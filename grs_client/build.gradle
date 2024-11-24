@@ -23,7 +23,7 @@ repositories {
 }
 
 war {
-    archiveName 'ROOT.war'
+    archiveName 'portal.war'
 }
 configurations {
     developmentOnly
@@ -37,10 +37,18 @@ repositories {
 }
 
 dependencies {
+    compile('org.springframework.boot:spring-boot-starter-data-jpa')
     compile("org.springframework.boot:spring-boot-starter-thymeleaf")
+    compile('org.springframework.boot:spring-boot-starter-security')
     compile('net.sourceforge.nekohtml:nekohtml:1.9.21')
     compile("org.springframework.boot:spring-boot-starter-web")
     compile('org.apache.tomcat.embed:tomcat-embed-jasper')
     compileOnly('org.projectlombok:lombok')
     compileOnly("org.springframework.boot:spring-boot-devtools")
+    compile('io.jsonwebtoken:jjwt:0.7.0')
+    compile files('libs/jackson-annotations-2.11.0.jar')
+    compile files('libs/jackson-core-2.11.0.jar')
+    compile files('libs/jackson-core-2.11.0.jar')
+    compile files('libs/java-jwt-3.16.0.jar')
+    compile("org.json:json:20171018")
 }
