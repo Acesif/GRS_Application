@@ -26,6 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Slf4j
 @Controller
@@ -124,6 +125,79 @@ public class ViewPageController {
         model.addAttribute("redirectUrl", redirectUrl);
         model.addAttribute("phoneNumber", phoneNumber);
         return new ModelAndView("login");
+    }
+
+    @RequestMapping(value = "/login/success", method = RequestMethod.POST)
+    public void redirectAfterLoginSuccessPOST(HttpServletResponse response, HttpServletRequest request, Authentication authentication) throws IOException {
+        if (authentication != null) {
+            UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
+            boolean isOthersComplainant = Utility.isUserAnOthersComplainant(authentication);
+            String lastSavedUrl = (String) request.getSession(false).getAttribute("prev_url");
+            //log.info(lastSavedUrl);
+            if (userInformation.getUserType().equals(UserType.OISF_USER)) {
+                if ((StringUtil.isValidString(lastSavedUrl) && lastSavedUrl.contains("/addStaffGrievances.do"))) {
+                    request.getSession().setAttribute("prev_url", "");
+                    response.sendRedirect((lastSavedUrl));
+                } else {
+                    if (userInformation.getOisfUserType().equals(OISFUserType.HEAD_OF_OFFICE)) {
+                        response.sendRedirect("/dashboard.do");
+                    } else {
+                        response.sendRedirect("/viewGrievances.do");
+                    }
+                }
+            } else if (userInformation.getUserType().equals(UserType.COMPLAINANT) || isOthersComplainant) {
+                if ((StringUtil.isValidString(lastSavedUrl)
+                        && (lastSavedUrl.contains("/addPublicGrievances.do")
+                        || lastSavedUrl.contains("/complainForOthers.do")))) {
+                    request.getSession().setAttribute("prev_url", "");
+                    response.sendRedirect(lastSavedUrl);
+                } else {
+                    response.sendRedirect("/viewGrievances.do");
+                }
+            } else if (userInformation.getUserType().equals(UserType.SYSTEM_USER)) {
+                response.sendRedirect("/viewOffice.do");
+            }
+        } else {
+            response.sendRedirect("/");
+        }
+    }
+
+    @RequestMapping(value = "/login/success", method = RequestMethod.GET)
+    public void redirectAfterLoginSuccess(HttpServletResponse response, HttpServletRequest request, Authentication authentication) throws IOException {
+        //log.info("/login/success : authentication: {}",authentication);
+
+        if (authentication != null) {
+            UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
+            //log.info("userInformation: {}",userInformation);
+            boolean isOthersComplainant = Utility.isUserAnOthersComplainant(authentication);
+            String lastSavedUrl = (String) request.getSession(false).getAttribute("prev_url");
+            //log.info(lastSavedUrl);
+            if (userInformation.getUserType().equals(UserType.OISF_USER)) {
+                if ((StringUtil.isValidString(lastSavedUrl) && lastSavedUrl.contains("/addStaffGrievances.do"))) {
+                    request.getSession().setAttribute("prev_url", "");
+                    response.sendRedirect((lastSavedUrl));
+                } else {
+                    if (userInformation.getOisfUserType().equals(OISFUserType.HEAD_OF_OFFICE)) {
+                        response.sendRedirect("/dashboard.do");
+                    } else {
+                        response.sendRedirect("/viewGrievances.do");
+                    }
+                }
+            } else if (userInformation.getUserType().equals(UserType.COMPLAINANT) || isOthersComplainant) {
+                if ((StringUtil.isValidString(lastSavedUrl)
+                        && (lastSavedUrl.contains("/addPublicGrievances.do")
+                        || lastSavedUrl.contains("/complainForOthers.do")))) {
+                    request.getSession().setAttribute("prev_url", "");
+                    response.sendRedirect(lastSavedUrl);
+                } else {
+                    response.sendRedirect("/viewGrievances.do");
+                }
+            } else if (userInformation.getUserType().equals(UserType.SYSTEM_USER)) {
+                response.sendRedirect("/viewOffice.do");
+            }
+        } else {
+            response.sendRedirect("/");
+        }
     }
 
 }
