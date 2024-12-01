@@ -1,5 +1,8 @@
 package com.grs.grs_client.controller;
 
+import com.grs.api.controller.GrievanceController;
+import com.grs.core.domain.projapoti.Office;
+import com.grs.core.service.OfficeService;
 import com.grs.grs_client.common.IDP_Client;
 import com.grs.grs_client.common.SSOPropertyReader;
 import com.grs.grs_client.domain.RedirectMap;
@@ -34,6 +37,9 @@ public class ViewPageController {
 
     @Autowired
     private ModelAndViewService modelViewService;
+    @Autowired
+    private OfficeService officeService;
+
 
     @Value("${app.base.url:''}")
     private String appBaseUrl;
@@ -198,6 +204,31 @@ public class ViewPageController {
         } else {
             response.sendRedirect("/");
         }
+    }
+
+    @RequestMapping(value = "/viewRegister.do", method = RequestMethod.GET)
+    public ModelAndView getRegisterPage(HttpServletRequest request, Authentication authentication, Model model) {
+        if (authentication != null) {
+            com.grs.api.model.UserInformation userInformation = com.grs.utils.Utility.extractUserInformationFromAuthentication(authentication);
+            Long officeId = userInformation.getOfficeInformation().getOfficeId();
+            String requestParams = request.getParameter("params");
+            if (com.grs.utils.StringUtil.isValidString(requestParams)) {
+                Long officeIdParam = com.grs.utils.StringUtil.decodeOfficeIdOnDashboardDrillDown(requestParams);
+                Office office = officeService.findOne(officeIdParam);
+                if (office != null) {
+                    officeId = officeIdParam;
+                }
+            }
+            model.addAttribute("officeId", officeId);
+            return modelViewService.addNecessaryAttributesAndReturnViewPage(model,
+                    authentication,
+                    request,
+                    "register",
+                    "viewRegister",
+                    "admin"
+            );
+        }
+        return new ModelAndView("redirect:/error-page");
     }
 
 }
