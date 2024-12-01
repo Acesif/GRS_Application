@@ -1,33 +1,15 @@
 package com.grs.grs_client.controller;
 
-import com.grs.api.model.UserInformation;
-import com.grs.api.model.UserType;
-import com.grs.api.model.request.BlacklistRequestBodyDTO;
-import com.grs.api.model.request.ComplainantDTO;
-import com.grs.api.model.request.PasswordChangeDTO;
-import com.grs.api.model.response.ComplainantResponseDTO;
-import com.grs.api.model.response.GenericResponse;
-import com.grs.api.model.response.IdPhoneMessageDTO;
-import com.grs.api.model.response.grievance.ComplainantInfoBlacklistReqDTO;
-import com.grs.api.model.response.grievance.ComplainantInfoDTO;
-import com.grs.core.domain.grs.Complainant;
-import com.grs.core.domain.grs.SuperAdmin;
-import com.grs.core.service.*;
 import com.grs.grs_client.service.ModelAndViewService;
-import com.grs.utils.CookieUtil;
-import com.grs.utils.StringUtil;
-import com.grs.utils.Utility;
+import com.grs.grs_client.utils.CookieUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**

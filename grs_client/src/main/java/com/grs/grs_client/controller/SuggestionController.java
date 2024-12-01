@@ -1,29 +1,14 @@
 package com.grs.grs_client.controller;
 
-import com.grs.api.model.OfficeInformation;
-import com.grs.api.model.UserInformation;
-import com.grs.api.model.UserType;
-import com.grs.api.model.request.SuggestionDetailsDTO;
-import com.grs.api.model.request.SuggestionRequestDTO;
-import com.grs.api.model.response.GenericResponse;
-import com.grs.api.model.response.SuggestionResponseDTO;
-import com.grs.core.domain.grs.Complainant;
-import com.grs.core.domain.grs.Suggestion;
-import com.grs.core.domain.projapoti.EmployeeRecord;
-import com.grs.core.domain.projapoti.Office;
-import com.grs.core.service.*;
-import com.grs.utils.StringUtil;
-import com.grs.utils.Utility;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
