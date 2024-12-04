@@ -27,13 +27,11 @@ public class Utility {
         return userInformation;
     }
 
-    public static Boolean isUserAnGRSUser(Authentication authentication) {
-        UserInformation userInformation = extractUserInformationFromAuthentication(authentication);
+    public static Boolean isUserAnGRSUser(UserInformation userInformation) {
         return userInformation.getUserType().equals(UserType.COMPLAINANT);
     }
 
-    public static Boolean isUserAnOthersComplainant(Authentication authentication) {
-        UserInformation userInformation = extractUserInformationFromAuthentication(authentication);
+    public static Boolean isUserAnOthersComplainant(UserInformation userInformation) {
         GRSUserType grsUserType = userInformation.getGrsUserType();
         if (grsUserType == null) {
             return false;
@@ -41,8 +39,7 @@ public class Utility {
         return grsUserType.equals(GRSUserType.OTHERS_COMPLAINANT);
     }
 
-    public static Boolean isUserAnGRSUserOrOthersComplainant(Authentication authentication) {
-        UserInformation userInformation = extractUserInformationFromAuthentication(authentication);
+    public static Boolean isUserAnGRSUserOrOthersComplainant(UserInformation userInformation) {
         GRSUserType grsUserType = userInformation.getGrsUserType();
         if (grsUserType == null) {
             return userInformation.getUserType().equals(UserType.COMPLAINANT);
@@ -50,32 +47,29 @@ public class Utility {
         return grsUserType.equals(GRSUserType.OTHERS_COMPLAINANT);
     }
 
-    public static Boolean isUserAnOisfUser(Authentication authentication) {
-        UserInformation userInformation = extractUserInformationFromAuthentication(authentication);
+    public static Boolean isUserAnOisfUser(UserInformation userInformation) {
         return (userInformation.getUserType().equals(UserType.OISF_USER));
     }
 
-    public static Boolean isUserAnGROUser(Authentication authentication) {
-        UserInformation userInformation = extractUserInformationFromAuthentication(authentication);
+    public static Boolean isUserAnGROUser(UserInformation userInformation) {
         if (userInformation.getOfficeInformation() != null && userInformation.getOisfUserType() == OISFUserType.GRO) {
             return true;
         }
         return false;
     }
 
-    public static Boolean isCellGRO(Authentication authentication) {
-        UserInformation userInformation = extractUserInformationFromAuthentication(authentication);
+    public static Boolean isCellGRO(UserInformation userInformation) {
         if (userInformation.getUserType().equals(UserType.OISF_USER)) {
             return userInformation.getIsCellGRO();
         }
         return false;
     }
 
-    public static Boolean canViewDashboard(Authentication authentication) {
-        return !isUserAnGRSUser(authentication) && (isUserAnGROUser(authentication)
-                || isUserAHOOUser(authentication)
-                || isUserACentralDashboardRecipient(authentication)
-                || isCellGRO(authentication));
+    public static Boolean canViewDashboard(UserInformation userInformation) {
+        return !isUserAnGRSUser(userInformation) && (isUserAnGROUser(userInformation)
+                || isUserAHOOUser(userInformation)
+                || isUserACentralDashboardRecipient(userInformation)
+                || isCellGRO(userInformation));
     }
 
     public static Boolean isServiceOfficer(Authentication authentication) {
@@ -86,8 +80,7 @@ public class Utility {
         return false;
     }
 
-    public static Boolean isUserAHOOUser(Authentication authentication) {
-        UserInformation userInformation = extractUserInformationFromAuthentication(authentication);
+    public static Boolean isUserAHOOUser(UserInformation userInformation) {
         if (userInformation.getOfficeInformation() != null && userInformation.getOisfUserType() == OISFUserType.HEAD_OF_OFFICE) {
             return true;
         }
@@ -112,24 +105,21 @@ public class Utility {
         return false;
     }
 
-    public static Boolean isUserACentralDashboardRecipient(Authentication authentication) {
-        UserInformation userInformation = extractUserInformationFromAuthentication(authentication);
+    public static Boolean isUserACentralDashboardRecipient(UserInformation userInformation) {
         if (userInformation.getIsCentralDashboardUser() != null) {
             return userInformation.getIsCentralDashboardUser();
         }
         return false;
     }
 
-    public static Boolean isLoggedInFromMobile(Authentication authentication) {
-        UserInformation userInformation = extractUserInformationFromAuthentication(authentication);
+    public static Boolean isLoggedInFromMobile(UserInformation userInformation) {
         if (userInformation.getIsMobileLogin() != null) {
             return userInformation.getIsMobileLogin();
         }
         return false;
     }
 
-    public static Boolean isFieldCoordinator(Authentication authentication) {
-        UserInformation userInformation = extractUserInformationFromAuthentication(authentication);
+    public static Boolean isFieldCoordinator(UserInformation userInformation) {
         if (userInformation.getOfficeInformation() != null && userInformation.getOfficeInformation().getOfficeMinistryId() != null && userInformation.getOfficeInformation().getLayerLevel() != null &&
                 userInformation.getOfficeInformation().getOfficeMinistryId().equals(Constant.ministryIdFive) &&
                 (userInformation.getOfficeInformation().getLayerLevel().equals(Constant.layerThree) || userInformation.getOfficeInformation().getLayerLevel().equals(Constant.layerFour)) &&
@@ -139,11 +129,10 @@ public class Utility {
         return false;
     }
 
-    public static Boolean isUserASuperAdmin(Authentication authentication) {
-        if (authentication == null) {
+    public static Boolean isUserASuperAdmin(UserInformation userInformation) {
+        if (userInformation == null) {
             return false;
         }
-        UserInformation userInformation = extractUserInformationFromAuthentication(authentication);
         return userInformation.getUserType().equals(UserType.SYSTEM_USER);
     }
 

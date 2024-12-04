@@ -1,7 +1,5 @@
 package com.grs.grs_client.service;
 
-import com.grs.api.model.NotificationsDTO;
-import com.grs.core.service.NotificationService;
 import com.grs.grs_client.enums.OISFUserType;
 import com.grs.grs_client.enums.UserType;
 import com.grs.grs_client.model.SubMenuDTO;
@@ -10,6 +8,7 @@ import com.grs.grs_client.utils.CookieUtil;
 import com.grs.grs_client.utils.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -22,6 +21,18 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class ModelAndViewService {
+
+    @Value("${settings.maximum-file-size}")
+    Integer maxFileSize;
+
+    @Value("${settings.allowed-file-types}")
+    String allowedFileTypes;
+
+    @Value("${settings.file-size-label}")
+    String fileSizeLabel;
+
+    @Value("${settings.file-types-label}")
+    String fileTypesLabel;
 
 //    @Autowired
 //    private NotificationService notificationService;
@@ -57,6 +68,15 @@ public class ModelAndViewService {
         model.addAttribute("isProductionMode", false);
         return new ModelAndView(viewName);
     }
+
+    public Model addFileSettingsAttributesToModel(Model model) {
+        model.addAttribute("maxFileSize", maxFileSize);
+        model.addAttribute("allowedFileTypes", allowedFileTypes);
+        model.addAttribute("fileSizeLabel", fileSizeLabel);
+        model.addAttribute("fileTypesLabel", fileTypesLabel);
+        return model;
+    }
+
     public ModelAndView addNecessaryAttributesAndReturnViewPage(Model model,
                                                                 Authentication authentication,
                                                                 HttpServletRequest request,
@@ -85,8 +105,8 @@ public class ModelAndViewService {
 //        model.addAttribute("isProductionMode", Boolean.valueOf(environment.getProperty("environment.production")));
         model.addAttribute("isProductionMode", false);
 
-        Boolean isGrsUser = Utility.isUserAnGRSUser(authentication);
-        Boolean isOthersComplainant = Utility.isUserAnOthersComplainant(authentication);
+        Boolean isGrsUser = Utility.isUserAnGRSUser(userInformation);
+        Boolean isOthersComplainant = Utility.isUserAnOthersComplainant(userInformation);
 //        if(!isGrsUser && !userInformation.getUserType().equals(UserType.SYSTEM_USER)){
 //            NotificationsDTO notifications = this.notificationService.findByOfficeIdAndEmployeeRecordIdAndOfficeUnitOrganogramIdOrderByIdDesc(
 //                    userInformation.getOfficeInformation().getOfficeId(), userInformation.getOfficeInformation().getEmployeeRecordId(), userInformation.getOfficeInformation().getOfficeUnitOrganogramId()
@@ -95,17 +115,17 @@ public class ModelAndViewService {
 //        }
         // todo: need to add Notification Service #blocker
         Boolean isMyGovLogin = userInformation.getIsMyGovLogin() != null && userInformation.getIsMyGovLogin();
-        Boolean isMobileLogin = Utility.isLoggedInFromMobile(authentication);
+        Boolean isMobileLogin = Utility.isLoggedInFromMobile(userInformation);
         Boolean isCellGro = userInformation.getIsCellGRO() == null ? false : userInformation.getIsCellGRO();
         Boolean showDrawerMenu = isMobileLogin && !isGrsUser;
         model.addAttribute("grsUser", isGrsUser);
         model.addAttribute("isOthersComplainant", isOthersComplainant);
-        model.addAttribute("isGro", Utility.isUserAnGROUser(authentication));
+        model.addAttribute("isGro", Utility.isUserAnGROUser(userInformation));
         model.addAttribute("isAppealOfficer", (userInformation.getIsAppealOfficer() || isCellGro));
         model.addAttribute("isOfficeAdmin", userInformation.getIsOfficeAdmin());
-        model.addAttribute("isHoo", Utility.isUserAHOOUser(authentication));
-        model.addAttribute("isFieldCoordinator", Utility.isFieldCoordinator(authentication));
-        model.addAttribute("isCentralDashboardRecipient", Utility.isUserACentralDashboardRecipient(authentication));
+        model.addAttribute("isHoo", Utility.isUserAHOOUser(userInformation));
+        model.addAttribute("isFieldCoordinator", Utility.isFieldCoordinator(userInformation));
+        model.addAttribute("isCentralDashboardRecipient", Utility.isUserACentralDashboardRecipient(userInformation));
         model.addAttribute("isMobileLogin", isMobileLogin);
         model.addAttribute("showDrawerMenu", showDrawerMenu);
         Boolean isMinistryLevel = false;
@@ -120,10 +140,10 @@ public class ModelAndViewService {
         model.addAttribute("isAdmin",  isAdmin);
 
         if (!model.containsAttribute("superAdmin")){
-            model.addAttribute("superAdmin",Utility.isUserASuperAdmin(authentication));
+            model.addAttribute("superAdmin",Utility.isUserASuperAdmin(userInformation));
         }
         if(!model.containsAttribute("showAllOffices")) {
-            model.addAttribute("showAllOffices",Utility.isUserASuperAdmin(authentication));
+            model.addAttribute("showAllOffices",Utility.isUserASuperAdmin(userInformation));
         }
         if(!model.containsAttribute("showChildOfficesOnly")) {
             model.addAttribute("showChildOfficesOnly",false);
@@ -135,8 +155,8 @@ public class ModelAndViewService {
         }
         model.addAttribute("isMyGovLogin", isMyGovLogin);
         model.addAttribute("isCellMember", isCellMember);
-        model.addAttribute("isCellGRO", Utility.isCellGRO(authentication));
-        model.addAttribute("canViewDashboard", Utility.canViewDashboard(authentication));
+        model.addAttribute("isCellGRO", Utility.isCellGRO(userInformation));
+        model.addAttribute("canViewDashboard", Utility.canViewDashboard(userInformation));
         model.addAttribute("token", userInformation.getToken());
 
         viewName = showDrawerMenu ? "admin_mobile" : viewName;

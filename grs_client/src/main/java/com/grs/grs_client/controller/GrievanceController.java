@@ -1,30 +1,19 @@
 package com.grs.grs_client.controller;
 
-import com.grs.api.model.OISFUserType;
-import com.grs.api.model.UserInformation;
-import com.grs.api.model.UserType;
-import com.grs.api.model.request.*;
-import com.grs.api.model.response.*;
-import com.grs.api.model.response.file.ExistingFileDerivedDTO;
-import com.grs.api.model.response.file.FileDerivedDTO;
-import com.grs.api.model.response.grievance.GrievanceDTO;
-import com.grs.api.model.response.grievance.GrievanceDetailsDTO;
-import com.grs.core.config.CaptchaSettings;
-import com.grs.core.dao.SpProgrammeDAO;
-import com.grs.core.domain.ServicePair;
-import com.grs.core.domain.ServiceType;
-import com.grs.core.domain.grs.Grievance;
-import com.grs.core.domain.grs.Notification;
-import com.grs.core.model.EmployeeOrganogram;
-import com.grs.core.model.ListViewType;
-import com.grs.core.service.*;
-import com.grs.utils.ListViewConditionOnCurrentStatusGenerator;
-import com.grs.utils.Utility;
+import com.grs.grs_client.enums.UserType;
+import com.grs.grs_client.gateway.ComplainantGateway;
+import com.grs.grs_client.gateway.GrievanceForwardingGateway;
+import com.grs.grs_client.gateway.GrievanceGateway;
+
+import com.grs.grs_client.gateway.OfficesGateway;
+import com.grs.grs_client.model.FeedbackResponseDTO;
+import com.grs.grs_client.model.Grievance;
+import com.grs.grs_client.model.UserInformation;
+import com.grs.grs_client.service.AccessControlService;
+import com.grs.grs_client.service.ModelAndViewService;
+import com.grs.grs_client.utils.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.ui.Model;
@@ -35,25 +24,25 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.*;
 
-/**
- * Created by Tanvir on 9/14/2017.
- */
+
 @Slf4j
 @RestController
 public class GrievanceController {
 
     @Autowired
-    private GrievanceService grievanceService;
+    private GrievanceGateway grievanceService;
     @Autowired
-    private OfficeService officeService;
+    private ComplainantGateway complainantService;
     @Autowired
-    private GrievanceForwardingService grievanceForwardingService;
+    private OfficesGateway officeService;
+    @Autowired
+    private GrievanceForwardingGateway grievanceForwardingService;
     @Autowired
     private CitizenCharterService citizenCharterService;
     @Autowired
-    private ModelViewService modelViewService;
+    private ModelAndViewService modelViewService;
     @Autowired
-    private ComplainantService complainantService;
+    private ComplainantGateway complainantService;
     @Autowired
     private AccessControlService accessControlService;
     @Autowired
@@ -66,9 +55,14 @@ public class GrievanceController {
     @RequestMapping(value = "/viewGrievances.do", method = RequestMethod.GET)
     public ModelAndView getViewGrievancesPage(Authentication authentication, Model model, HttpServletRequest request) {
         if (authentication != null) {
+            Boolean isBlacklisted = false;
+            UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
+            if (userInformation.getUserType().equals(UserType.COMPLAINANT)) {
+                isBlacklisted =  complainantService.isBlacklistedUser(userInformation.getUserId());
+            }
             String fragmentFolder = Utility.isUserAnGRSUserOrOthersComplainant(authentication) ? "dashboard" : "grievances";
             String fragmentName = Utility.isUserAnGRSUserOrOthersComplainant(authentication) ? "dashboardCitizen" : "manageGrievances";
-            Boolean isBlacklisted = complainantService.isBlacklistedUser(authentication);
+
             model.addAttribute("isBlacklisted", isBlacklisted);
             return modelViewService.addNecessaryAttributesAndReturnViewPage(model,
                     authentication,
@@ -125,28 +119,30 @@ public class GrievanceController {
             if(!accessControlService.hasPermissionToViewGrievanceDetails(authentication, id)) {
                 return new ModelAndView("redirect:/error-page");
             }
-            Boolean isGrsUser = Utility.isUserAnGRSUser(authentication);
-            Boolean isOthersComplainant = Utility.isUserAnOthersComplainant(authentication);
-            Boolean isGROUser = Utility.isUserAnGROUser(authentication);
-            Boolean appealButtonFlag = this.grievanceService.appealActivationFlag(id);
-            Boolean isOISFComplainant = this.grievanceService.isOISFComplainant(authentication, id);
-            Boolean serviceIsNull = this.grievanceService.serviceIsNull(id);
-            Boolean isNagorik = this.grievanceService.isNagorikTypeGrievance(id);
-            Boolean isBlacklisted = complainantService.isBlacklistedUser(authentication);
-            Boolean isFeedbackEnabled = this.grievanceService.isFeedbackEnabled(id);
-            Boolean isAnonymousUser = this.grievanceService.isSubmittedByAnonymousUser(id);
+            UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
+            Grievance grievance = this.grievanceService.findGrievanceById(id);
+            Boolean isGrsUser = Utility.isUserAnGRSUser(userInformation);
+            Boolean isOthersComplainant = Utility.isUserAnOthersComplainant(userInformation);
+            Boolean isGROUser = Utility.isUserAnGROUser(userInformation);
+            Boolean appealButtonFlag = this.grievanceService.appealActivationFlag(grievance);
+            Boolean isOISFComplainant = this.grievanceService.isOISFComplainant(authentication, grievance);
+            Boolean serviceIsNull = this.grievanceService.serviceIsNull(grievance);
+            Boolean isNagorik = this.grievanceService.isNagorikTypeGrievance(grievance);
+            Boolean isBlacklisted = complainantService.isBlacklistedUser(userInformation.getUserId());
+            Boolean isFeedbackEnabled = this.grievanceService.isFeedbackEnabled(grievance);
+            Boolean isAnonymousUser = this.grievanceService.isSubmittedByAnonymousUser(grievance);
             Boolean soAppealOption = null;
             Boolean isComplainantBlacklisted = false;
             Boolean canRetakeComplaint = false;
             if (Utility.isServiceOfficer(authentication)) {
-                soAppealOption = this.grievanceService.soAppealActivationFlag(id);
+                soAppealOption = this.grievanceForwardingService.soAppealActivationFlag(grievance);
             }
             if(!isGrsUser) {
-                isComplainantBlacklisted = grievanceService.isComplainantBlackListedByGrievanceId(id);
-                canRetakeComplaint = grievanceForwardingService.getComplaintRetakeFlag(id, authentication);
+                isComplainantBlacklisted = complainantService.isBlacklistedUserByComplainantId(grievance.getComplainantId());
+                canRetakeComplaint = grievanceForwardingService.getComplaintRetakeFlag(grievance, userInformation);
             }
-            List<FeedbackResponseDTO> feedbacks = this.grievanceService.getFeedbacks(id);
-            model = grievanceService.addFileSettingsAttributesToModel(model);
+            List<FeedbackResponseDTO> feedbacks = this.grievanceService.getFeedbacks(grievance);
+            model = modelViewService.addFileSettingsAttributesToModel(model);
             model.addAttribute("grsUser", isGrsUser);
             model.addAttribute("isOthersComplainant", isOthersComplainant);
             model.addAttribute("isGRO", isGROUser);
@@ -197,28 +193,30 @@ public class GrievanceController {
             if(!accessControlService.hasPermissionToViewGrievanceDetails(authentication, id)) {
                 return new ModelAndView("redirect:/error-page");
             }
-            Boolean isGrsUser = Utility.isUserAnGRSUser(authentication);
-            Boolean isOthersComplainant = Utility.isUserAnOthersComplainant(authentication);
-            Boolean isGROUser = Utility.isUserAnGROUser(authentication);
-            Boolean appealButtonFlag = this.grievanceService.appealActivationFlag(id);
-            Boolean isOISFComplainant = this.grievanceService.isOISFComplainant(authentication, id);
-            Boolean serviceIsNull = this.grievanceService.serviceIsNull(id);
-            Boolean isNagorik = this.grievanceService.isNagorikTypeGrievance(id);
-            Boolean isBlacklisted = complainantService.isBlacklistedUser(authentication);
-            Boolean isFeedbackEnabled = this.grievanceService.isFeedbackEnabled(id);
-            Boolean isAnonymousUser = this.grievanceService.isSubmittedByAnonymousUser(id);
+            UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
+            Grievance grievance = this.grievanceService.findGrievanceById(id);
+            Boolean isGrsUser = Utility.isUserAnGRSUser(userInformation);
+            Boolean isOthersComplainant = Utility.isUserAnOthersComplainant(userInformation);
+            Boolean isGROUser = Utility.isUserAnGROUser(userInformation);
+            Boolean appealButtonFlag = this.grievanceService.appealActivationFlag(grievance);
+            Boolean isOISFComplainant = this.grievanceService.isOISFComplainant(userInformation, grievance);
+            Boolean serviceIsNull = this.grievanceService.serviceIsNull(grievance);
+            Boolean isNagorik = this.grievanceService.isNagorikTypeGrievance(grievance);
+            Boolean isBlacklisted = complainantService.isBlacklistedUser(userInformation.getUserId());
+            Boolean isFeedbackEnabled = this.grievanceService.isFeedbackEnabled(grievance);
+            Boolean isAnonymousUser = this.grievanceService.isSubmittedByAnonymousUser(grievance);
             Boolean soAppealOption = null;
             Boolean isComplainantBlacklisted = false;
             Boolean canRetakeComplaint = false;
             if (Utility.isServiceOfficer(authentication)) {
-                soAppealOption = this.grievanceService.soAppealActivationFlag(id);
+                soAppealOption = this.grievanceForwardingService.soAppealActivationFlag(grievance);
             }
             if(!isGrsUser) {
                 isComplainantBlacklisted = grievanceService.isComplainantBlackListedByGrievanceId(id);
-                canRetakeComplaint = grievanceForwardingService.getComplaintRetakeFlag(id, authentication);
+                canRetakeComplaint = grievanceForwardingService.getComplaintRetakeFlag(id, userInformation);
             }
-            List<FeedbackResponseDTO> feedbacks = this.grievanceService.getFeedbacks(id);
-            model = grievanceService.addFileSettingsAttributesToModel(model);
+            List<FeedbackResponseDTO> feedbacks = this.grievanceService.getFeedbacks(grievance);
+            model = modelViewService.addFileSettingsAttributesToModel(model);
             model.addAttribute("grsUser", isGrsUser);
             model.addAttribute("isOthersComplainant", isOthersComplainant);
             model.addAttribute("isGRO", isGROUser);
