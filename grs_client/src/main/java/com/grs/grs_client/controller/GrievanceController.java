@@ -6,9 +6,7 @@ import com.grs.grs_client.gateway.GrievanceForwardingGateway;
 import com.grs.grs_client.gateway.GrievanceGateway;
 
 import com.grs.grs_client.gateway.OfficesGateway;
-import com.grs.grs_client.model.FeedbackResponseDTO;
-import com.grs.grs_client.model.Grievance;
-import com.grs.grs_client.model.UserInformation;
+import com.grs.grs_client.model.*;
 import com.grs.grs_client.service.AccessControlService;
 import com.grs.grs_client.service.ModelAndViewService;
 import com.grs.grs_client.utils.Utility;
@@ -331,7 +329,7 @@ public class GrievanceController {
                 return new ModelAndView("redirect:/error-page");
             }
 
-            if(complainantService.isBlacklistedUser(authentication)){
+            if(complainantService.isBlacklistedUser(userInformation.getUserId())){
                 blackLiterOffice = complainantService.findBlacklistedOffices(userInformation.getUserId());
             }
             model.addAttribute("grievanceDTO", new GrievanceRequestDTO());
