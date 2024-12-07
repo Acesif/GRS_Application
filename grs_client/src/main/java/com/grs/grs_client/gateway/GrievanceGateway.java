@@ -1,6 +1,9 @@
 package com.grs.grs_client.gateway;
 
+import com.grs.grs_client.enums.GrievanceCurrentStatus;
+import com.grs.grs_client.enums.OISFUserType;
 import com.grs.grs_client.enums.ServiceType;
+import com.grs.grs_client.enums.UserType;
 import com.grs.grs_client.model.AttachedFile;
 import com.grs.grs_client.model.FeedbackResponseDTO;
 import com.grs.grs_client.model.Grievance;
@@ -72,14 +75,12 @@ public class GrievanceGateway extends BaseRestTemplate {
         return false;
     }
 
-    public Boolean isOISFComplainant(Authentication authentication, Grievance grievance) {
+    public Boolean isOISFComplainant(UserInformation userInformation, Grievance grievance) {
 
         if(grievance == null)
         {
             return false;
         }
-
-        UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
 
         if (!grievance.isGrsUser()
                 && (grievance.getComplainantId().equals(userInformation.getUserId())
@@ -158,5 +159,16 @@ public class GrievanceGateway extends BaseRestTemplate {
         }
         List<AttachedFile> attachedFiles = grievance.getAttachedFiles();
         return attachedFiles.size();
+    }
+
+    public Boolean isComplaintRevivable(Grievance grievance, UserInformation userInformation) {
+        if(grievance.getGrievanceCurrentStatus().equals(GrievanceCurrentStatus.REJECTED)){
+            if(userInformation.getUserType().equals(UserType.OISF_USER)){
+                if(userInformation.getOisfUserType().equals(OISFUserType.GRO)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

@@ -5,6 +5,7 @@ import com.grs.grs_client.enums.RoleType;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class GrievanceForwarding {
@@ -45,4 +46,5 @@ public class GrievanceForwarding {
     private Long createdBy;
     private Long modifiedBy;
     private Boolean status;
+    private List<MovementAttachedFile> attachedFiles;
 }

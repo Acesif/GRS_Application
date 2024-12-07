@@ -2,7 +2,9 @@ package com.grs.grs_client.gateway;
 
 import com.grs.grs_client.model.EmployeeRecord;
 import com.grs.grs_client.model.EmployeeRecordDTO;
+import com.grs.grs_client.model.OfficeSearchDTO;
 import com.grs.grs_client.model.OfficesGRO;
+import com.grs.grs_client.utils.CacheUtil;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -41,5 +43,9 @@ public class OfficesGateway extends BaseRestTemplate{
                 .name(employeeRecord.getNameBangla())
                 .phoneNumber(employeeRecord.getPersonalMobile())
                 .build();
+    }
+
+    public List<OfficeSearchDTO> getGrsEnabledOfficeSearchingData() {
+        return CacheUtil.getGrsEnabledOfficeSearchDTOList();
     }
 }

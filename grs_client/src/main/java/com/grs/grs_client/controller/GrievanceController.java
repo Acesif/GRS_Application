@@ -38,18 +38,9 @@ public class GrievanceController {
     @Autowired
     private GrievanceForwardingGateway grievanceForwardingService;
     @Autowired
-    private CitizenCharterService citizenCharterService;
-    @Autowired
     private ModelAndViewService modelViewService;
     @Autowired
-    private ComplainantGateway complainantService;
-    @Autowired
     private AccessControlService accessControlService;
-    @Autowired
-    private SafetyNetProgramService safetyNetProgramService;
-
-    @Autowired
-    private CaptchaSettings captchaSettings;
 
 
     @RequestMapping(value = "/viewGrievances.do", method = RequestMethod.GET)
@@ -60,8 +51,8 @@ public class GrievanceController {
             if (userInformation.getUserType().equals(UserType.COMPLAINANT)) {
                 isBlacklisted =  complainantService.isBlacklistedUser(userInformation.getUserId());
             }
-            String fragmentFolder = Utility.isUserAnGRSUserOrOthersComplainant(authentication) ? "dashboard" : "grievances";
-            String fragmentName = Utility.isUserAnGRSUserOrOthersComplainant(authentication) ? "dashboardCitizen" : "manageGrievances";
+            String fragmentFolder = Utility.isUserAnGRSUserOrOthersComplainant(userInformation) ? "dashboard" : "grievances";
+            String fragmentName = Utility.isUserAnGRSUserOrOthersComplainant(userInformation) ? "dashboardCitizen" : "manageGrievances";
 
             model.addAttribute("isBlacklisted", isBlacklisted);
             return modelViewService.addNecessaryAttributesAndReturnViewPage(model,
@@ -76,10 +67,12 @@ public class GrievanceController {
 
     @RequestMapping(value = "/viewMyGrievances.do", method = RequestMethod.GET)
     public ModelAndView getMyViewGrievancesPage(Authentication authentication, Model model, HttpServletRequest request) {
+
         if (authentication != null) {
+            UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
             String fragmentFolder = "grievances";
             String fragmentName = "viewMyGrievances";
-            model.addAttribute("isHoo", Utility.isUserAHOOUser(authentication));
+            model.addAttribute("isHoo", Utility.isUserAHOOUser(userInformation));
             return modelViewService.addNecessaryAttributesAndReturnViewPage(model,
                     authentication,
                     request,
@@ -125,7 +118,7 @@ public class GrievanceController {
             Boolean isOthersComplainant = Utility.isUserAnOthersComplainant(userInformation);
             Boolean isGROUser = Utility.isUserAnGROUser(userInformation);
             Boolean appealButtonFlag = this.grievanceService.appealActivationFlag(grievance);
-            Boolean isOISFComplainant = this.grievanceService.isOISFComplainant(authentication, grievance);
+            Boolean isOISFComplainant = this.grievanceService.isOISFComplainant(userInformation, grievance);
             Boolean serviceIsNull = this.grievanceService.serviceIsNull(grievance);
             Boolean isNagorik = this.grievanceService.isNagorikTypeGrievance(grievance);
             Boolean isBlacklisted = complainantService.isBlacklistedUser(userInformation.getUserId());
@@ -157,11 +150,11 @@ public class GrievanceController {
             model.addAttribute("soAppealOption", soAppealOption);
             model.addAttribute("isComplainantBlacklisted", isComplainantBlacklisted);
             model.addAttribute("canRetakeComplaint", canRetakeComplaint);
-            model.addAttribute("grievanceFileCount", this.grievanceService.getCountOfAttachedFiles(id));
-            model.addAttribute("grievanceForwardingFileCount", this.grievanceForwardingService.getCountOfComplaintMovementAttachedFiles(authentication, id));
-            Boolean reviveFlag = this.grievanceService.isComplaintRevivable(id, authentication);
+            model.addAttribute("grievanceFileCount", this.grievanceService.getCountOfAttachedFiles(grievance));
+            model.addAttribute("grievanceForwardingFileCount", this.grievanceForwardingService.getCountOfComplaintMovementAttachedFiles(userInformation, grievance));
+            Boolean reviveFlag = this.grievanceService.isComplaintRevivable(grievance, userInformation);
             model.addAttribute("reviveFlag", reviveFlag);
-            this.grievanceForwardingService.updateForwardSeenStatus(Utility.extractUserInformationFromAuthentication(authentication), id);
+            this.grievanceForwardingService.updateForwardSeenStatus(Utility.extractUserInformationFromAuthentication(authentication), grievance);
             model.addAttribute("searchableOffices", officeService.getGrsEnabledOfficeSearchingData());
 
             // Add tab, page, and size parameters to the model so they can be passed back
@@ -212,8 +205,8 @@ public class GrievanceController {
                 soAppealOption = this.grievanceForwardingService.soAppealActivationFlag(grievance);
             }
             if(!isGrsUser) {
-                isComplainantBlacklisted = grievanceService.isComplainantBlackListedByGrievanceId(id);
-                canRetakeComplaint = grievanceForwardingService.getComplaintRetakeFlag(id, userInformation);
+                isComplainantBlacklisted = complainantService.isBlacklistedUserByComplainantId(grievance.getComplainantId());
+                canRetakeComplaint = grievanceForwardingService.getComplaintRetakeFlag(grievance, userInformation);
             }
             List<FeedbackResponseDTO> feedbacks = this.grievanceService.getFeedbacks(grievance);
             model = modelViewService.addFileSettingsAttributesToModel(model);
@@ -231,11 +224,11 @@ public class GrievanceController {
             model.addAttribute("soAppealOption", soAppealOption);
             model.addAttribute("isComplainantBlacklisted", isComplainantBlacklisted);
             model.addAttribute("canRetakeComplaint", canRetakeComplaint);
-            model.addAttribute("grievanceFileCount", this.grievanceService.getCountOfAttachedFiles(id));
-            model.addAttribute("grievanceForwardingFileCount", this.grievanceForwardingService.getCountOfComplaintMovementAttachedFiles(authentication, id));
-            Boolean reviveFlag = this.grievanceService.isComplaintRevivable(id, authentication);
+            model.addAttribute("grievanceFileCount", this.grievanceService.getCountOfAttachedFiles(grievance));
+            model.addAttribute("grievanceForwardingFileCount", this.grievanceForwardingService.getCountOfComplaintMovementAttachedFiles(userInformation, grievance));
+            Boolean reviveFlag = this.grievanceService.isComplaintRevivable(grievance, userInformation);
             model.addAttribute("reviveFlag", reviveFlag);
-            this.grievanceForwardingService.updateForwardSeenStatus(Utility.extractUserInformationFromAuthentication(authentication), id);
+            this.grievanceForwardingService.updateForwardSeenStatus(userInformation, grievance);
             model.addAttribute("searchableOffices", officeService.getGrsEnabledOfficeSearchingData());
 
             // Add tab, page, and size parameters to the model so they can be passed back
@@ -256,34 +249,36 @@ public class GrievanceController {
     @RequestMapping(value = "/viewAppealGrievances.do", method = RequestMethod.GET, params = "id")
     public ModelAndView getViewAppealGrievancesPage(Authentication authentication, Model model, HttpServletRequest request, @RequestParam Long id) {
         if (authentication != null) {
-            Boolean isGrsUser = Utility.isUserAnGRSUser(authentication);
-            Boolean isOthersComplainant = Utility.isUserAnOthersComplainant(authentication);
-            Boolean isGROUser = Utility.isUserAnGROUser(authentication);
-            Boolean serviceIsNull = this.grievanceService.serviceIsNull(id);
-            Boolean isFeedbackEnabled = this.grievanceService.isFeedbackEnabled(id);
-            List<FeedbackResponseDTO> feedbacks = this.grievanceService.getFeedbacks(id);
-            model = grievanceService.addFileSettingsAttributesToModel(model);
+            UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
+            Grievance grievance = this.grievanceService.findGrievanceById(id);
+            Boolean isGrsUser = Utility.isUserAnGRSUser(userInformation);
+            Boolean isOthersComplainant = Utility.isUserAnOthersComplainant(userInformation);
+            Boolean isGROUser = Utility.isUserAnGROUser(userInformation);
+            Boolean serviceIsNull = this.grievanceService.serviceIsNull(grievance);
+            Boolean isFeedbackEnabled = this.grievanceService.isFeedbackEnabled(grievance);
+            List<FeedbackResponseDTO> feedbacks = this.grievanceService.getFeedbacks(grievance);
+            model = modelViewService.addFileSettingsAttributesToModel(model);
             model.addAttribute("isGRO", isGROUser);
             model.addAttribute("serviceIsNull", serviceIsNull);
             model.addAttribute("isFeedbackEnabled", isFeedbackEnabled);
             model.addAttribute("feedbacks", feedbacks);
 
-            Boolean appealButtonFlag = this.grievanceService.appealActivationFlag(id);
-            Boolean isOISFComplainant = this.grievanceService.isOISFComplainant(authentication, id);
-            Boolean isNagorik = this.grievanceService.isNagorikTypeGrievance(id);
-            Boolean isBlacklisted = complainantService.isBlacklistedUser(authentication);
-            Boolean isAnonymousUser = this.grievanceService.isSubmittedByAnonymousUser(id);
+            Boolean appealButtonFlag = this.grievanceService.appealActivationFlag(grievance);
+            Boolean isOISFComplainant = this.grievanceService.isOISFComplainant(userInformation, grievance);
+            Boolean isNagorik = this.grievanceService.isNagorikTypeGrievance(grievance);
+            Boolean isBlacklisted = complainantService.isBlacklistedUser(userInformation.getUserId());
+            Boolean isAnonymousUser = this.grievanceService.isSubmittedByAnonymousUser(grievance);
             Boolean soAppealOption = null;
             Boolean isComplainantBlacklisted = false;
             Boolean canRetakeComplaint = false;
             if (Utility.isServiceOfficer(authentication)) {
-                soAppealOption = this.grievanceService.soAppealActivationFlag(id);
+                soAppealOption = this.grievanceForwardingService.soAppealActivationFlag(grievance);
             }
             if(!isGrsUser) {
-                isComplainantBlacklisted = grievanceService.isComplainantBlackListedByGrievanceId(id);
-                canRetakeComplaint = grievanceForwardingService.getComplaintRetakeFlag(id, authentication);
+                isComplainantBlacklisted = complainantService.isBlacklistedUserByComplainantId(grievance.getComplainantId());
+                canRetakeComplaint = grievanceForwardingService.getComplaintRetakeFlag(grievance, userInformation);
             }
-            model = grievanceService.addFileSettingsAttributesToModel(model);
+            model = modelViewService.addFileSettingsAttributesToModel(model);
             model.addAttribute("grsUser", isGrsUser);
             model.addAttribute("isOthersComplainant", isOthersComplainant);
             model.addAttribute("isGRO", isGROUser);
@@ -298,14 +293,14 @@ public class GrievanceController {
             model.addAttribute("soAppealOption", soAppealOption);
             model.addAttribute("isComplainantBlacklisted", isComplainantBlacklisted);
             model.addAttribute("canRetakeComplaint", canRetakeComplaint);
-            model.addAttribute("grievanceFileCount", this.grievanceService.getCountOfAttachedFiles(id));
-            model.addAttribute("grievanceForwardingFileCount", this.grievanceForwardingService.getCountOfComplaintMovementAttachedFiles(authentication, id));
-            Boolean reviveFlag = this.grievanceService.isComplaintRevivable(id, authentication);
+            model.addAttribute("grievanceFileCount", this.grievanceService.getCountOfAttachedFiles(grievance));
+            model.addAttribute("grievanceForwardingFileCount", this.grievanceForwardingService.getCountOfComplaintMovementAttachedFiles(userInformation, grievance));
+            Boolean reviveFlag = this.grievanceService.isComplaintRevivable(grievance, userInformation);
             model.addAttribute("reviveFlag", reviveFlag);
-            this.grievanceForwardingService.updateForwardSeenStatus(Utility.extractUserInformationFromAuthentication(authentication), id);
+            this.grievanceForwardingService.updateForwardSeenStatus(userInformation, grievance);
             model.addAttribute("searchableOffices", officeService.getGrsEnabledOfficeSearchingData());
 
-            this.grievanceForwardingService.updateForwardSeenStatus(Utility.extractUserInformationFromAuthentication(authentication), id);
+            this.grievanceForwardingService.updateForwardSeenStatus(userInformation, grievance);
             return modelViewService.addNecessaryAttributesAndReturnViewPage(model,
                     authentication,
                     request,
