@@ -2,6 +2,7 @@ package com.grs.grs_client.service;
 
 import com.grs.grs_client.enums.OISFUserType;
 import com.grs.grs_client.enums.UserType;
+import com.grs.grs_client.gateway.GrievanceForwardingGateway;
 import com.grs.grs_client.gateway.GrievanceGateway;
 import com.grs.grs_client.gateway.OfficesGroGateway;
 import com.grs.grs_client.model.Grievance;
@@ -23,6 +24,10 @@ import java.util.Objects;
 public class AccessControlService {
     @Autowired
     GrievanceGateway grievanceService;
+
+    @Autowired
+    GrievanceForwardingGateway grievanceForwardingService;
+
     @Autowired
     OfficesGroGateway officesGroService;
 
@@ -52,7 +57,7 @@ public class AccessControlService {
             if( userInformation.getOisfUserType().equals(OISFUserType.HEAD_OF_OFFICE) && Objects.equals(officeId, grievance.getOfficeId())){
                 return true;
             }
-            List<GrievanceForwarding> grievanceForwardingList = grievanceService.getAllComplaintMovementByGrievance(grievance.getId());
+            List<GrievanceForwarding> grievanceForwardingList = grievanceForwardingService.getAllComplaintMovementByGrievance(grievance.getId());
             List<Long> permittedOrganogramIdList = new ArrayList();
             grievanceForwardingList.forEach(grievanceForwarding -> {
                 permittedOrganogramIdList.add(grievanceForwarding.getFromOfficeUnitOrganogramId());

@@ -1,6 +1,14 @@
 package com.grs.grs_client.controller;
 
 
+import com.grs.grs_client.enums.UserType;
+import com.grs.grs_client.gateway.ComplainantGateway;
+import com.grs.grs_client.gateway.OfficesGateway;
+import com.grs.grs_client.model.*;
+import com.grs.grs_client.service.MessageService;
+import com.grs.grs_client.service.ModelAndViewService;
+import com.grs.grs_client.utils.StringUtil;
+import com.grs.grs_client.utils.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.codec.binary.StringUtils;
@@ -23,14 +31,13 @@ import java.util.List;
 @RestController
 //TODO backend checking of field of suggestion form
 public class SuggestionController {
+
     @Autowired
-    private SuggestionService suggestionService;
+    private ModelAndViewService modelViewService;
     @Autowired
-    private ModelViewService modelViewService;
+    private OfficesGateway officeService;
     @Autowired
-    private OfficeService officeService;
-    @Autowired
-    private ComplainantService complainantService;
+    private ComplainantGateway complainantService;
     @Autowired
     private MessageService messageService;
 
@@ -40,13 +47,13 @@ public class SuggestionController {
             UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
             String name = null, phone = null, email = null;
             if(userInformation.getUserType().equals(UserType.COMPLAINANT)) {
-                Complainant complainant = complainantService.findOne(userInformation.getUserId());
+                Complainant complainant = complainantService.getComplainantByUserId(userInformation.getUserId());
                 name = complainant.getName();
                 phone = complainant.getPhoneNumber();
                 email = complainant.getEmail();
             } else if(userInformation.getUserType().equals(UserType.OISF_USER)) {
                 OfficeInformation officeInformation = userInformation.getOfficeInformation();
-                EmployeeRecord employeeRecord = officeService.findEmployeeRecordById(officeInformation.getEmployeeRecordId());
+                EmployeeRecord employeeRecord = officeService.getEmployeeRecordById(officeInformation.getEmployeeRecordId());
                 name = messageService.isCurrentLanguageInEnglish() ? employeeRecord.getNameEnglish() : employeeRecord.getNameBangla();
                 phone = employeeRecord.getPersonalMobile();
                 email = employeeRecord.getPersonalEmail();
@@ -73,7 +80,7 @@ public class SuggestionController {
             if(StringUtil.isValidString(requestParams)) {
                 String decodedParams = StringUtils.newStringUtf8(Base64.decodeBase64(requestParams.substring(20)));
                 Long childOfficeId = Long.parseLong(decodedParams);
-                Office childOffice = officeService.findOne(childOfficeId);
+                Office childOffice = officeService.getOfficeByOfficeId(childOfficeId);
                 List<Long> parentOfficeIds = officeService.getAncestorOfficeIds(childOfficeId);
                 if(childOffice != null && (parentOfficeIds.contains(officeId) || userInformation.getIsCentralDashboardUser())) {
                     officeId = childOfficeId;

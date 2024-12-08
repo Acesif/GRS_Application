@@ -1,13 +1,11 @@
 package com.grs.grs_client.controller;
-
-import com.grs.api.controller.GrievanceController;
-import com.grs.core.domain.projapoti.Office;
-import com.grs.core.service.OfficeService;
 import com.grs.grs_client.common.IDP_Client;
 import com.grs.grs_client.common.SSOPropertyReader;
 import com.grs.grs_client.domain.RedirectMap;
 import com.grs.grs_client.enums.OISFUserType;
 import com.grs.grs_client.enums.UserType;
+import com.grs.grs_client.gateway.OfficesGateway;
+import com.grs.grs_client.model.Office;
 import com.grs.grs_client.model.SubMenuDTO;
 import com.grs.grs_client.model.UserInformation;
 import com.grs.grs_client.service.ModelAndViewService;
@@ -38,7 +36,7 @@ public class ViewPageController {
     @Autowired
     private ModelAndViewService modelViewService;
     @Autowired
-    private OfficeService officeService;
+    private OfficesGateway officeService;
 
 
     @Value("${app.base.url:''}")
@@ -47,8 +45,8 @@ public class ViewPageController {
     private String idpUrl;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public ModelAndView firstPage(HttpServletRequest request, HttpServletResponse response, Model model) {
-        return modelViewService.returnViewsForNormalPages(model, request, "index");
+    public ModelAndView firstPage(Authentication authentication, HttpServletRequest request, HttpServletResponse response, Model model) {
+        return modelViewService.returnViewsForNormalPages(authentication, model, request, "index");
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
@@ -137,7 +135,7 @@ public class ViewPageController {
     public void redirectAfterLoginSuccessPOST(HttpServletResponse response, HttpServletRequest request, Authentication authentication) throws IOException {
         if (authentication != null) {
             UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
-            boolean isOthersComplainant = Utility.isUserAnOthersComplainant(authentication);
+            boolean isOthersComplainant = Utility.isUserAnOthersComplainant(userInformation);
             String lastSavedUrl = (String) request.getSession(false).getAttribute("prev_url");
             //log.info(lastSavedUrl);
             if (userInformation.getUserType().equals(UserType.OISF_USER)) {
@@ -175,7 +173,7 @@ public class ViewPageController {
         if (authentication != null) {
             UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
             //log.info("userInformation: {}",userInformation);
-            boolean isOthersComplainant = Utility.isUserAnOthersComplainant(authentication);
+            boolean isOthersComplainant = Utility.isUserAnOthersComplainant(userInformation);
             String lastSavedUrl = (String) request.getSession(false).getAttribute("prev_url");
             //log.info(lastSavedUrl);
             if (userInformation.getUserType().equals(UserType.OISF_USER)) {
@@ -209,12 +207,12 @@ public class ViewPageController {
     @RequestMapping(value = "/viewRegister.do", method = RequestMethod.GET)
     public ModelAndView getRegisterPage(HttpServletRequest request, Authentication authentication, Model model) {
         if (authentication != null) {
-            com.grs.api.model.UserInformation userInformation = com.grs.utils.Utility.extractUserInformationFromAuthentication(authentication);
+            UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
             Long officeId = userInformation.getOfficeInformation().getOfficeId();
             String requestParams = request.getParameter("params");
-            if (com.grs.utils.StringUtil.isValidString(requestParams)) {
-                Long officeIdParam = com.grs.utils.StringUtil.decodeOfficeIdOnDashboardDrillDown(requestParams);
-                Office office = officeService.findOne(officeIdParam);
+            if (StringUtil.isValidString(requestParams)) {
+                Long officeIdParam = StringUtil.decodeOfficeIdOnDashboardDrillDown(requestParams);
+                Office office = officeService.getOfficeByOfficeId(officeIdParam);
                 if (office != null) {
                     officeId = officeIdParam;
                 }

@@ -1,33 +1,39 @@
 package com.grs.grs_client.gateway;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.grs.grs_client.enums.GrievanceCurrentStatus;
 import com.grs.grs_client.enums.OISFUserType;
 import com.grs.grs_client.enums.ServiceType;
 import com.grs.grs_client.enums.UserType;
-import com.grs.grs_client.model.AttachedFile;
-import com.grs.grs_client.model.FeedbackResponseDTO;
-import com.grs.grs_client.model.Grievance;
-import com.grs.grs_client.model.UserInformation;
+import com.grs.grs_client.model.*;
 import com.grs.grs_client.service.MessageService;
 import com.grs.grs_client.utils.CalendarUtil;
 import com.grs.grs_client.utils.Constant;
-import com.grs.grs_client.utils.Utility;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
 public class GrievanceGateway extends BaseRestTemplate {
 
     @Autowired
     private MessageService messageService;
+
+    @Autowired
+    private OfficesGateway officeService;
+
+    @Autowired
+    private CitizenCharterGateway citizenCharterService;
 
     public Grievance findGrievanceById(Long grievanceId) {
         String url = getUrl() + "/api/grievance/findGrievanceById/" + grievanceId;
@@ -49,7 +55,14 @@ public class GrievanceGateway extends BaseRestTemplate {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String body = "";
+        try {
+            body = objectMapper.writeValueAsString(grievance);
+        }catch (Exception ex){
+            log.error("",ex);
+        }
+        HttpEntity<String> entity = new HttpEntity<>(body, headers);
 
 
         ResponseEntity<Grievance> response = restTemplate.exchange(url,
@@ -170,5 +183,48 @@ public class GrievanceGateway extends BaseRestTemplate {
             }
         }
         return false;
+    }
+
+    public ServiceRelatedInfoRequestDTO convertFromBase64encodedString(String base64EncodedString) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String base64DecodedParameters = StringUtils.newStringUtf8(org.apache.tomcat.util.codec.binary.Base64.decodeBase64(base64EncodedString));
+        ServiceRelatedInfoRequestDTO serviceRelatedInfoRequestDTO = objectMapper.readValue(base64DecodedParameters, ServiceRelatedInfoRequestDTO.class);
+        String officeName = this.getOfficeNameBanglaByOfficeId(serviceRelatedInfoRequestDTO.getOfficeId());
+        String serviceName = this.getServiceNameBanglaByOfficeCitizenCharterId(serviceRelatedInfoRequestDTO.getOfficeCitizenCharterId());
+        serviceRelatedInfoRequestDTO.setServiceName(serviceName);
+        serviceRelatedInfoRequestDTO.setOfficeName(officeName);
+        return serviceRelatedInfoRequestDTO;
+    }
+
+    public String getOfficeNameBanglaByOfficeId(Long officeId) {
+        Office office = officeService.getOfficeByOfficeId(officeId);
+        return office.getNameBangla();
+    }
+
+    public String getServiceNameBanglaByOfficeCitizenCharterId(Long officeCitizenCharterId) {
+        CitizenCharter citizenCharter = citizenCharterService.getCitizenCharterByOfficeCitizenCharterId(officeCitizenCharterId);
+        return citizenCharter.getServiceNameBangla();
+    }
+
+    public SafetyNetGrievanceSummaryListDto getSafetyNetGrievanceSummary
+            (SafetyNetGrievanceSummaryRequest request) {
+        String url = getUrl() + "/api/grievance/getSafetyNetGrievanceSummary";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "Bearer " + getToken());
+        ObjectMapper objectMapper = new ObjectMapper();
+        String body = "";
+        try {
+            body = objectMapper.writeValueAsString(request);
+        }catch (Exception ex){
+            log.error("",ex);
+        }
+        HttpEntity<String> entity = new HttpEntity<>(body, headers);
+
+
+        ResponseEntity<SafetyNetGrievanceSummaryListDto> response = restTemplate.exchange(url,
+                HttpMethod.POST, entity, new ParameterizedTypeReference<SafetyNetGrievanceSummaryListDto>() {
+                });
+        return response.getBody();
     }
 }

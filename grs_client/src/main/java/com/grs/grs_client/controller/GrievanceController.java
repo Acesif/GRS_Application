@@ -1,11 +1,11 @@
 package com.grs.grs_client.controller;
 
+import com.grs.grs_client.config.CaptchaSettings;
+import com.grs.grs_client.enums.OISFUserType;
+import com.grs.grs_client.enums.ServiceType;
 import com.grs.grs_client.enums.UserType;
-import com.grs.grs_client.gateway.ComplainantGateway;
-import com.grs.grs_client.gateway.GrievanceForwardingGateway;
-import com.grs.grs_client.gateway.GrievanceGateway;
+import com.grs.grs_client.gateway.*;
 
-import com.grs.grs_client.gateway.OfficesGateway;
 import com.grs.grs_client.model.*;
 import com.grs.grs_client.service.AccessControlService;
 import com.grs.grs_client.service.ModelAndViewService;
@@ -39,6 +39,12 @@ public class GrievanceController {
     private ModelAndViewService modelViewService;
     @Autowired
     private AccessControlService accessControlService;
+    @Autowired
+    private CitizenCharterGateway citizenCharterService;
+    @Autowired
+    private SafetyNetProgramGateway safetyNetProgramService;
+    @Autowired
+    private CaptchaSettings captchaSettings;
 
 
     @RequestMapping(value = "/viewGrievances.do", method = RequestMethod.GET)
@@ -334,7 +340,7 @@ public class GrievanceController {
             }
             model.addAttribute("grievanceDTO", new GrievanceRequestDTO());
             List<ServicePair> servicePairs = citizenCharterService.getDefaultAllowedServiceTypes(request);
-            model = grievanceService.addFileSettingsAttributesToModel(model);
+            model = modelViewService.addFileSettingsAttributesToModel(model);
             model.addAttribute("servicePairs", servicePairs);
             model.addAttribute("searchableOffices", officeService.getGrsEnabledOfficeSearchingData());
             model.addAttribute("safetyNetPrograms", safetyNetProgramService.getSafetyNetPrograms());
@@ -367,7 +373,7 @@ public class GrievanceController {
 
             model.addAttribute("grievanceDTO", new GrievanceRequestDTO());
             List<ServicePair> servicePairs = citizenCharterService.getDefaultAllowedServiceTypes(request);
-            model = grievanceService.addFileSettingsAttributesToModel(model);
+            model = modelViewService.addFileSettingsAttributesToModel(model);
             model.addAttribute("servicePairs", servicePairs);
             model.addAttribute("searchableOffices", officeService.getGrsEnabledOfficeSearchingData());
             model.addAttribute("safetyNetPrograms", safetyNetProgramService.getSafetyNetPrograms());
@@ -400,7 +406,7 @@ public class GrievanceController {
 
             model.addAttribute("grievanceDTO", new GrievanceRequestDTO());
             List<ServicePair> servicePairs = citizenCharterService.getDefaultAllowedServiceTypes(request);
-            model = grievanceService.addFileSettingsAttributesToModel(model);
+            model = modelViewService.addFileSettingsAttributesToModel(model);
             model.addAttribute("servicePairs", servicePairs);
             model.addAttribute("searchableOffices", officeService.getGrsEnabledOfficeSearchingData());
             model.addAttribute("safetyNetPrograms", safetyNetProgramService.getSafetyNetPrograms());
@@ -426,14 +432,15 @@ public class GrievanceController {
     public ModelAndView getAddOfficialGrievancesPage(Authentication authentication, Model model, HttpServletRequest request) throws IOException {
         model.addAttribute("grievanceDTO", new GrievanceRequestDTO());
         if (authentication != null) {
-            if(!Utility.isUserAHOOUser(authentication)) {
+            UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
+            if(!Utility.isUserAHOOUser(userInformation)) {
                 return new ModelAndView("redirect:/error-page");
             }
 
 
             model.addAttribute("grievanceDTO", new GrievanceRequestDTO());
             List<ServicePair> servicePairs = citizenCharterService.getDefaultAllowedServiceTypes(request);
-            model = grievanceService.addFileSettingsAttributesToModel(model);
+            model = modelViewService.addFileSettingsAttributesToModel(model);
             model.addAttribute("servicePairs", servicePairs);
             model.addAttribute("searchableOffices", officeService.getGrsEnabledOfficeSearchingData());
             model.addAttribute("safetyNetPrograms", safetyNetProgramService.getSafetyNetPrograms());
@@ -464,7 +471,7 @@ public class GrievanceController {
 
         model.addAttribute("grievanceDTO", new GrievanceRequestDTO());
         List<ServicePair> servicePairs = citizenCharterService.getDefaultAllowedServiceTypes(request);
-        model = grievanceService.addFileSettingsAttributesToModel(model);
+        model = modelViewService.addFileSettingsAttributesToModel(model);
         model.addAttribute("servicePairs", servicePairs);
         model.addAttribute("searchableOffices", officeService.getGrsEnabledOfficeSearchingData());
         model.addAttribute("safetyNetPrograms", safetyNetProgramService.getSafetyNetPrograms());
@@ -489,7 +496,7 @@ public class GrievanceController {
         String sn = request.getParameter("sn");
         model.addAttribute("grievanceDTO", new GrievanceRequestDTO());
         List<ServicePair> servicePairs = citizenCharterService.getDefaultAllowedServiceTypes(request);
-        model = grievanceService.addFileSettingsAttributesToModel(model);
+        model = modelViewService.addFileSettingsAttributesToModel(model);
         model.addAttribute("servicePairs", servicePairs);
         model.addAttribute("searchableOffices", officeService.getGrsEnabledOfficeSearchingData());
         model.addAttribute("sn", sn);
@@ -514,7 +521,7 @@ public class GrievanceController {
     public ModelAndView complainForOthersPage(HttpServletRequest request, Authentication authentication, Model model) {
         model.addAttribute("grievanceDTO", new GrievanceRequestDTO());
         List<ServicePair> servicePairs = citizenCharterService.getDefaultAllowedServiceTypes(request);
-        model = grievanceService.addFileSettingsAttributesToModel(model);
+        model = modelViewService.addFileSettingsAttributesToModel(model);
         model.addAttribute("servicePairs", servicePairs);
         model.addAttribute("searchableOffices", officeService.getGrsEnabledOfficeSearchingData());
         model.addAttribute("safetyNetPrograms", safetyNetProgramService.getSafetyNetPrograms());
@@ -535,9 +542,9 @@ public class GrievanceController {
     }
 
     @RequestMapping(value = "/safetynetgrievancedata.do", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public com.grs.api.model.response.grievance.SafetyNetGrievanceSummaryListDto getSafetyNetGrievanceList
+    public SafetyNetGrievanceSummaryListDto getSafetyNetGrievanceList
             (@RequestBody SafetyNetGrievanceSummaryRequest request, Model model) {
-        com.grs.api.model.response.grievance.SafetyNetGrievanceSummaryListDto safetyNetGrievanceSummaryListDto
+        SafetyNetGrievanceSummaryListDto safetyNetGrievanceSummaryListDto
                 = this.grievanceService.getSafetyNetGrievanceSummary(request);
         model.addAttribute("resultList", safetyNetGrievanceSummaryListDto.safetyNetGrievanceSummaryList);
         return safetyNetGrievanceSummaryListDto;
@@ -548,7 +555,7 @@ public class GrievanceController {
         if (authentication != null) {
             model.addAttribute("grievanceDTO", new GrievanceRequestDTO());
             List<ServicePair> servicePairs = citizenCharterService.getDefaultAllowedServiceTypes(request);
-            model = grievanceService.addFileSettingsAttributesToModel(model);
+            model = modelViewService.addFileSettingsAttributesToModel(model);
             model.addAttribute("servicePairs", servicePairs);
             model.addAttribute("searchableOffices", officeService.getGrsEnabledOfficeSearchingData());
             model.addAttribute("safetyNetPrograms", safetyNetProgramService.getSafetyNetPrograms());
@@ -591,7 +598,7 @@ public class GrievanceController {
 
             model.addAttribute("grievanceDTO", new GrievanceRequestDTO());
             List<ServicePair> servicePairs = citizenCharterService.getDefaultAllowedServiceTypes(request);
-            model = grievanceService.addFileSettingsAttributesToModel(model);
+            model = modelViewService.addFileSettingsAttributesToModel(model);
             model.addAttribute("servicePairs", servicePairs);
             model.addAttribute("searchableOffices", officeService.getGrsEnabledOfficeSearchingData());
             model.addAttribute("safetyNetPrograms", safetyNetProgramService.getSafetyNetPrograms());
@@ -621,7 +628,7 @@ public class GrievanceController {
 
         model.addAttribute("grievanceDTO", new GrievanceRequestDTO());
         List<ServicePair> servicePairs = citizenCharterService.getDefaultAllowedServiceTypes(request);
-        model = grievanceService.addFileSettingsAttributesToModel(model);
+        model = modelViewService.addFileSettingsAttributesToModel(model);
         model.addAttribute("servicePairs", servicePairs);
         model.addAttribute("searchableOffices", officeService.getGrsEnabledOfficeSearchingData());
         model.addAttribute("safetyNetPrograms", safetyNetProgramService.getSafetyNetPrograms());

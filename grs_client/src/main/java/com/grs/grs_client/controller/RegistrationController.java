@@ -22,8 +22,8 @@ public class RegistrationController {
     private ModelAndViewService modelViewService;
 
     @RequestMapping(value = "/register.do", method = RequestMethod.GET)
-    public ModelAndView registrationPage(HttpServletRequest request, Model model) {
-        return modelViewService.returnViewsForNormalPages(model, request, "grsRegistrationForm");
+    public ModelAndView registrationPage(Authentication authentication,HttpServletRequest request, Model model) {
+        return modelViewService.returnViewsForNormalPages(authentication, model, request, "grsRegistrationForm");
     }
 
     @RequestMapping(value = "/mobileRegistration.do", method = RequestMethod.GET)

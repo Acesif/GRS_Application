@@ -1,14 +1,9 @@
 package com.grs.grs_client.controller;
 
-import com.grs.api.model.NotificationDTO;
-import com.grs.api.model.UserInformation;
-import com.grs.core.service.ModelViewService;
-import com.grs.core.service.NotificationService;
-import com.grs.utils.Utility;
+
+import com.grs.grs_client.gateway.NotificationGateway;
+import com.grs.grs_client.service.ModelAndViewService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,9 +16,9 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 public class NotificationController {
     @Autowired
-    private NotificationService notificationService;
+    private NotificationGateway notificationService;
     @Autowired
-    private ModelViewService modelViewService;
+    private ModelAndViewService modelViewService;
 
     @RequestMapping(value = "/notifications.do", method = RequestMethod.GET)
     public ModelAndView getUsersNotifications(Authentication authentication, Model model, HttpServletRequest request){
