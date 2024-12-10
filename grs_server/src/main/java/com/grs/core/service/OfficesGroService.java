@@ -484,7 +484,7 @@ public class OfficesGroService {
         return officesGroDTO;
     }
 
-    List<OfficesGRO> getCurrentlyGrsEnabledOffices() {
+    public List<OfficesGRO> getCurrentlyGrsEnabledOffices() {
         List<OfficesGRO> officesGROList = officesGroDAO.findAll();
         officesGROList = officesGROList.stream().filter(officesGRO -> {
             return officesGRO.getGroOfficeId()!= null && officesGRO.getGroOfficeUnitOrganogramId()!=null && officesGRO.getAppealOfficeId()!=null && officesGRO.getAppealOfficerOfficeUnitOrganogramId()!=null;
@@ -492,7 +492,7 @@ public class OfficesGroService {
         return officesGROList;
     }
 
-    List<OfficesGRO> getAncestors(Long officeId){
+    public List<OfficesGRO> getAncestors(Long officeId){
         List<OfficesGRO> officesGROES = new ArrayList<>();
         OfficesGRO officesGRO = this.officesGroDAO.findByOfficeId(officeId);
         officesGROES.add(officesGRO);
