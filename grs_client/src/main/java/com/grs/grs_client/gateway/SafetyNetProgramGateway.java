@@ -4,6 +4,7 @@ import com.grs.grs_client.model.SafetyNetProgram;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
@@ -22,5 +23,4 @@ public class SafetyNetProgramGateway extends BaseRestTemplate{
                 });
         return response.getBody();
     }
-
 }

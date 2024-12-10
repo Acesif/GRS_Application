@@ -13,15 +13,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @SpringBootApplication
 //@ComponentScan(basePackageClasses = {
 //})
-@EnableJpaRepositories(basePackages = {
-        "com.grs.core.repo.grs",
-        "com.grs.core.repo.projapoti"
-})
-@EntityScan(basePackages = "com.grs.core.domain")
-@ComponentScan(basePackages = {
-        "com.grs.core.service",
-        "com.grs.core.dao"
-})
 public class GrsClientApplication {
 
     public static void main(String[] args) {

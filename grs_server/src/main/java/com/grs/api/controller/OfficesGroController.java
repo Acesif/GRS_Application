@@ -39,4 +39,6 @@ public class OfficesGroController {
     public List<OfficesGRO> findActiveOffices(){
         return officesGroDAO.findActiveOffices();
     }
+
+    //todo: few more services left
 }

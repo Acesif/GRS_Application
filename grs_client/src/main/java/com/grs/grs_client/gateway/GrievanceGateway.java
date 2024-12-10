@@ -51,7 +51,7 @@ public class GrievanceGateway extends BaseRestTemplate {
 
 
     public Grievance saveGrievance(Grievance grievance, boolean callHistory) {
-        String url = getUrl() + "/api/grievance/saveGrievance";
+        String url = getUrl() + "/api/grievance";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());

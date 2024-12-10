@@ -6,21 +6,25 @@
       <GradleProjectSettings>
         <option name="distributionType" value="LOCAL" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/grs_client" />
-        <option name="gradleHome" value="$PROJECT_DIR$/../Downloads/gradle-3.4.1" />
+        <option name="gradleHome" value="E:/Downloads/gradle-3.4.1" />
         <option name="gradleJvm" value="corretto-1.8" />
         <option name="modules">
           <set>
+            <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/grs_client" />
+            <option value="$PROJECT_DIR$/grs_server" />
           </set>
         </option>
       </GradleProjectSettings>
       <GradleProjectSettings>
         <option name="distributionType" value="LOCAL" />
         <option name="externalProjectPath" value="$PROJECT_DIR$/grs_server" />
-        <option name="gradleHome" value="$PROJECT_DIR$/../Downloads/gradle-3.4.1" />
+        <option name="gradleHome" value="E:/Downloads/gradle-3.4.1" />
         <option name="gradleJvm" value="corretto-1.8" />
         <option name="modules">
           <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/grs_client" />
             <option value="$PROJECT_DIR$/grs_server" />
           </set>
         </option>

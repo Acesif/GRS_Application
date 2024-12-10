@@ -53,6 +53,7 @@ public class OfficesGateway extends BaseRestTemplate{
 
     public Office getOfficeByOfficeId(Long officeId) {
 
+        // todo: fix this url
         String url = getUrl() + "/api/office/getOfficeByOfficeId/"+officeId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
