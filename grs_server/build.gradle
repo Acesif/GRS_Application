@@ -23,7 +23,7 @@ repositories {
 }
 
 war {
-    archiveName 'ROOT.war'
+    archiveName 'server.war'
 }
 configurations {
     developmentOnly
