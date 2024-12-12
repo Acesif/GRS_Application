@@ -66,7 +66,7 @@ public class OfficesGroController {
         return officesGroService.findByAppealOfficeUnitOrganogramId(officeUnitOrganogramId);
     }
 
-    @RequestMapping(value = "/findByAppealOfficeUnitOrganogramId/{officeUnitOrganogramId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/findByAdminOfficeUnitOrganogramId/{officeUnitOrganogramId}", method = RequestMethod.GET)
     public List<OfficesGRO> findByAdminOfficeUnitOrganogramId(@PathVariable("officeUnitOrganogramId") Long officeUnitOrganogramId) {
         return this.officesGroService.findByAdminOfficeUnitOrganogramId(officeUnitOrganogramId);
     }
