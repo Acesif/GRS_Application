@@ -2,12 +2,15 @@ package com.grs.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.grs.api.config.security.TokenAuthenticationServiceUtil;
+import com.grs.api.model.OfficeInformation;
 import com.grs.api.model.OfficewithCountDTO;
 import com.grs.api.model.UserInformation;
 import com.grs.api.model.request.KeyValueStringPairDTO;
 import com.grs.api.model.response.*;
+import com.grs.api.model.response.dashboard.GrievanceCountByItemDTO;
 import com.grs.api.model.response.grievance.GrievanceDTO;
 import com.grs.api.model.response.officeSelection.OfficeSearchContentsDTO;
+import com.grs.api.model.response.officeSelection.OfficeSearchDTO;
 import com.grs.api.model.response.organogram.OfficeOriginUnitOrganogramDTO;
 import com.grs.api.model.response.organogram.TreeNodeDTO;
 import com.grs.api.model.response.organogram.TreeNodeOfficerDTO;
@@ -15,16 +18,13 @@ import com.grs.api.model.response.roles.RoleContainerDTO;
 import com.grs.api.model.response.roles.SingleRoleDTO;
 import com.grs.core.dao.SafetyNetDAO;
 import com.grs.core.domain.ServiceType;
-import com.grs.core.domain.grs.CitizenCharter;
-import com.grs.core.domain.grs.OfficesGRO;
-import com.grs.core.domain.grs.ServiceOrigin;
-import com.grs.core.domain.projapoti.CustomOfficeLayer;
-import com.grs.core.domain.projapoti.Office;
-import com.grs.core.domain.projapoti.OfficeOrigin;
+import com.grs.core.domain.grs.*;
+import com.grs.core.domain.projapoti.*;
 import com.grs.core.service.*;
 import com.grs.utils.Constant;
 import com.grs.utils.StringUtil;
 import com.grs.utils.Utility;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -46,30 +46,19 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class OfficeController {
-    @Autowired
-    private OfficeService officeService;
-    @Autowired
-    private OfficeOrganogramService officeOrganogramService;
-    @Autowired
-    private CitizenCharterService citizenCharterService;
-    @Autowired
-    private GrievanceForwardingService grievanceForwardingService;
-    @Autowired
-    private MessageService messageService;
-    @Autowired
-    private OfficesGroService officesGroService;
-    @Autowired
-    private ActionToRoleService actionToRoleService;
-    @Autowired
-    private GrievanceService grievanceService;
-    @Autowired
-    private CacheService cacheService;
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private SafetyNetProgramService safetyNetProgramService;
+    private final OfficeService officeService;
+    private final OfficeOrganogramService officeOrganogramService;
+    private final CitizenCharterService citizenCharterService;
+    private final GrievanceForwardingService grievanceForwardingService;
+    private final MessageService messageService;
+    private final OfficesGroService officesGroService;
+    private final ActionToRoleService actionToRoleService;
+    private final GrievanceService grievanceService;
+    private final CacheService cacheService;
+    private final ObjectMapper objectMapper;
+    private final SafetyNetProgramService safetyNetProgramService;
 
     @RequestMapping(value = "/api/office-origin-unit-organograms/{officeOriginId}", method = RequestMethod.GET)
     public List<OfficeOriginUnitOrganogramDTO> getOfficeOriginUnitOrganogramsByOfficeOriginId(@PathVariable("officeOriginId") Long officeOriginId) {
@@ -385,9 +374,17 @@ public class OfficeController {
     }
 
     @RequestMapping(value = "/api/offices/ancestors", method = RequestMethod.GET)
-    public Object getOfficeAlongWithAncestorOffices(Authentication authentication) {
-        UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
-        return this.officeService.getOfficeAlongWithAncestorOffices(userInformation);
+    public List<Office> getOfficeAlongWithAncestorOffices(Object request) {
+        if (request instanceof Authentication){
+            UserInformation userInformation = Utility.extractUserInformationFromAuthentication(
+                    (Authentication) request
+            );
+            return this.officeService.getOfficeAlongWithAncestorOffices(userInformation);
+        } else if (request instanceof UserInformation){
+            return this.officeService.getOfficeAlongWithAncestorOffices((UserInformation) request);
+        } else {
+            return null;
+        }
     }
 
     @RequestMapping(value = "/api/office-origin/{layer_level}", method = RequestMethod.GET)
@@ -527,5 +524,423 @@ public class OfficeController {
                                                                  @RequestParam(value = "grsEnabled", defaultValue = "true") boolean grsEnabled,
                                                                  @RequestParam(value = "showChildOfficesOnly", defaultValue = "false") Boolean showChildOfficesOnly) {
         return officeService.getDropdownDataOnOfficeSearch(layerLevel, officeOriginId, customLayerId, officeId, grsEnabled, showChildOfficesOnly);
+    }
+
+    public Integer getChildCountByParentOfficeId(Long parentOfficeId){
+        return officeService.getChildCountByParentOfficeId(parentOfficeId);
+    }
+
+    public Office findOne(Long id){
+        return officeService.findOne(id);
+    }
+
+    public EmployeeOffice findEmployeeOfficeByOfficeAndIsOfficeHead(Long officeId){
+        return officeService.findEmployeeOfficeByOfficeAndIsOfficeHead(officeId);
+    }
+
+    public EmployeeOffice findEmployeeOfficeByOfficeAndOfficeUnitOrganogramAndStatus(
+            Long officeId,
+            Long officeUnitOrganogramId,
+            boolean status
+    ){
+        return officeService.findEmployeeOfficeByOfficeAndOfficeUnitOrganogramAndStatus(
+                officeId,
+                officeUnitOrganogramId,
+                status
+        );
+    }
+
+    public Office getOffice(Long officeId){
+        return officeService.getOffice(officeId);
+    }
+
+    public OfficeOrigin getOfficeOrigin(Long officeOriginId){
+        return officeService.getOfficeOrigin(officeOriginId);
+    }
+
+    public ServiceOrigin getServiceOrigin(Long id){
+        return officeService.getServiceOrigin(id);
+    }
+
+    public EmployeeRecord findEmployeeRecordById(Long id){
+        return officeService.findEmployeeRecordById(id);
+    }
+
+    public SingleRoleDTO findSingleRole(Long officeId, Long officeUnitOrganogramId){
+        return officeService.findSingleRole(officeId, officeUnitOrganogramId);
+    }
+
+    public List<OfficeLayer> getOfficeLayersByLayerLevel(Integer layerLevel){
+        return officeService.getOfficeLayersByLayerLevel(layerLevel);
+    }
+
+    public List<OfficeLayer> getOfficeLayersByLayerLevelAndMinistryId(Integer layerLevel, Long ministryId){
+        return officeService.getOfficeLayersByLayerLevelAndMinistryId(layerLevel, ministryId);
+    }
+
+    public List<OfficeLayer> getOfficeLayersByLayerLevelAndCustomLayerId(Integer layerLevel, Integer customLayerId){
+        return officeService.getOfficeLayersByLayerLevelAndCustomLayerId(layerLevel, customLayerId);
+    }
+
+    public List<OfficeLayer> getOfficeLayersByLayerLevelAndCustomLayerIdInList(
+            Integer layerLevel,
+            List<Integer> customLayerIdList
+    )
+    {
+        return officeService.getOfficeLayersByLayerLevelAndCustomLayerIdInList(layerLevel, customLayerIdList);
+    }
+
+    public Boolean isMinistryOrDivisionLevelOffice(Long officeId){
+        return officeService.isMinistryOrDivisionLevelOffice(officeId);
+    }
+
+    public List<Office> getOfficesByOfficeLayer(List<OfficeLayer> officeLayers, Boolean grsEnabled){
+        return officeService.getOfficesByOfficeLayer(officeLayers, grsEnabled);
+    }
+
+    public String getOfficeName(long id){
+        return officeService.getOfficeName(id);
+    }
+
+    public List<Office> getOfficesByParentOfficeId(Long parentOfficeId){
+        return officeService.getOfficesByParentOfficeId(parentOfficeId);
+    }
+
+    public List<Office> findByOfficeIdInList(List<Long> idList){
+        return officeService.findByOfficeIdInList(idList);
+    }
+
+    public ServiceOriginDTO convertToService(CitizenCharter citizenCharter){
+        return officeService.convertToService(citizenCharter);
+    }
+
+    public List<CitizenCharter> getServicesHavingServiceOfficerInfo(List<CitizenCharter> citizenCharters){
+        return officeService.getServicesHavingServiceOfficerInfo(citizenCharters);
+    }
+
+    public List<ServiceOriginDTO> getServicesByServiceTypeFromOfficesCitizenCharter(
+            Long officeId,
+            ServiceType serviceType
+    ){
+        return officeService.getServicesByServiceTypeFromOfficesCitizenCharter(
+                officeId,
+                serviceType
+        );
+    }
+
+    public BaseObjectContainerDTO getEmployeesByOffices(Long officeID){
+        return officeService.getEmployeesByOffices(officeID);
+    }
+
+    public List<EmployeeRecordDTO> getListOfEmployeeRecordsFromGivenOfficeUnitOrganogram(Long officeUnitOrganogramId){
+        return officeService.getListOfEmployeeRecordsFromGivenOfficeUnitOrganogram(officeUnitOrganogramId);
+    }
+
+    public OfficeUnitOrganogram getOfficeUnitOrganogramById(Long id){
+        return officeService.getOfficeUnitOrganogramById(id);
+    }
+
+    public ServiceOriginDTO getServiceDTOFromService(ServiceOrigin serviceOrigin){
+        return officeService.getServiceDTOFromService(serviceOrigin);
+    }
+
+    public CitizenCharterDTO getCitizenCharterDTOFromCitizenCharter(CitizenCharter citizenCharter){
+        return officeService.getCitizenCharterDTOFromCitizenCharter(citizenCharter);
+    }
+
+    public boolean hasChildOffice(Long officeId){
+        return officeService.hasChildOffice(officeId);
+    }
+
+    public Page<CitizenCharterDTO> getAllCitizenChartersByOffice(Pageable pageable, Long officeId){
+        return officeService.getAllCitizenChartersByOffice(pageable, officeId);
+    }
+
+    public Page<EmployeeRecordDTO> getAllEmployeeRecordByOffice(Pageable pageable, Office office){
+        return officeService.getAllEmployeeRecordByOffice(pageable, office);
+    }
+
+    public OfficesGRO getOfficesGRO(Long officeId){
+        return officeService.getOfficesGRO(officeId);
+    }
+
+    public EmployeeRecordDTO getGRODetailsByOfficeId(Long officeId){
+        return officeService.getGRODetailsByOfficeId(officeId);
+    }
+
+    public EmployeeRecordDTO getAODetailsByOfficeId(Long officeId){
+        return officeService.getAODetailsByOfficeId(officeId);
+    }
+
+    public OfficesGroDTO getVisionMissionByOfficeId(Long officeId){
+        return officeService.getVisionMissionByOfficeId(officeId);
+    }
+
+    public OfficesGroDTO getOfficesVisionMission(Long officeId){
+        return officeService.getVisionMissionByOfficeId(officeId);
+    }
+    public CitizensCharterOriginDTO getOfficesVisionMission(Long layerLevel, Long officeOriginId){
+        return officeService.getOfficesVisionMission(layerLevel, officeOriginId);
+    }
+
+    public OfficesGroDTO getOfficerCitizenCharter(Long officeId){
+        return officeService.getOfficerCitizenCharter(officeId);
+    }
+
+    public Page<OfficesGroDTO> getOfficeSetUpMissing(
+            Long missingOfficerType,
+            Long officeLayers,
+            Long firstSelection,
+            Long secondSelection,
+            Pageable pageable
+    ){
+        return officeService.getOfficeSetUpMissing(
+                missingOfficerType,
+                officeLayers,
+                firstSelection,
+                secondSelection,
+                pageable
+        );
+
+    }
+
+    public RoleContainerDTO getOfficeUnitOrganogramsForLoggedInUser(UserInformation userInformation){
+        return officeService.getOfficeUnitOrganogramsForLoggedInUser(userInformation);
+    }
+
+    public Boolean isUpazilaLevelOffice(Long officeId){
+        return officeService.isUpazilaLevelOffice(officeId);
+    }
+
+    public Boolean isZilaLevelOffice(Long officeId){
+        return officeService.isZilaLevelOffice(officeId);
+    }
+
+    public GroContactInfoResponseDTO getGROcontactInfoByOfficeId(Long officeId){
+        return officeService.getGROcontactInfoByOfficeId(officeId);
+    }
+
+    public GroContactInfoResponseDTO getAoContactInfoByOfficeId(Long officeId){
+        return officeService.getAoContactInfoByOfficeId(officeId);
+    }
+
+    public List<GrievanceCountByItemDTO> getListOfOfficeUnitsByOfficeId(Long officeId){
+        return officeService.getListOfOfficeUnitsByOfficeId(officeId);
+    }
+
+    public List<GrievanceCountByItemDTO> getGrievanceCountByCitizensCharter(Long officeId){
+        return officeService.getGrievanceCountByCitizensCharter(officeId);
+    }
+
+    public List<Long> getAncestorOfficeIds(Long officeId){
+        return officeService.getAncestorOfficeIds(officeId);
+    }
+
+    public OfficeUnit getOfficeUnitById(Long officeUnitId){
+        return officeService.getOfficeUnitById(officeUnitId);
+    }
+
+    public OfficeUnit getOfficeUnitByIdIncludingFakeOfficeUnitForCell(Long officeUnitId){
+        return officeService.getOfficeUnitByIdIncludingFakeOfficeUnitForCell(officeUnitId);
+    }
+
+    public CitizensCharterOriginDTO convertToOfficeOriginInfoDTO(CitizensCharterOrigin citizensCharterOrigin){
+        return officeService.convertToOfficeOriginInfoDTO(citizensCharterOrigin);
+    }
+
+    public EmployeeOffice findEmployeeOfficeByOfficeIdAndOfficeUnitOrganogramId(
+            Long officeId,
+            Long officeUnitOrganogramId
+    ){
+        return officeService.findEmployeeOfficeByOfficeIdAndOfficeUnitOrganogramId(
+                officeId,
+                officeUnitOrganogramId
+        );
+    }
+
+    public CitizenCharterDTO convertToCitizenCharterDTO(CitizenCharter citizenCharter){
+        return officeService.convertToCitizenCharterDTO(citizenCharter);
+    }
+
+    public ServiceOriginDTO getServiceOriginDTObyId(Long id){
+        return officeService.getServiceOriginDTObyId(id);
+    }
+
+    public List<Office> findByIdContainsInList(List<Long> idList){
+        return officeService.findByIdContainsInList(idList);
+    }
+
+    public List<OfficeOrigin> getOfficeOriginsByLayerLevel(
+            Integer layerLevel,
+            Boolean grsEnabled,
+            Boolean showChildOfficesOnly
+    ){
+        if (showChildOfficesOnly == null){
+            return officeService.getOfficeOriginsByLayerLevel(layerLevel, grsEnabled);
+        }
+        return officeService.getOfficeOriginsByLayerLevel(layerLevel, grsEnabled, showChildOfficesOnly);
+    }
+
+    public List<Office> findByOfficeOriginId(Long officeoriginId, Boolean grsEnabled, Boolean showChildOfficesOnly){
+        if (showChildOfficesOnly == null){
+            return officeService.findByOfficeOriginId(
+                    officeoriginId,
+                    grsEnabled
+            );
+        }
+        return officeService.findByOfficeOriginId(officeoriginId, grsEnabled, showChildOfficesOnly);
+    }
+    public List<Office> findByOfficeOriginIds(
+            List<Long> officeoriginIds,
+            Boolean grsEnabled,
+            Boolean showChildOfficesOnly
+    ){
+        return officeService.findByOfficeOriginIds(officeoriginIds, grsEnabled, showChildOfficesOnly);
+    }
+
+    public Boolean hasAccessToAoAndSubOfficesDashboard(UserInformation userInformation, Long officeId){
+        return officeService.hasAccessToAoAndSubOfficesDashboard(userInformation, officeId);
+    }
+
+    public Boolean canViewDashboardAsFieldCoordinator(Authentication authentication, Long officeId){
+        return officeService.canViewDashboardAsFieldCoordinator(authentication, officeId);
+    }
+
+    public List<CellMemberInfoDTO> getCellMembersInfo(List<CellMember> cellMembers){
+        return officeService.getCellMembersInfo(cellMembers);
+    }
+
+    public List<Office> getGrsEnabledDivisionOffices(Long divisionId){
+        return officeService.getGrsEnabledDivisionOffices(divisionId);
+    }
+
+    public List<Office> getDivisionLevelOffices(Integer divisionId){
+        return officeService.getDivisionLevelOffices(divisionId);
+    }
+    public List<Office> getDistrictLevelOffices(Integer divisionId, Integer districtId){
+        return officeService.getDistrictLevelOffices(divisionId, districtId);
+    }
+
+    public List<Office> getUpazilaLevelOffices(Integer divisionId, Integer districtId, Integer upazilaId){
+        return officeService.getUpazilaLevelOffices(divisionId, districtId, upazilaId);
+    }
+
+    public List<Office> getGrsEnabledDistrictOffices(Long districtId){
+        return officeService.getGrsEnabledDistrictOffices(districtId);
+    }
+
+    public List<Office> getGRSenabledOfficesFromOffices(List<Long> officeIdList){
+        return officeService.getGRSenabledOfficesFromOffices(officeIdList);
+    }
+
+    public List<Long> getOfficeIdListByGeoDivisionId(Long geoDivisionId, Long layerLevel){
+        return officeService.getOfficeIdListByGeoDivisionId(geoDivisionId, layerLevel);
+    }
+
+    public List<Long> getOfficeIdListByGeoDistrictId(Long geoDistrictId, Long layerLevel){
+        return officeService.getOfficeIdListByGeoDistrictId(geoDistrictId, layerLevel);
+    }
+
+    public List<Office> getOfficesByLayerLevel(
+            Integer layerLevel,
+            Boolean grsEnabled,
+            Boolean showChildOfficesOnly
+    )
+    {
+        if (showChildOfficesOnly == null){
+            return officeService.getOfficesByLayerLevel(layerLevel, grsEnabled);
+        }
+        return officeService.getOfficesByLayerLevel(layerLevel, grsEnabled, showChildOfficesOnly);
+    }
+    
+    public List<Office> getOfficesByNullableLayerLevelWithChildOffices(
+            Integer layerLevel,
+            Long firstSelection,
+            Long secondSelection,
+            Boolean grsEnabled
+    ){
+        return officeService.getOfficesByNullableLayerLevelWithChildOffices(
+                layerLevel,
+                firstSelection,
+                secondSelection,
+                grsEnabled
+        );
+    }
+
+    public List<Office> getOfficesByLayerLevelWithChildOffices(
+            Integer layerLevel,
+            Long firstSelection,
+            Long secondSelection,
+            Boolean grsEnabled
+    ){
+        return officeService.getOfficesByLayerLevelWithChildOffices(
+                layerLevel,
+                firstSelection,
+                secondSelection,
+                grsEnabled
+        );
+    }
+
+    public OfficeInformation getCurrentLoggedInUserInformation(){
+        return officeService.getCurrentLoggedInUserInformation();
+    }
+
+    public List<OfficeSearchDTO> getDescendantOfficeSearchingData(){
+        return officeService.getDescendantOfficeSearchingData();
+    }
+
+    public List<OfficeSearchDTO> getTopLayerOffices(){
+        return officeService.getTopLayerOffices();
+    }
+
+    public List<OfficeSearchDTO> getGrsEnabledOfficeSearchingData(){
+        return officeService.getGrsEnabledOfficeSearchingData();
+    }
+
+    public List<OfficeSearchDTO> getOfficeSearchingData(){
+        return officeService.getOfficeSearchingData();
+    }
+
+    public List<OfficeSearchDTO> generateOfficeSearchingData(boolean grsEnabled){
+        return officeService.generateOfficeSearchingData(grsEnabled);
+    }
+
+    public List<Office> getDescendantOfficesByMinistryId(OfficeMinistry officeMinistry){
+        return officeService.getDescendantOfficesByMinistryId(officeMinistry);
+    }
+
+    public WeakHashMap<String, WeakHashMap> generateDescendantOfficesIdListOfMinistries(){
+        return officeService.generateDescendantOfficesIdListOfMinistries();
+    }
+
+    public List<Office> findByDivisionIdAndOfficeMinistry(
+            Integer divisionId,
+            OfficeMinistry officeMinistry
+    ){
+        return officeService.findByDivisionIdAndOfficeMinistry(divisionId,officeMinistry);
+    }
+    public List<Office> findByDivisionIdAndDistrictIdAndOfficeMinistry(
+            Integer divisionId,
+            Integer districtId,
+            OfficeMinistry officeMinistry
+    ){
+        return officeService.findByDivisionIdAndDistrictIdAndOfficeMinistry(
+                divisionId,
+                districtId,
+                officeMinistry
+        );
+    }
+    public List<Office> findByDivisionIdAndDistrictIdAndUpazilaIdAndOfficeMinistry(
+            Integer divisionId,
+            Integer districtId,
+            Integer upazilaId,
+            OfficeMinistry officeMinistry
+    ){
+        return officeService.findByDivisionIdAndDistrictIdAndUpazilaIdAndOfficeMinistry(
+                divisionId,
+                districtId,
+                upazilaId,
+                officeMinistry
+        );
     }
 }
