@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="ProjectModuleManager">
-    <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-675420542/GRS_Client_Server.iml" filepath="$PROJECT_DIR$/.idea/modules/-675420542/GRS_Client_Server.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/GRS_Client_Server.grs_server.iml" filepath="$PROJECT_DIR$/.idea/modules/GRS_Client_Server.grs_server.iml" />
-    </modules>
-  </component>
-</project>
