@@ -10,9 +10,10 @@ import java.util.List;
 @Service
 public class SafetyNetProgramGateway extends BaseRestTemplate{
 
+    String GRS_CORE_CONTEXT_PATH = "/grs_server";
 
     public List<SafetyNetProgram> getSafetyNetPrograms() {
-        String url = getUrl() + "/api/citizenCharter/getSafetyNetPrograms";
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/citizenCharter/getSafetyNetPrograms";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());

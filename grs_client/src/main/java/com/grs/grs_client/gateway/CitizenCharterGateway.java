@@ -15,8 +15,10 @@ import java.util.List;
 @Service
 public class CitizenCharterGateway extends BaseRestTemplate{
 
+    String GRS_CORE_CONTEXT_PATH = "/grs_server";
+
     public CitizenCharter getCitizenCharterByOfficeCitizenCharterId(Long officeCitizenCharterId) {
-        String url = getUrl() + "/api/citizenCharter/getCitizenCharterByOfficeCitizenCharterId/"+officeCitizenCharterId;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/citizenCharter/getCitizenCharterByOfficeCitizenCharterId/"+officeCitizenCharterId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());

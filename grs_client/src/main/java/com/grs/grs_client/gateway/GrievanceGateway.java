@@ -35,8 +35,10 @@ public class GrievanceGateway extends BaseRestTemplate {
     @Autowired
     private CitizenCharterGateway citizenCharterService;
 
+    String GRS_CORE_CONTEXT_PATH = "/grs_server";
+
     public Grievance findGrievanceById(Long grievanceId) {
-        String url = getUrl() + "/api/grievance/findGrievanceById/" + grievanceId;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievance/findGrievanceById/" + grievanceId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());
@@ -51,7 +53,7 @@ public class GrievanceGateway extends BaseRestTemplate {
 
 
     public Grievance saveGrievance(Grievance grievance, boolean callHistory) {
-        String url = getUrl() + "/api/grievance";
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievance";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());
@@ -208,7 +210,7 @@ public class GrievanceGateway extends BaseRestTemplate {
 
     public SafetyNetGrievanceSummaryListDto getSafetyNetGrievanceSummary
             (SafetyNetGrievanceSummaryRequest request) {
-        String url = getUrl() + "/api/grievance/getSafetyNetGrievanceSummary";
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievance/getSafetyNetGrievanceSummary";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());

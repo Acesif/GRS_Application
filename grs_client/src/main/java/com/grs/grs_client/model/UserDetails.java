@@ -22,4 +22,7 @@ public class UserDetails {
     private UserType userType;
     private OISFUserType oisfUserType;
     private GRSUserType grsUserType;
+
+
+
 }

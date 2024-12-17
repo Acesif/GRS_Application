@@ -10,8 +10,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class OfficesGroGateway  extends BaseRestTemplate{
+
+    String GRS_CORE_CONTEXT_PATH = "/grs_server";
+
     public List<OfficesGRO> getAncestors(Long officeId){
-        String url = getUrl() + "/api/officegro/getAncestors/"+officeId;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/officegro/getAncestors/"+officeId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());
@@ -37,7 +40,7 @@ public class OfficesGroGateway  extends BaseRestTemplate{
     }
 
     public List<OfficesGRO> findActiveOffices(){
-        String url = getUrl() + "/api/officegro/findActiveOffices";
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/officegro/findActiveOffices";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());

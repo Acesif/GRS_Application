@@ -2,9 +2,7 @@ package com.grs.grs_client.config;
 
 import com.grs.grs_client.enums.UserType;
 import com.grs.grs_client.gateway.AuthGateway;
-import com.grs.grs_client.model.OfficeInformation;
-import com.grs.grs_client.model.UserDetails;
-import com.grs.grs_client.model.UserInformation;
+import com.grs.grs_client.model.*;
 import com.grs.grs_client.utils.BanglaConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +27,16 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String name = authentication.getName();
         String password = authentication.getCredentials().toString();
-        UserDetails user = authGateway.login(BanglaConverter.convertToEnglish(name));
+        String userName = BanglaConverter.convertToEnglish(name);
+        LoginRequest loginRequest = LoginRequest.builder()
+                .username(userName)
+                .password(password).build();
+        LoginResponse user = authGateway.login(loginRequest);
 
         if (user != null) {
             UserInformation userInformation = getUserInfo(user);
             List<GrantedAuthorityImpl> grantedAuthorities = user
-                    .getPermissions()
+                    .getAuthorities()
                     .stream()
                     .map(permission -> {
                         return GrantedAuthorityImpl.builder()
@@ -53,23 +55,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         return authentication.equals(UsernamePasswordAuthenticationToken.class);
     }
 
-    private UserInformation getUserInfo(UserDetails user) {
-        OfficeInformation officeInformation = user.getOfficeInformation();
-
-        return UserInformation
-                .builder()
-                .userId(user.getId())
-                .username(user.getUsername())
-                .userType(UserType.OISF_USER)
-                .oisfUserType(user.getOisfUserType())
-                .grsUserType(null)
-                .officeInformation(officeInformation)
-                .isAppealOfficer(user.getIsAppealOfficer())
-                .isOfficeAdmin(user.getIsOfficeAdmin())
-                .isCentralDashboardUser(user.getIsCentralDashboardUser())
-                .isCellGRO(user.getIsCellGRO())
-                .isMobileLogin(false)
-                .build();
+    private UserInformation getUserInfo(LoginResponse user) {
+        return user.getUserInformation();
     }
 
 }

@@ -1,6 +1,7 @@
 package com.grs.grs_client.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -52,7 +53,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/grievance/forward/appeal").hasAnyAuthority("APPEAL")
                 .antMatchers("/addOfflineGrievance.do").hasAnyAuthority("OFFLINE_GRIEVANCE_UPLOAD")
                 .and()
-                .formLogin()
+                .formLogin().authenticationDetailsSource(authenticationDetailSource())
                 .loginPage("/login")
                 .permitAll()
                 .and()
@@ -75,5 +76,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(this.userDetailsService).passwordEncoder(bCryptPasswordEncoder);
         auth.userDetailsService(this.grsUserDetailsService).passwordEncoder(bCryptPasswordEncoder);
         auth.authenticationProvider(customAuthenticationProvider);
+    }
+
+    @Bean
+    public CustomAuthenticationDetailSource authenticationDetailSource() {
+        System.out.println("Configuring Spring Security : Initializaing user details service...");
+        return new CustomAuthenticationDetailSource();
     }
 }

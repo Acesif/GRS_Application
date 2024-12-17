@@ -18,9 +18,10 @@ import java.util.stream.Collectors;
 @Service
 public class NotificationGateway extends BaseRestTemplate{
 
+    String GRS_CORE_CONTEXT_PATH = "/grs_server";
 
     public List<SafetyNetProgram> getSafetyNetPrograms() {
-        String url = getUrl() + "/api/citizenCharter/getSafetyNetPrograms";
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/citizenCharter/getSafetyNetPrograms";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());
@@ -35,7 +36,7 @@ public class NotificationGateway extends BaseRestTemplate{
     public NotificationsDTO findByOfficeIdAndEmployeeRecordIdAndOfficeUnitOrganogramIdOrderByIdDesc(Long officeId, Long employeeRecordId, Long officeUnitOrganogramId) {
         List<Notification> notifications;
 
-        String url = getUrl() + "/api/notification/findByOfficeIdAndEmployeeRecordIdAndOfficeUnitOrganogramIdOrderByIdDesc/" + officeId + "/" + employeeRecordId + "/" + officeUnitOrganogramId;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/notification/findByOfficeIdAndEmployeeRecordIdAndOfficeUnitOrganogramIdOrderByIdDesc/" + officeId + "/" + employeeRecordId + "/" + officeUnitOrganogramId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());

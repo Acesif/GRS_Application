@@ -28,6 +28,8 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
     @Autowired
     private OfficesGroGateway officesGroService;
 
+    String GRS_CORE_CONTEXT_PATH = "/grs_server";
+
     public Boolean getComplaintRetakeFlag(Grievance grievance, UserInformation userInformation) {
         OfficesGRO gro = this.officesGroService.findOfficesGroByOfficeId(grievance.getOfficeId());
         boolean flag = false;
@@ -85,7 +87,7 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
     }
 
     public GrievanceForwarding getLastForwadingForGivenGrievance(Long grievanceId){
-        String url = getUrl() + "/api/grievanceforwarding/getLastForwadingForGivenGrievance/" + grievanceId;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH +  "/api/grievanceforwarding/getLastForwadingForGivenGrievance/" + grievanceId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());
@@ -98,7 +100,7 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
     }
 
     public List<GrievanceForwarding> findByGrievanceAndIsCurrent(Long grievanceId){
-        String url = getUrl() + "/api/grievanceforwarding/findByGrievanceAndIsCurrent/" + grievanceId;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievanceforwarding/findByGrievanceAndIsCurrent/" + grievanceId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());
@@ -111,7 +113,7 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
     }
 
     public List<GrievanceForwarding> getAllComplaintMovementByGrievance(Long grievanceId) {
-        String url = getUrl() + "/api/grievanceforwarding/getAllComplaintMovementByGrievance/" + grievanceId;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievanceforwarding/getAllComplaintMovementByGrievance/" + grievanceId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());
@@ -124,7 +126,7 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
     }
 
     public GrievanceForwarding getLastClosedOrRejectedForwarding(Long grievanceId) {
-        String url = getUrl() + "/api/grievanceforwarding/getLastClosedOrRejectedForwarding/" + grievanceId;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievanceforwarding/getLastClosedOrRejectedForwarding/" + grievanceId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());
@@ -156,7 +158,7 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
     }
 
     public List<GrievanceForwarding> findByGrievanceIdAndAssignedRole(Long grievanceId, String roleType){
-        String url = getUrl() + "/api/grievanceforwarding/findByGrievanceIdAndAssignedRole/" + grievanceId + "/" + roleType;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievanceforwarding/findByGrievanceIdAndAssignedRole/" + grievanceId + "/" + roleType;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());
@@ -171,7 +173,7 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
     public GrievanceForwarding getByActionAndToOfficeIdAndToOfficeUnitOrganogramIdAndGrievance(
             Long grievanceId, Long officeId, Long officeOrganogramId, String action
     ){
-        String url = getUrl() + "/api/grievanceforwarding/getByActionAndToOfficeIdAndToOfficeUnitOrganogramIdAndGrievance/" + grievanceId + "/" + officeId + "/" + officeOrganogramId + "/" + action;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievanceforwarding/getByActionAndToOfficeIdAndToOfficeUnitOrganogramIdAndGrievance/" + grievanceId + "/" + officeId + "/" + officeOrganogramId + "/" + action;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());
@@ -203,7 +205,7 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
     }
 
     public List<GrievanceForwarding> findByGrievanceAndActionLikeOrderByIdDesc(Long grievanceId, String action){
-        String url = getUrl() + "/api/grievanceforwarding/findByGrievanceAndActionLikeOrderByIdDesc/" + grievanceId + "/" + action;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievanceforwarding/findByGrievanceAndActionLikeOrderByIdDesc/" + grievanceId + "/" + action;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());
@@ -216,7 +218,7 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
     }
 
     public GrievanceForwarding findByGrievanceAndActionLikeAndCurrentStatusLike(Long grievanceId, String action, String status){
-        String url = getUrl() + "/api/grievanceforwarding/findByGrievanceAndActionLikeAndCurrentStatusLike/" + grievanceId + "/" + action + "/" + status;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievanceforwarding/findByGrievanceAndActionLikeAndCurrentStatusLike/" + grievanceId + "/" + action + "/" + status;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());
@@ -229,7 +231,7 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
     }
 
     public GrievanceForwarding findByGrievanceAndActionLikeAndCurrentStatusNotLike(long grievanceId, String action, String status){
-        String url = getUrl() + "/api/grievanceforwarding/findByGrievanceAndActionLikeAndCurrentStatusNotLike/" + grievanceId + "/" + action + "/" + status;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievanceforwarding/findByGrievanceAndActionLikeAndCurrentStatusNotLike/" + grievanceId + "/" + action + "/" + status;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());
@@ -244,7 +246,7 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
     public List<GrievanceForwarding> getAllRelatedComplaintMovementsBetweenDates(
             Long grievanceId, Long officeId, List<Long> officeUnitOrganogramId, String action, Date start, Date finish
     ){
-        String url = getUrl() + "/api/grievanceforwarding/getAllRelatedComplaintMovementsBetweenDates";
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievanceforwarding/getAllRelatedComplaintMovementsBetweenDates";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());
@@ -267,7 +269,7 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
     public List<GrievanceForwarding> getAllRelatedComplaintMovements(
             Long grievanceId, Long officeId, List<Long> officeUnitOrganogramId, String action
     ){
-        String url = getUrl() + "/api/grievanceforwarding/getAllRelatedComplaintMovements";
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievanceforwarding/getAllRelatedComplaintMovements";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());
@@ -286,7 +288,7 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
     }
 
     public GrievanceForwarding getLastActiveGrievanceForwardingOfCurrentUser(Long grievanceId, Long userOfficeId, Long userOrganogramId){
-        String url = getUrl() + "/api/grievanceforwarding/getLastActiveGrievanceForwardingOfCurrentUser/" + grievanceId + "/" + userOfficeId + "/" + userOrganogramId;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievanceforwarding/getLastActiveGrievanceForwardingOfCurrentUser/" + grievanceId + "/" + userOfficeId + "/" + userOrganogramId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());
@@ -299,7 +301,7 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
     }
 
     public GrievanceForwarding updateGrievanceForwarding(GrievanceForwarding grievanceForwarding){
-        String url = getUrl() + "/api/grievanceforwarding/update";
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievanceforwarding/update";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());
@@ -319,7 +321,7 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
     }
 
     public GrievanceForwarding saveGrievanceForwardingHistory(GrievanceForwarding grievanceForwarding){
-        String url = getUrl() + "/api/grievanceforwarding/saveGrievanceForwardingHistory";
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievanceforwarding/saveGrievanceForwardingHistory";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());

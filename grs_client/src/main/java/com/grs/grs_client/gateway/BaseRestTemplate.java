@@ -20,24 +20,11 @@ public class BaseRestTemplate {
 
     @Autowired
     protected RestTemplate restTemplate;
-
-
     private static String PROTOCOL;
-
-
     public static String HOST;
-
-
     public static String PORT;
-
-    public static String PATH = "api";
-
     private static String SERVICE_URL = "";
-
-    private static String FIELD_ATTACHMENT_URL = "";
-
     private String token;
-
 
     @PostConstruct
     void init() {
@@ -45,28 +32,18 @@ public class BaseRestTemplate {
         PROTOCOL = env.getProperty("api.service.protocol");
         HOST = env.getProperty("api.service.host");
         PORT = env.getProperty("api.service.port");
-        PATH = env.getProperty("api.service.context");
-        FIELD_ATTACHMENT_URL = env.getProperty("fv.attachment.url");
 
         if (PORT != null && PORT.length() > 0) {
-            SERVICE_URL = PROTOCOL + "://" + HOST + ":" + PORT + "/" + PATH + "/";
+            SERVICE_URL = PROTOCOL + "://" + HOST + ":" + PORT;
         } else {
-            SERVICE_URL = PROTOCOL + "://" + HOST + "/" + PATH + "/";
+            SERVICE_URL = PROTOCOL + "://" + HOST;
         }
 
     }
-
     public static String getUrl() {
         return SERVICE_URL;
     }
-
     protected String getToken(){
         return "";
     }
-
-    public static String getFieldAttachmentUrl() {
-        return FIELD_ATTACHMENT_URL;
-    }
-
-
 }

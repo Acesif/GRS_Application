@@ -17,8 +17,10 @@ public class OfficesGateway extends BaseRestTemplate{
     @Autowired
     private OfficesGroGateway officesGroService;
 
+    String GRS_CORE_CONTEXT_PATH = "/grs_server";
+
     public EmployeeRecord getEmployeeRecordById(Long employeeId) {
-        String url = getUrl() + "/api/employee/findEmployeeRecordById/"+employeeId;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/employee/findEmployeeRecordById/"+employeeId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());
@@ -54,7 +56,7 @@ public class OfficesGateway extends BaseRestTemplate{
     public Office getOfficeByOfficeId(Long officeId) {
 
         // todo: fix this url
-        String url = getUrl() + "/api/office/getOfficeByOfficeId/"+officeId;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/office/getOfficeByOfficeId/"+officeId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());
