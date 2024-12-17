@@ -122,6 +122,7 @@ public class GrievanceService {
         return grievance;
     }
 
+    //todo:Both will be implemented?
     public Grievance saveGrievance(Grievance grievance) {
         return saveGrievance(grievance, true);
     }
@@ -429,6 +430,8 @@ public class GrievanceService {
         return grievanceDetailsDTO;
     }
 
+
+    //todo:Same both should apply?
     public GrievanceDetailsDTO getGrievanceDetails(Long id) {
         return this.getGrievanceDetails(id, null);
     }
@@ -1715,7 +1718,7 @@ public class GrievanceService {
             return grievanceDTO;
         });
     }
-
+//todo:Need to implement
     public Page<GrievanceComplainantInfoDTO> getComplainantViewForReport(List<Office> childOffices, Integer fromYear, Integer fromMonth, Integer toYear, Integer toMonth, Pageable pageable) {
 
         Page<GrievanceComplainantInfoDTO> inboxAppealGrievances = this.grievanceDAO.getComplainantViewForReport(childOffices, fromYear, fromMonth, toYear, toMonth, pageable)
@@ -1728,7 +1731,10 @@ public class GrievanceService {
         return this.grievanceForwardingDAO.getInboxCount(userInformation, listViewType);
     }
 
-    public List<Grievance> getListViewWithOutSearching(long officeId, long userId, long officeOrganogramId) {
+    public List<Grievance> getListViewWithOutSearching(
+            long officeId,
+            long userId,
+            long officeOrganogramId) {
         Date date = new Date();
         Long expTime = CalendarUtil.getWorkDaysCountBefore(date, (int) Constant.GRIEVANCE_EXPIRATION_TIME);
         date.setTime(date.getTime() - expTime * 24 * 60 * 60 * 1000);
@@ -2073,6 +2079,7 @@ public class GrievanceService {
         }
         return feedbacks;
     }
+
 
     public List<Grievance> getGrievancesByIds(List<Long> grievanceIds) {
         return this.grievanceDAO.findByIdIn(grievanceIds);

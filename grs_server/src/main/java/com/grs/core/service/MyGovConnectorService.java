@@ -126,6 +126,8 @@ public class MyGovConnectorService {
         }
     }
 
+    /////////////
+
     public ComplainantDTO createUser(ComplainantDTO complainantDTO) throws Exception {
         String apiToken = getApiToken();
         MyGovLoginResponse myGovLoginResponse = new MyGovLoginResponse();
@@ -180,6 +182,7 @@ public class MyGovConnectorService {
             throw new Exception(new Gson().toJson(returnObject));
         }
     }
+    //////////////////
 */
     public MyGovTokenResponse getMyGovToken(String code) {
 
@@ -207,6 +210,7 @@ public class MyGovConnectorService {
         return null;
     }
 
+    /////////////////
 
     public MyGovUser getMyGovLoginUser(String accessToken) {
 

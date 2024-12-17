@@ -19,8 +19,20 @@ public class GeoController {
     @Autowired
     private GeoService geoService;
 
+
+    @RequestMapping(value = "/api/geo/upazilas", method = RequestMethod.GET)
+    public Upazila getUpazilaById(@PathVariable("upazilaId") Integer upazilaId) {
+        return this.geoService.getUpazilaById(upazilaId);
+    }
+
+    @RequestMapping(value = "/api/geo/cityCorporations/{cityCorporationId}", method = RequestMethod.GET)
+    public CityCorporation getCityCorporationById(@PathVariable("cityCorporationId") Integer cityCorporationId) {
+        return this.geoService.getCityCorporationById(cityCorporationId);
+    }
+
+
     @RequestMapping(value = "/api/geo/countries", method = RequestMethod.GET)
-    public List<CountryInfo>  getAllNationalitiesAlongWithCountry() {
+    public List<CountryInfo> getAllNationalitiesAlongWithCountry() {
         return this.geoService.getAllNationalitiesAlongWithCountry();
     }
 
@@ -39,7 +51,7 @@ public class GeoController {
         return this.geoService.getUpazilas(districtId);
     }
 
-    @RequestMapping( value = "/api/geo/division", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/geo/division", method = RequestMethod.GET)
     public List<Division> getDivisions() {
         return this.geoService.getDivisions();
     }
