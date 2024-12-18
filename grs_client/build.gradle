@@ -23,7 +23,8 @@ repositories {
 }
 
 war {
-    archiveName 'grs_client.war'
+//    archiveName 'grs_client.war'
+    archiveName 'ROOT.war'
 }
 configurations {
     developmentOnly
