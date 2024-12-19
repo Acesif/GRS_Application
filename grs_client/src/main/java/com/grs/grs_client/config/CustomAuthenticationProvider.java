@@ -29,7 +29,10 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String name = authentication.getName();
         String password = authentication.getCredentials().toString();
-        UserDetails user = authGateway.login(BanglaConverter.convertToEnglish(name));
+        UserDetails user = authGateway.login(
+                BanglaConverter.convertToEnglish(name),
+                BanglaConverter.convertToEnglish(password)
+        );
 
         if (user != null) {
             UserInformation userInformation = getUserInfo(user);
@@ -60,9 +63,9 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 .builder()
                 .userId(user.getId())
                 .username(user.getUsername())
-                .userType(UserType.OISF_USER)
+                .userType(user.getUserType())
                 .oisfUserType(user.getOisfUserType())
-                .grsUserType(null)
+                .grsUserType(user.getGrsUserType())
                 .officeInformation(officeInformation)
                 .isAppealOfficer(user.getIsAppealOfficer())
                 .isOfficeAdmin(user.getIsOfficeAdmin())

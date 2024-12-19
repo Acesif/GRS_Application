@@ -22,7 +22,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetailsImpl loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserDetails user = authGateway.login(BanglaConverter.convertToEnglish(username));
+        UserDetails user = authGateway.login(BanglaConverter.convertToEnglish(username), null);
         if (user == null) {
             throw new UsernameNotFoundException("Invalid credentials");
         }

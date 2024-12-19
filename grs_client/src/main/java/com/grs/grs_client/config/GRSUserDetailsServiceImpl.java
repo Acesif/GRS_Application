@@ -23,7 +23,7 @@ public class GRSUserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetailsImpl loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserDetails user = authGateway.login(username);
+        UserDetails user = authGateway.login(username, null);
         if (user == null) {
             throw new UsernameNotFoundException("Invalid credentials");
         }
