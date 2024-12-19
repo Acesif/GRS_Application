@@ -2,6 +2,7 @@ package com.grs.grs_client.config;
 
 import com.grs.grs_client.enums.UserType;
 import com.grs.grs_client.gateway.AuthGateway;
+import com.grs.grs_client.model.LoginResponse;
 import com.grs.grs_client.model.OfficeInformation;
 import com.grs.grs_client.model.UserDetails;
 import com.grs.grs_client.model.UserInformation;
@@ -29,12 +30,18 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String name = authentication.getName();
         String password = authentication.getCredentials().toString();
-        UserDetails user = authGateway.login(BanglaConverter.convertToEnglish(name));
+        LoginResponse loginResponse = authGateway.login(
+                BanglaConverter.convertToEnglish(name),
+                BanglaConverter.convertToEnglish(password)
+        );
 
-        if (user != null) {
-            UserInformation userInformation = getUserInfo(user);
-            List<GrantedAuthorityImpl> grantedAuthorities = user
-                    .getPermissions()
+        UserInformation userInformation = loginResponse.getUserInformation();
+
+
+        if (userInformation != null) {
+//            UserInformation userInformation = getUserInfo(user);
+            List<GrantedAuthorityImpl> grantedAuthorities = loginResponse
+                    .getAuthorities()
                     .stream()
                     .map(permission -> {
                         return GrantedAuthorityImpl.builder()
@@ -53,23 +60,23 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         return authentication.equals(UsernamePasswordAuthenticationToken.class);
     }
 
-    private UserInformation getUserInfo(UserDetails user) {
-        OfficeInformation officeInformation = user.getOfficeInformation();
-
-        return UserInformation
-                .builder()
-                .userId(user.getId())
-                .username(user.getUsername())
-                .userType(UserType.OISF_USER)
-                .oisfUserType(user.getOisfUserType())
-                .grsUserType(null)
-                .officeInformation(officeInformation)
-                .isAppealOfficer(user.getIsAppealOfficer())
-                .isOfficeAdmin(user.getIsOfficeAdmin())
-                .isCentralDashboardUser(user.getIsCentralDashboardUser())
-                .isCellGRO(user.getIsCellGRO())
-                .isMobileLogin(false)
-                .build();
-    }
+//    private UserInformation getUserInfo(UserDetails user) {
+//        OfficeInformation officeInformation = user.getOfficeInformation();
+//
+//        return UserInformation
+//                .builder()
+//                .userId(user.getId())
+//                .username(user.getUsername())
+//                .userType(user.getUserType())
+//                .oisfUserType(user.getOisfUserType())
+//                .grsUserType(user.getGrsUserType())
+//                .officeInformation(officeInformation)
+//                .isAppealOfficer(user.getIsAppealOfficer())
+//                .isOfficeAdmin(user.getIsOfficeAdmin())
+//                .isCentralDashboardUser(user.getIsCentralDashboardUser())
+//                .isCellGRO(user.getIsCellGRO())
+//                .isMobileLogin(false)
+//                .build();
+//    }
 
 }

@@ -2,6 +2,7 @@ package com.grs.grs_client.config;
 
 import com.grs.grs_client.enums.UserType;
 import com.grs.grs_client.gateway.AuthGateway;
+import com.grs.grs_client.model.LoginResponse;
 import com.grs.grs_client.model.UserDetails;
 import com.grs.grs_client.model.UserInformation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,23 +24,25 @@ public class GRSUserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetailsImpl loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserDetails user = authGateway.login(username);
-        if (user == null) {
+        LoginResponse loginResponse = authGateway.login(username, null);
+        if (loginResponse.getUserInformation() == null) {
             throw new UsernameNotFoundException("Invalid credentials");
         }
 
-        List<GrantedAuthorityImpl> grantedAuthorities = user.getPermissions().stream()
+        List<GrantedAuthorityImpl> grantedAuthorities = loginResponse.getAuthorities().stream()
                 .map(permission -> {
                     return GrantedAuthorityImpl.builder()
                             .role(permission)
                             .build();
                 }).collect(Collectors.toList());
 
-        UserInformation userInformation = getUserInfo(user);
+//        UserInformation userInformation = getUserInfo(user);
+        UserInformation userInformation = loginResponse.getUserInformation();
 
         return UserDetailsImpl.builder()
-                .username(user.getUsername())
-                .password(user.getPassword())
+                .username(userInformation.getUsername())
+//                .password(user.getPassword())
+                .password(null)
                 .grantedAuthorities(grantedAuthorities)
                 .userInformation(userInformation)
                 .isAccountAuthenticated(true)
