@@ -14,7 +14,7 @@ import java.util.List;
 @Service
 public class AuthGateway extends BaseRestTemplate{
 
-    public UserDetails login(String userName, String password) {
+    public LoginResponse login(String userName, String password) {
 
 //        String url = "http://localhost:8088/grs_security/auth/login";
         String url = getUrl() + "grs_security/auth/login";
@@ -39,28 +39,28 @@ public class AuthGateway extends BaseRestTemplate{
                 HttpMethod.POST, entity, new ParameterizedTypeReference<LoginResponse>() {
                 });
 
-        UserDetails userDetails = new UserDetails();
-        UserInformation userInformation = response.getBody().getUserInformation();
-        OfficeInformation officeInfo = response.getBody().getUserInformation().getOfficeInformation();
+//        UserDetails userDetails = new UserDetails();
+//        UserInformation userInformation = response.getBody().getUserInformation();
+//        OfficeInformation officeInfo = response.getBody().getUserInformation().getOfficeInformation();
+//
+//        userDetails.setId(userInformation.getUserId());
+//        userDetails.setUsername(userInformation.getUsername());
+//        userDetails.setName(userInformation.getUsername());
+//        userDetails.setUserType(userInformation.getUserType());
+//        userDetails.setGrsUserType(userInformation.getGrsUserType());
+//        userDetails.setOisfUserType(userInformation.getOisfUserType());
+//        OfficeInformation officeInformation = new OfficeInformation();
+////        officeInformation.setOfficeId(officeInfo.getOfficeId());
+////        officeInformation.setName(officeInfo.getName());
+////        officeInformation.setDesignation(officeInfo.getDesignation());
+//        userDetails.setOfficeInformation(officeInformation);
+//        userDetails.setPermissions(response.getBody().getAuthorities());
+//        userDetails.setIsAppealOfficer(userInformation.getIsAppealOfficer());
+//        userDetails.setIsCellGRO(userInformation.getIsCellGRO());
+//        userDetails.setIsCentralDashboardUser(userInformation.getIsCentralDashboardUser());
+//        userDetails.setIsOfficeAdmin(userInformation.getIsOfficeAdmin());
 
-        userDetails.setId(userInformation.getUserId());
-        userDetails.setUsername(userInformation.getUsername());
-        userDetails.setName(userInformation.getUsername());
-        userDetails.setUserType(userInformation.getUserType());
-        userDetails.setGrsUserType(userInformation.getGrsUserType());
-        userDetails.setOisfUserType(userInformation.getOisfUserType());
-        OfficeInformation officeInformation = new OfficeInformation();
-//        officeInformation.setOfficeId(officeInfo.getOfficeId());
-//        officeInformation.setName(officeInfo.getName());
-//        officeInformation.setDesignation(officeInfo.getDesignation());
-        userDetails.setOfficeInformation(officeInformation);
-        userDetails.setPermissions(response.getBody().getAuthorities());
-        userDetails.setIsAppealOfficer(userInformation.getIsAppealOfficer());
-        userDetails.setIsCellGRO(userInformation.getIsCellGRO());
-        userDetails.setIsCentralDashboardUser(userInformation.getIsCentralDashboardUser());
-        userDetails.setIsOfficeAdmin(userInformation.getIsOfficeAdmin());
-
-        return userDetails;
+        return response.getBody();
 
     }
 

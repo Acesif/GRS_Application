@@ -1,6 +1,7 @@
 package com.grs.grs_client.config;
 
 import com.grs.grs_client.gateway.AuthGateway;
+import com.grs.grs_client.model.LoginResponse;
 import com.grs.grs_client.model.UserDetails;
 import com.grs.grs_client.model.UserInformation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetailsImpl loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserDetails user = authGateway.login(BanglaConverter.convertToEnglish(username), null);
-        if (user == null) {
+        LoginResponse loginResponse = authGateway.login(BanglaConverter.convertToEnglish(username), null);
+        if (loginResponse.getUserInformation() == null) {
             throw new UsernameNotFoundException("Invalid credentials");
         }
 
@@ -31,26 +32,28 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             add("ADD_PUBLIC_GRIEVANCES");
             add("DO_APPEAL");
         }};
-        List<GrantedAuthorityImpl> grantedAuthorities = user.getPermissions().stream()
+        List<GrantedAuthorityImpl> grantedAuthorities = loginResponse.getAuthorities().stream()
                 .map(permission -> {
                     return GrantedAuthorityImpl.builder()
                             .role(permission)
                             .build();
                 }).collect(Collectors.toList());
 
-        UserInformation userInformation = UserInformation
-                .builder()
-                .userId(user.getId())
-                .username(user.getName())
-                .userType(UserType.COMPLAINANT)
-                .officeInformation(null)
-                .oisfUserType(null)
-                .isAppealOfficer(false)
-                .build();
+//        UserInformation userInformation = UserInformation
+//                .builder()
+//                .userId(user.getId())
+//                .username(user.getName())
+//                .userType(UserType.COMPLAINANT)
+//                .officeInformation(null)
+//                .oisfUserType(null)
+//                .isAppealOfficer(false)
+//                .build();
+        UserInformation userInformation = loginResponse.getUserInformation();
 
         return UserDetailsImpl.builder()
-                .username(user.getUsername())
-                .password(user.getPassword())
+                .username(userInformation.getUsername())
+//                .password(user.getPassword())
+                .password(null)
                 .isAccountAuthenticated(true)
                 .grantedAuthorities(grantedAuthorities)
                 .userInformation(userInformation)
