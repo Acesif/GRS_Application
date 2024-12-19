@@ -1,6 +1,7 @@
 package com.grs.api.controller;
 
 import com.grs.api.model.response.ComplainantResponseDTO;
+import com.grs.core.domain.projapoti.EmployeeRecord;
 import com.grs.core.service.EmployeeService;
 import com.grs.core.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -39,5 +40,11 @@ public class EmployeeController {
     public ComplainantResponseDTO getPersonalInfoOfEmployeeIntoComplainantResponseDTO(@PathVariable("employeeRecordId") Long employeeRecordId) {
         return this.employeeService.getPersonalInfoOfEmployeeIntoComplainantResponseDTO(employeeRecordId);
     }
+
+    @RequestMapping(value = "/api/employee/{id}",method = RequestMethod.GET)
+    public EmployeeRecord findOne(@PathVariable("id") Long id){
+        return this.employeeService.findOne(id);
+    }
+
 
 }

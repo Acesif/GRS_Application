@@ -1,6 +1,7 @@
 package com.grs.api.controller;
 
 import com.grs.api.model.SafetyNetProgramReportResponse;
+import com.grs.api.model.SafetyNetSummaryResponse;
 import com.grs.api.model.UserInformation;
 import com.grs.api.model.request.AddCentralDashboardRecipientDTO;
 import com.grs.api.model.response.CentralDashboardRecipientDTO;
@@ -9,6 +10,8 @@ import com.grs.api.model.response.RegisterDTO;
 import com.grs.api.model.response.dashboard.*;
 import com.grs.api.model.response.dashboard.latest.*;
 import com.grs.core.dao.GRSStatisticsDAO;
+import com.grs.core.domain.MediumOfSubmission;
+import com.grs.core.domain.grs.Grievance;
 import com.grs.core.service.DashboardService;
 import com.grs.utils.CacheUtil;
 import com.grs.utils.Utility;
@@ -75,6 +78,22 @@ public class DashboardController {
         return NameValuePairListDTO.builder()
                 .nameValuePairList(dashboardService.getAppealCountByMediumOfSubmission(officeId, 0L))
                 .build();
+    }
+
+    @PostMapping("/dashboard/feedbackForDashboardData")
+    public void getFeedbackForDashboardData(@RequestBody Grievance grievance){
+        dashboardService.getFeedbackForDashboardData(grievance);
+    }
+
+
+    @PostMapping("/dashboard/appealFeedbackForDashboardData")
+    public void getAppealFeedbackForDashboardData(@RequestBody Grievance grievance){
+        dashboardService.getAppealFeedbackForDashboardData(grievance);
+    }
+
+    @GetMapping("/dashboard/citizenCharterServicesByComplaintFrequency")
+    public List<ItemIdNameCountDTO> getCitizenCharterServicesByComplaintFrequency(){
+        return dashboardService.getCitizenCharterServicesByComplaintFrequency();
     }
 
     @GetMapping("/office/{office_id}/grievances/compare-with-last-month")
@@ -153,6 +172,13 @@ public class DashboardController {
         return dashboardService.getTimeExpiredAppealDTOList(officeId);
     }
 
+
+    @GetMapping("/office/{office_id}/{month_diff}/grievanceAscertainCountOfPreviousMonthV2")
+    public Long getGrievanceAscertainCountOfPreviousMonthV2(@PathVariable("office_id") Long officeId,
+                                                            @PathVariable("month_diff") Long monthDiff){
+        return dashboardService.getGrievanceAscertainCountOfPreviousMonthV2(officeId,monthDiff);
+    }
+
     @GetMapping("/central-data")
     public CentralDashboardDataDTO getCentralDashboardData() {
         return dashboardService.getCentralDashboardData();
@@ -209,10 +235,268 @@ public class DashboardController {
         return dashboardService.addNewCentralDashboardRecipients(dashboardRecipientDTO);
     }
 
+
+    @GetMapping("/{office_id}/{year}/{month}/countResolvedComplaintsByOfficeIdAndYearAndMonth")
+    public Long countResolvedComplaintsByOfficeIdAndYearAndMonth(
+           @PathVariable("office_id") Long officeId,
+           @PathVariable("year") String year,
+           @PathVariable("month") String month){
+        return dashboardService.countResolvedComplaintsByOfficeIdAndYearAndMonth(officeId,year,month);
+    }
+
+    @GetMapping("/{office_id}/{year}/{month}/countTimeExpiredComplaintsByOfficeIdAndYearAndMonth")
+    public Long countTimeExpiredComplaintsByOfficeIdAndYearAndMonth(
+            @PathVariable("office_id") Long officeId,
+            @PathVariable("year") String year,
+            @PathVariable("month") String month){
+        return dashboardService.countTimeExpiredComplaintsByOfficeIdAndYearAndMonth(officeId,year,month);
+    }
+
+    @GetMapping("/{office_id}/{year}/{month}/countRunningGrievancesByOfficeIdAndYearAndMonth")
+    public Long countRunningGrievancesByOfficeIdAndYearAndMonth(
+            @PathVariable("office_id") Long officeId,
+            @PathVariable("year") String year,
+            @PathVariable("month") String month){
+        return dashboardService.countRunningGrievancesByOfficeIdAndYearAndMonth(officeId,year,month);
+    }
+
+    @GetMapping("/{office_id}/{year}/{month}/countTotalComplaintsByOfficeIdAndYearAndMonth")
+    public Long countTotalComplaintsByOfficeIdAndYearAndMonth(
+            @PathVariable("office_id") Long officeId,
+            @PathVariable("year") String year,
+            @PathVariable("month") String month){
+        return dashboardService.countTotalComplaintsByOfficeIdAndYearAndMonth(officeId,year,month);
+    }
+
+    @GetMapping("/{office_id}/{year}/{month}/countDeclinedGrievancesByOfficeIdAndYearAndMonth")
+    public Long countDeclinedGrievancesByOfficeIdAndYearAndMonth(
+            @PathVariable("office_id") Long officeId,
+            @PathVariable("year") String year,
+            @PathVariable("month") String month){
+        return dashboardService.countDeclinedGrievancesByOfficeIdAndYearAndMonth(officeId,year,month);
+    }
+
+    @GetMapping("/{office_id}/{year}/{month}/getGrievanceAscertainCountbyOfficeIdAndYearAndMonth")
+    public Long getGrievanceAscertainCountbyOfficeIdAndYearAndMonth(
+            @PathVariable("office_id") Long officeId,
+            @PathVariable("year") String year,
+            @PathVariable("month") String month){
+        return dashboardService.getGrievanceAscertainCountbyOfficeIdAndYearAndMonth(officeId,year,month);
+    }
+
+    @GetMapping("/{office_id}/{year}/{month}/getMonthlyComplaintsCountByOfficeIdAndMediumOfSubmissionAndYearAndMonth")
+    public Long getMonthlyComplaintsCountByOfficeIdAndMediumOfSubmissionAndYearAndMonth(
+            @PathVariable("office_id") Long officeId,
+            @RequestParam MediumOfSubmission mediumOfSubmission,
+            @PathVariable("year") String year,
+            @PathVariable("month") String month){
+        return dashboardService.getMonthlyComplaintsCountByOfficeIdAndMediumOfSubmissionAndYearAndMonth(officeId,mediumOfSubmission,year,month);
+    }
+
+    @GetMapping("/{office_id}/{year}/{month}/countResolvedAppealByOfficeIdAndYearAndMonth")
+    public Long countResolvedAppealByOfficeIdAndYearAndMonth(
+            @PathVariable("office_id") Long officeId,
+            @PathVariable("year") String year,
+            @PathVariable("month") String month){
+        return dashboardService.countResolvedAppealByOfficeIdAndYearAndMonth(officeId,year,month);
+    }
+
+    @GetMapping("/{office_id}/{year}/{month}/countTimeExpiredAppealByOfficeIdAndYearAndMonth")
+    public Long countTimeExpiredAppealByOfficeIdAndYearAndMonth(
+            @PathVariable("office_id") Long officeId,
+            @PathVariable("year") String year,
+            @PathVariable("month") String month){
+        return dashboardService.countTimeExpiredAppealByOfficeIdAndYearAndMonth(officeId,year,month);
+    }
+
+    @GetMapping("/{office_id}/{year}/{month}/countRunningAppealByOfficeIdAndYearAndMonth")
+    public Long countRunningAppealByOfficeIdAndYearAndMonth(
+            @PathVariable("office_id") Long officeId,
+            @PathVariable("year") String year,
+            @PathVariable("month") String month){
+        return dashboardService.countRunningAppealByOfficeIdAndYearAndMonth(officeId,year,month);
+    }
+
+    @GetMapping("/{office_id}/{year}/{month}/countTotalAppealByOfficeIdAndYearAndMonth")
+    public Long countTotalAppealByOfficeIdAndYearAndMonth(
+            @PathVariable("office_id") Long officeId,
+            @PathVariable("year") String year,
+            @PathVariable("month") String month){
+        return dashboardService.countTotalAppealByOfficeIdAndYearAndMonth(officeId,year,month);
+    }
+
+    @GetMapping("/{office_id}/{year}/{month}/getAppealAscertainCountByOfficeIdAndYearAndMonth")
+    public Long getAppealAscertainCountByOfficeIdAndYearAndMonth(
+            @PathVariable("office_id") Long officeId,
+            @PathVariable("year") String year,
+            @PathVariable("month") String month){
+        return dashboardService.getAppealAscertainCountByOfficeIdAndYearAndMonth(officeId,year,month);
+    }
+
+    @GetMapping("/{office_id}/{year}/{month}/getMonthlyAppealCountByOfficeIdAndMediumOfSubmissionAndYearAndMonth")
+    public Long getMonthlyAppealCountByOfficeIdAndMediumOfSubmissionAndYearAndMonth(
+            @PathVariable("office_id") Long officeId,
+            @RequestParam MediumOfSubmission mediumOfSubmission,
+            @PathVariable("year") String year,
+            @PathVariable("month") String month){
+        return dashboardService.getMonthlyAppealCountByOfficeIdAndMediumOfSubmissionAndYearAndMonth(officeId,mediumOfSubmission,year,month);
+    }
+
+
+
+
+
+
     @PutMapping("/central-dashboard-recipients/{id}/status/{status}")
     public Boolean changeCentralDashboardRecipientStatus(@PathVariable("id") Long id, @PathVariable("status") Boolean status) {
         return dashboardService.changeCentralDashboardRecipientStatus(id, status);
     }
+
+    @GetMapping("/{office_id}/{is_appeal}/complaintIdsContainRatingInCurrentMonth")
+    public List<Long> getComplaintIdsContainRatingInCurrentMonth(@PathVariable("office_id") Long officeId,
+                                                                 @PathVariable("is_appeal") Boolean isAppeal){
+        return dashboardService.getComplaintIdsContainRatingInCurrentMonth(officeId,isAppeal);
+    }
+
+    @GetMapping("/{office_id}/{month_diff}/monthlyComplaintsCountByOfficeIdAndMediumOfSubmission")
+    public Long getMonthlyComplaintsCountByOfficeIdAndMediumOfSubmission(
+           @PathVariable("office_id") Long officeId,
+           @RequestParam MediumOfSubmission mediumOfSubmission,
+           @PathVariable("month_diff") Long monthDiff){
+        return dashboardService.getMonthlyComplaintsCountByOfficeIdAndMediumOfSubmission(
+                officeId,mediumOfSubmission,monthDiff);
+    }
+
+
+    @GetMapping("/{office_id}/{month_diff}/monthlyAppealsCountByOfficeIdAndMediumOfSubmission")
+    public Long getMonthlyAppealsCountByOfficeIdAndMediumOfSubmission(
+            @PathVariable("office_id") Long officeId,
+            @RequestParam   MediumOfSubmission mediumOfSubmission,
+            @PathVariable("month_diff") Long monthDiff){
+
+        return dashboardService.getMonthlyAppealsCountByOfficeIdAndMediumOfSubmission(
+                officeId,mediumOfSubmission,monthDiff);
+    }
+
+    @GetMapping("/{office_id}/{month_diff}/appealAscertainCountOfPreviousMonth")
+    public Long getAppealAscertainCountOfPreviousMonth(@PathVariable("office_id") Long officeId,
+                                                       @PathVariable("month_diff") Long monthDiff){
+        return dashboardService.getAppealAscertainCountOfPreviousMonth(officeId,monthDiff);
+    }
+
+    @GetMapping("/{office_id}/{month_diff}/monthlyAppealsCountByOfficeIdAndMediumOfSubmissionV2")
+    public Long getMonthlyAppealsCountByOfficeIdAndMediumOfSubmissionV2(
+            @PathVariable("office_id") Long officeId,
+            @RequestParam   MediumOfSubmission mediumOfSubmission,
+            @PathVariable("month_diff") Long monthDiff){
+
+        return dashboardService.getMonthlyAppealsCountByOfficeIdAndMediumOfSubmissionV2(
+                officeId,mediumOfSubmission,monthDiff);
+    }
+
+
+    @GetMapping("/{office_id}/{month_diff}/countResolvedComplaintsByOfficeId")
+    public Long countResolvedComplaintsByOfficeId(@PathVariable("office_id") Long officeId,
+                                                  @PathVariable("month_diff") Long monthDiff){
+        return dashboardService.countResolvedComplaintsByOfficeId(officeId,monthDiff);
+    }
+
+
+    @GetMapping("/{office_id}/{month_diff}/countTimeExpiredComplaintsByOfficeId")
+    public Long countTimeExpiredComplaintsByOfficeId(@PathVariable("office_id") Long officeId,
+                                                  @PathVariable("month_diff") Long monthDiff){
+        return dashboardService.countTimeExpiredComplaintsByOfficeId(officeId,monthDiff);
+    }
+
+    @GetMapping("/{office_id}/{month_diff}/countRunningGrievancesByOfficeId")
+    public Long countRunningGrievancesByOfficeId(@PathVariable("office_id") Long officeId,
+                                                     @PathVariable("month_diff") Long monthDiff){
+        return dashboardService.countRunningGrievancesByOfficeId(officeId,monthDiff);
+    }
+
+
+    @GetMapping("/{office_id}/{month_diff}/countDeclinedGrievancesByOfficeId")
+    public Long countDeclinedGrievancesByOfficeId(@PathVariable("office_id") Long officeId,
+                                                 @PathVariable("month_diff") Long monthDiff){
+        return dashboardService.countDeclinedGrievancesByOfficeId(officeId,monthDiff);
+    }
+
+    @GetMapping("/{office_id}/{month_diff}/countRunningAppealsByOfficeId")
+    public Long countRunningAppealsByOfficeId(@PathVariable("office_id") Long officeId,
+                                                  @PathVariable("month_diff") Long monthDiff){
+        return dashboardService.countRunningAppealsByOfficeId(officeId,monthDiff);
+    }
+
+    @GetMapping("/{office_id}/{month_diff}/countTimeExpiredAppealsByOfficeId")
+    public Long countTimeExpiredAppealsByOfficeId(@PathVariable("office_id") Long officeId,
+                                              @PathVariable("month_diff") Long monthDiff){
+        return dashboardService.countTimeExpiredAppealsByOfficeId(officeId,monthDiff);
+    }
+
+    @GetMapping("/{office_id}/{month_diff}/countTotalComplaintsByOfficeIdV2")
+    public Long countTotalComplaintsByOfficeIdV2(@PathVariable("office_id") Long officeId,
+                                                  @PathVariable("month_diff") Long monthDiff){
+        return dashboardService.countTotalComplaintsByOfficeIdV2(officeId,monthDiff);
+    }
+
+    @GetMapping("/{office_id}/{month_diff}/countResolvedComplaintsByOfficeIdV2")
+    public Long countResolvedComplaintsByOfficeIdV2(@PathVariable("office_id") Long officeId,
+                                                 @PathVariable("month_diff") Long monthDiff){
+        return dashboardService.countResolvedComplaintsByOfficeIdV2(officeId,monthDiff);
+    }
+
+    @GetMapping("/{office_id}/{month_diff}/countTimeExpiredComplaintsByOfficeIdV3")
+    public Long countTimeExpiredComplaintsByOfficeIdV3(@PathVariable("office_id") Long officeId,
+                                                    @PathVariable("month_diff") Long monthDiff){
+        return dashboardService.countTimeExpiredComplaintsByOfficeIdV3(officeId,monthDiff);
+    }
+
+    @GetMapping("/{office_id}/{month_diff}/countRunningGrievancesByOfficeIdV2")
+    public Long countRunningGrievancesByOfficeIdV2(@PathVariable("office_id") Long officeId,
+                                                       @PathVariable("month_diff") Long monthDiff){
+        return dashboardService.countRunningGrievancesByOfficeIdV2(officeId,monthDiff);
+    }
+
+
+    @GetMapping("/{office_id}/{month_diff}/countInheritedComplaintsByOfficeId")
+    public Long countInheritedComplaintsByOfficeId(@PathVariable("office_id") Long officeId,
+                                                   @PathVariable("month_diff") Long monthDiff){
+        return dashboardService.countInheritedComplaintsByOfficeId(officeId,monthDiff);
+    }
+
+    @GetMapping("/{office_id}/{month_diff}/countForwardedGrievancesByOfficeIdV2")
+    public Long countForwardedGrievancesByOfficeIdV2(@PathVariable("office_id") Long officeId,
+                                                   @PathVariable("month_diff") Long monthDiff){
+        return dashboardService.countForwardedGrievancesByOfficeIdV2(officeId,monthDiff);
+    }
+
+    @GetMapping("/{office_id}/{month_diff}/countTotalAppealsByOfficeIdV2")
+    public Long countTotalAppealsByOfficeIdV2(@PathVariable("office_id") Long officeId,
+                                                     @PathVariable("month_diff") Long monthDiff){
+        return dashboardService.countTotalAppealsByOfficeIdV2(officeId,monthDiff);
+    }
+
+
+    @GetMapping("/{office_id}/{month_diff}/countResolvedAppealsByOfficeIdV2")
+    public Long countResolvedAppealsByOfficeIdV2(@PathVariable("office_id") Long officeId,
+                                              @PathVariable("month_diff") Long monthDiff){
+        return dashboardService.countResolvedAppealsByOfficeIdV2(officeId,monthDiff);
+    }
+
+    @GetMapping("/{office_id}/{month_diff}/countTimeExpiredAppealsByOfficeIdV2")
+    public Long countTimeExpiredAppealsByOfficeIdV2(@PathVariable("office_id") Long officeId,
+                                                 @PathVariable("month_diff") Long monthDiff){
+        return dashboardService.countTimeExpiredAppealsByOfficeIdV2(officeId,monthDiff);
+    }
+
+    @GetMapping("/{office_id}/{month_diff}/countRunningAppealsByOfficeIdV2")
+    public Long countRunningAppealsByOfficeIdV2(@PathVariable("office_id") Long officeId,
+                                                    @PathVariable("month_diff") Long monthDiff){
+        return dashboardService.countRunningAppealsByOfficeIdV2(officeId,monthDiff);
+    }
+
+
+
 
     @DeleteMapping("/central-dashboard-recipients/{id}")
     public Boolean deleteCentralDashboardRecipient(@PathVariable("id") Long id) {
@@ -438,7 +722,6 @@ public class DashboardController {
         return dashboardService.getTotalResolvedAppealByMonthOfCurrentYear(layerLevel, officeOrigin, officeId, year, month, grsEnabled);
     }
 
-
     @GetMapping("/field-coordinator-data")
     public List<SubOfficesStatisticsDTO> getGrievanceRelatedStatisticsForFieldCoordinator(Authentication authentication) {
         return grsStatisticsDAO.getOfficesStatisticsForFieldCoordinator(authentication);
@@ -461,4 +744,12 @@ public class DashboardController {
         UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
         return this.dashboardService.safetyNetProgramReportByProgramId(userInformation, fromDate, toDate, programId);
     }
+
+    @PostMapping("/safety-net-program/{programId}/safetyNetSummary")
+    public SafetyNetSummaryResponse getSafetyNetSummary(
+            @RequestBody UserInformation userInformation,
+            @PathVariable("programId") Integer programId){
+        return this.dashboardService.getSafetyNetSummary(userInformation,programId);
+    }
+
 }
