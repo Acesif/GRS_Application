@@ -41,6 +41,20 @@ public class CellController {
     @Autowired
     private GeneralSettingsService generalSettingsService;
 
+
+
+    @RequestMapping(value = "/celMemberEntry/{officeUnitOrganogramId}",method = RequestMethod.GET)
+    public CellMember getCellMemberEntry(@PathVariable("officeUnitOrganogramId") Long officeUnitOrganogramId){
+        return  this.cellService.getCellMemberEntry(officeUnitOrganogramId);
+    }
+
+    @RequestMapping(value = "/celMemberEntryWithOfficeId",method = RequestMethod.POST)
+    public CellMember getCellMemberEntry(
+           @RequestParam List<Long> officeIds,
+          @RequestParam  List<Long> officeUnitOrganogramIds){
+        return this.cellService.getCellMemberEntry(officeIds,officeUnitOrganogramIds);
+    }
+
     @RequestMapping(value = "/viewMeetings.do", method = RequestMethod.GET)
     public ModelAndView getViewMeetingsPage(Authentication authentication, Model model, HttpServletRequest request) {
         if (authentication != null) {

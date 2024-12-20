@@ -7,13 +7,18 @@ import com.grs.api.model.request.*;
 import com.grs.api.model.response.*;
 import com.grs.api.model.response.file.ExistingFileDerivedDTO;
 import com.grs.api.model.response.file.FileDerivedDTO;
+import com.grs.api.model.response.grievance.ComplainantInfoDTO;
 import com.grs.api.model.response.grievance.GrievanceDTO;
 import com.grs.api.model.response.grievance.GrievanceDetailsDTO;
+import com.grs.api.model.response.grievance.OISFIntermediateDashboardDTO;
 import com.grs.core.config.CaptchaSettings;
 import com.grs.core.domain.ServicePair;
 import com.grs.core.domain.ServiceType;
+import com.grs.core.domain.grs.Complainant;
 import com.grs.core.domain.grs.Grievance;
+import com.grs.core.domain.grs.GrievanceForwarding;
 import com.grs.core.domain.grs.Notification;
+import com.grs.core.domain.projapoti.EmployeeRecord;
 import com.grs.core.model.EmployeeOrganogram;
 import com.grs.core.model.ListViewType;
 import com.grs.core.service.*;
@@ -72,6 +77,59 @@ public class GrievanceController {
     @Autowired
     private CaptchaSettings captchaSettings;
 
+
+    @RequestMapping(value = "/api/findGrievanceById/{grievanceId}", method = RequestMethod.GET)
+    public Grievance findGrievanceById(@PathVariable("grievanceId") Long grievanceId) {
+        return this.grievanceService.findGrievanceById(grievanceId);
+    }
+
+    @RequestMapping(value = "/api/findCount", method = RequestMethod.POST)
+    public Long findCount(
+            @RequestParam String sql,
+            @RequestBody Map<String, Object> params) {
+        return this.grievanceService.findCount(sql, params);
+    }
+
+    @RequestMapping(value = "/api/saveGrievance", method = RequestMethod.POST)
+    public Grievance saveGrievance(@RequestBody Grievance grievance,
+                                   @RequestParam boolean callHistory) {
+        return this.grievanceService.saveGrievance(grievance, callHistory);
+    }
+
+    @RequestMapping(value = "/api/saveGrievanceList", method = RequestMethod.POST)
+    public void SaveGrievancesList(@RequestBody List<Grievance> grievances) {
+        this.grievanceService.SaveGrievancesList(grievances);
+    }
+
+    @RequestMapping(value = "/api/getEmployeeRecordById/{id}", method = RequestMethod.GET)
+    public EmployeeRecord getEmployeeRecordById(@PathVariable("id") Long id) {
+        return this.grievanceService.getEmployeeRecordById(id);
+    }
+
+
+    @RequestMapping(value = "/api/convertToGrievanceDTO", method = RequestMethod.POST)
+    public GrievanceDTO convertToGrievanceDTO(@RequestBody Grievance grievance) {
+        return this.grievanceService.convertToGrievanceDTO(grievance);
+    }
+
+    @RequestMapping(value = "/api/getCurrentMonthComplaintsWithRatingsByOfficeIdAndType", method = RequestMethod.POST)
+    public List<GrievanceDTO> getCurrentMonthComplaintsWithRatingsByOfficeIdAndType(
+            @RequestParam Long officeId,
+            @RequestParam Boolean isAppeal) {
+        return this.grievanceService.getCurrentMonthComplaintsWithRatingsByOfficeIdAndType(officeId, isAppeal);
+
+    }
+
+    @RequestMapping(value = "/api/grievanceDetails/{id}", method = RequestMethod.GET)
+    public GrievanceDetailsDTO getGrievanceDetails(@PathVariable("id") Long id) {
+        return this.grievanceService.getGrievanceDetails(id);
+    }
+
+    @RequestMapping(value = "/api/complainantInfo", method = RequestMethod.POST)
+    public ComplainantInfoDTO getComplainantInfo(@RequestBody Grievance grievance) {
+        return this.grievanceService.getComplainantInfo(grievance);
+    }
+
     @RequestMapping(value = "/spProgrammeList/get", method = RequestMethod.GET)
     public List<com.grs.core.domain.grs.SpProgramme> getSpProgrammeList() {
         List<com.grs.core.domain.grs.SpProgramme> spProgrammeList = spProgrammeService.findAllByStatusAndOfficeIdNotNull();
@@ -117,6 +175,18 @@ public class GrievanceController {
         return this.grievanceService.addGrievanceWithoutLogin(authentication, grievanceRequestDTO);
     }
 
+    @RequestMapping(value = "/api/getAllComplaintMovementByGrievance", method = RequestMethod.POST)
+    public List<GrievanceForwarding> getAllComplaintMovementByGrievance(
+            @RequestBody Grievance grievance) {
+        return this.grievanceService.getAllComplaintMovementByGrievance(grievance);
+    }
+
+    @RequestMapping(value = "/api/findGrievancesByOthersComplainant/{userId}", method = RequestMethod.GET)
+    public List<GrievanceDTO> findGrievancesByOthersComplainant(@PathVariable("userId") long userId) {
+        return this.grievanceService.findGrievancesByOthersComplainant(userId);
+
+    }
+
     @RequestMapping(value = "/api/grievanceForOthers", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public WeakHashMap<String, Object> addGrievanceForOthers(Authentication authentication, @RequestBody GrievanceWithoutLoginRequestDTO grievanceRequestDTO) throws Exception {
         return this.grievanceService.addGrievanceForOthers(authentication, grievanceRequestDTO);
@@ -127,13 +197,18 @@ public class GrievanceController {
         return this.grievanceService.changeSafetyNetCategory(authentication, request);
     }
 
+    @RequestMapping(value = "/api/userInformationForComplainant", method = RequestMethod.POST)
+    public UserInformation generateUserInformationForComplainant(@RequestBody Complainant complainant) {
+        return this.grievanceService.generateUserInformationForComplainant(complainant);
+    }
+
     @RequestMapping(value = "/api/grievance/{id}", method = RequestMethod.GET)
     public GrievanceDetailsDTO getGrievanceDetails(Authentication authentication, @PathVariable("id") Long id) {
         return grievanceService.getGrievanceDetailsWithMenuOptions(authentication, id);
     }
 
     @RequestMapping(value = "/api/grievance/{id}/files", method = RequestMethod.GET)
-    public List<FileDerivedDTO> getGrievancesFiles(@PathVariable("id") Long id){
+    public List<FileDerivedDTO> getGrievancesFiles(@PathVariable("id") Long id) {
         return grievanceService.getGrievancesFiles(id);
     }
 
@@ -192,9 +267,30 @@ public class GrievanceController {
         return grievanceService.getOutboxAppealGrievanceList(userInformation, pageable);
     }
 
+    @RequestMapping(value = "/api/caseNumber/{officeId}", method = RequestMethod.GET)
+    public String getCaseNumber(@PathVariable("officeId") Long officeId) {
+        return grievanceService.getCaseNumber(officeId);
+    }
+
     @RequestMapping(value = "/api/employee/{employee_record_id}", method = RequestMethod.GET)
     public EmployeeRecordDTO getEmployeeRecord(@PathVariable("employee_record_id") Long id) {
         return grievanceService.getEmployeeRecord(id);
+    }
+
+
+    @RequestMapping(value = "/api/serviceOfficer/{grievanceId}", method = RequestMethod.GET)
+    public EmployeeOrganogram getServiceOfficer(@PathVariable("grievanceId") Long grievanceId) {
+        return this.grievanceService.getServiceOfficer(grievanceId);
+    }
+
+    @RequestMapping(value = "/api/getGRO/{grievanceId}", method = RequestMethod.GET)
+    public EmployeeOrganogram getGRO(@PathVariable("grievanceId") Long grievanceId) {
+        return this.grievanceService.getGRO(grievanceId);
+    }
+
+    @RequestMapping(value = "/api/appealOfficer/{grievanceId}", method = RequestMethod.GET)
+    public EmployeeOrganogram getAppealOfficer(@PathVariable("grievanceId") Long grievanceId) {
+        return this.grievanceService.getAppealOfficer(grievanceId);
     }
 
     @RequestMapping(value = "/api/grievance/appeal/closed", method = RequestMethod.GET)
@@ -213,6 +309,11 @@ public class GrievanceController {
         return this.grievanceService.getGroOfGrievance(grievanceId);
     }
 
+    @RequestMapping(value = "/api/grievance/submittedGrievancesCountByOffice/{officeId}", method = RequestMethod.GET)
+    public Long getSubmittedGrievancesCountByOffice(@PathVariable("officeId") Long officeId) {
+        return this.grievanceService.getSubmittedGrievancesCountByOffice(officeId);
+    }
+
     @RequestMapping(value = "api/grievance/so/{grievanceId}")
     public EmployeeOrganogramDTO getSOOfGrievance(@PathVariable("grievanceId") Long grievanceId) {
         return this.grievanceService.getSODetail(grievanceId);
@@ -228,6 +329,32 @@ public class GrievanceController {
         ListViewConditionOnCurrentStatusGenerator viewConditionOnCurrentStatusGenerator = new ListViewConditionOnCurrentStatusGenerator();
         ListViewType listViewType = viewConditionOnCurrentStatusGenerator.getNormalListTypeByString(listType);
         return this.grievanceService.getListViewWithSearching(userInformation, value, listViewType, pageable);
+    }
+
+
+    @RequestMapping(value = "api/grievance/inboxCount", method = RequestMethod.POST)
+    public Long getInboxCount(Authentication authentication,
+                              @RequestBody ListViewType listViewType) {
+        UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
+        return this.grievanceService.getInboxCount(userInformation, listViewType);
+    }
+
+
+    @RequestMapping(value = "api/grievance/listViewWithOutSearching", method = RequestMethod.POST)
+    public List<Grievance> getListViewWithOutSearching(
+            @RequestParam long officeId,
+            @RequestParam long userId,
+            @RequestParam long officeOrganogramId) {
+        return this.grievanceService.getListViewWithOutSearching(officeId, userId, officeOrganogramId);
+    }
+
+
+    @RequestMapping(value = "/api/grievance/oisfIntermediateDashboard",method = RequestMethod.POST)
+    public OISFIntermediateDashboardDTO getInboxDataDTO(
+            @RequestParam Long officeId,
+            @RequestParam Long officeUnitOrganogramId,
+           @RequestParam Long userId){
+        return this.grievanceService.getInboxDataDTO(officeId,officeUnitOrganogramId,userId);
     }
 
     @RequestMapping(value = "api/grievance/appeal/{listType}/search", method = RequestMethod.GET)
@@ -270,6 +397,21 @@ public class GrievanceController {
         return this.grievanceService.getGrievancesByComplainantId(complainantId);
     }
 
+    @RequestMapping(value = "/api/grievances/grievancesByComplainantIdForApi/{complainantId}", method = RequestMethod.GET)
+    public List<GrievanceDTO> getGrievancesByComplainantIdForApi(@PathVariable("complainantId") Long complainantId) {
+        return this.grievanceService.getGrievancesByComplainantIdForApi(complainantId);
+    }
+
+    @RequestMapping(value = "/api/grievances/grievanceByTrackingNumber", method = RequestMethod.POST)
+    public Object getGrievanceByTrackingNumber(@RequestParam String trackingNumber) {
+        return this.grievanceService.getGrievanceByTrackingNumber(trackingNumber);
+    }
+
+    @RequestMapping(value = "/api/grievances/singleGrievanceByTrackingNumber", method = RequestMethod.POST)
+    public Grievance getSingleGrievanceByTrackingNumber(@RequestParam String trackingNumber) {
+        return this.grievanceService.getSingleGrievanceByTrackingNumber(trackingNumber);
+    }
+
     @RequestMapping(value = "/api/grievance/provide-nudge", method = RequestMethod.POST)
     public GenericResponse provideNudgeOfAGrievance(Authentication authentication, @RequestBody GrievanceForwardingMessageDTO forwardingMessageDTO) {
         return this.grievanceForwardingService.provideNudgeAgainstGrievance(forwardingMessageDTO, authentication);
@@ -299,40 +441,42 @@ public class GrievanceController {
         }
     }
 
+//    public List<Grievance> getGrievancesByIds(List<Long> grievanceIds){
+//
+//    }
+
     @RequestMapping(value = "/api/notification/update", method = RequestMethod.PUT)
-    public NotificationUrlDTO updateNotification(@RequestParam("id") Long id){
+    public NotificationUrlDTO updateNotification(@RequestParam("id") Long id) {
         Notification notification = this.notificationService.updateNotification(id);
         return NotificationUrlDTO.builder().url(notification.getUrl()).build();
     }
 
     @RequestMapping(value = "/api/grievances/{grievanceId}/citizens-charter/{citizensCharterId}", method = RequestMethod.GET)
-    public ServiceOriginDTO getCitizensCharterServiceDetailsOfGrievance(Authentication authentication,@PathVariable("grievanceId") Long grievanceId, @PathVariable("citizensCharterId") Long citizensCharterId) {
+    public ServiceOriginDTO getCitizensCharterServiceDetailsOfGrievance(Authentication authentication, @PathVariable("grievanceId") Long grievanceId, @PathVariable("citizensCharterId") Long citizensCharterId) {
         UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
         return grievanceService.getCitizenCharterAsServiceOriginDTO(userInformation, citizensCharterId, grievanceId);
     }
 
     @RequestMapping(value = "/api/unseen/count/{inboxType}", method = RequestMethod.GET)
-    public UnseenCountDTO getUnseenCount(Authentication authentication, @PathVariable("inboxType") String inboxType){
+    public UnseenCountDTO getUnseenCount(Authentication authentication, @PathVariable("inboxType") String inboxType) {
         return authentication == null ? UnseenCountDTO.builder().build() : this.grievanceForwardingService.getUnseenCountForUser(authentication, inboxType);
     }
 
     @RequestMapping(value = "/api/total/count/{inboxType}", method = RequestMethod.GET)
-    public UnseenCountDTO getTotalCount(Authentication authentication, @PathVariable("inboxType") String inboxType){
+    public UnseenCountDTO getTotalCount(Authentication authentication, @PathVariable("inboxType") String inboxType) {
         return authentication == null ? UnseenCountDTO.builder().build() : this.grievanceForwardingService.getTotalCountForUser(authentication, inboxType);
     }
 
     @RequestMapping(value = "/api/grievance/cell", method = RequestMethod.GET)
-    public List<GrievanceDTO> getAllCellGrievance(Authentication authentication){
-        if (authentication != null){
+    public List<GrievanceDTO> getAllCellGrievance(Authentication authentication) {
+        if (authentication != null) {
             UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
-            if (Objects.equals(userInformation.getOfficeInformation().getOfficeId(), 0L)){
+            if (Objects.equals(userInformation.getOfficeInformation().getOfficeId(), 0L)) {
                 return this.grievanceService.getAllCellComplaints();
-            }
-            else {
+            } else {
                 return null;
             }
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -345,10 +489,15 @@ public class GrievanceController {
     @RequestMapping(value = "/api/grievance/admin", method = RequestMethod.GET)
     public Page<GrievanceAdminDTO> getAdminGrievances(Authentication authentication,
                                                       @RequestParam(value = "officeId", required = false) Long officeId,
-                                                      @RequestParam(value = "referenceNumber",required = false) String referenceNumber,
+                                                      @RequestParam(value = "referenceNumber", required = false) String referenceNumber,
                                                       @PageableDefault(value = Integer.MAX_VALUE) Pageable pageable) {
         UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
-        return grievanceService.getAdminGrievances(userInformation,officeId, referenceNumber, pageable);
+        return grievanceService.getAdminGrievances(userInformation, officeId, referenceNumber, pageable);
+    }
+
+    @RequestMapping(value = "/api/grievance/getGrievancesByIds", method = RequestMethod.POST)
+    public List<Grievance> getGrievancesByIds(@RequestParam List<Long> grievanceIds){
+        return this.grievanceService.getGrievancesByIds(grievanceIds);
     }
 
     @RequestMapping(value = "/api/grievance/re-assign", method = RequestMethod.POST)

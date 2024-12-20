@@ -6,6 +6,7 @@ import com.grs.api.model.response.grievance.GrievanceComplainantInfoDTO;
 import com.grs.api.model.response.reports.GrievanceAndAppealDailyReportDTO;
 import com.grs.api.model.response.reports.GrievanceAndAppealMonthlyReportDTO;
 import com.grs.api.model.response.reports.GrievanceMonthlyReportsDTO;
+import com.grs.api.model.response.reports.MonthlyReportDTO;
 import com.grs.core.service.ModelViewService;
 import com.grs.core.service.ReportsService;
 import com.grs.utils.Utility;
@@ -159,6 +160,22 @@ public class ReportController {
         log.info("View Page Request : /api/ministry/{}/reports/from/{}/{}/{}/to/{}/{}/{}", officeId, fromYear, fromMonth, fromDay, toYear, toMonth, toDay);
         return reportsService.getMinistryBasedReport(officeId, fromYear, fromMonth, fromDay, toYear, toMonth, toDay);
     }
+
+    @RequestMapping(value = "/api/grievance/monthly/report/{officeId}/{monthDiff}",method = RequestMethod.GET)
+    public MonthlyReportDTO getGrievanceMonthlyReportForGenerate(
+            @PathVariable("officeId") Long officeId,
+            @PathVariable("monthDiff") Long monthDiff){
+        return this.reportsService.getGrievanceMonthlyReportForGenerate(officeId,monthDiff);
+    }
+
+    @RequestMapping(value = "/api/appeal/monthly/report/{officeId}/{monthDiff}",method = RequestMethod.GET)
+    public MonthlyReportDTO getAppealMonthlyReportForGenerate(@PathVariable("officeId") Long officeId,
+                                                              @PathVariable("monthDiff") Long monthDiff){
+        return this.reportsService.getAppealMonthlyReportForGenerate(officeId,monthDiff);
+
+    }
+
+
 
     @RequestMapping(value = "/api/layerWise/{level}/reports/from/{fromYear}/{fromMonth}/to/{toYear}/{toMonth}", method = RequestMethod.GET)
     public List<GrievanceAndAppealMonthlyReportDTO> getLayerWiseReport(Authentication authentication,

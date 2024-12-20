@@ -1,6 +1,5 @@
 package com.grs.grs_client.config;
 
-import com.grs.grs_client.enums.UserType;
 import com.grs.grs_client.gateway.AuthGateway;
 import com.grs.grs_client.model.*;
 import com.grs.grs_client.utils.BanglaConverter;

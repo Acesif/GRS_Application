@@ -863,7 +863,15 @@ public class ReportsService {
         return getMultipleOfficesMergedReport(childOffices, fromYear, fromMonth, toYear, toMonth);
     }
 
-    public List<GrievanceAndAppealDailyReportDTO> getMinistryBasedReport(Long officeId, Integer fromYear, Integer fromMonth, Integer fromDay, Integer toYear, Integer toMonth, Integer toDay) {
+    public List<GrievanceAndAppealDailyReportDTO> getMinistryBasedReport(
+            Long officeId,
+            Integer fromYear,
+            Integer fromMonth,
+            Integer fromDay,
+            Integer toYear,
+            Integer toMonth,
+            Integer toDay
+    ) {
         Office office = this.officeService.getOffice(officeId);
         List<Long> officeIds = this.officesGroService.findAllOffficeIds();
         List<Office> childOffices = this.officeService.getDescendantOfficesByMinistryId(office.getOfficeMinistry()).stream().filter(o -> officeIds.contains(o.getId())).collect(toList());

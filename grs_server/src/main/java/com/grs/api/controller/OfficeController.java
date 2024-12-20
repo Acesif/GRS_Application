@@ -2,12 +2,15 @@ package com.grs.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.grs.api.config.security.TokenAuthenticationServiceUtil;
+import com.grs.api.model.OfficeInformation;
 import com.grs.api.model.OfficewithCountDTO;
 import com.grs.api.model.UserInformation;
 import com.grs.api.model.request.KeyValueStringPairDTO;
 import com.grs.api.model.response.*;
+import com.grs.api.model.response.dashboard.GrievanceCountByItemDTO;
 import com.grs.api.model.response.grievance.GrievanceDTO;
 import com.grs.api.model.response.officeSelection.OfficeSearchContentsDTO;
+import com.grs.api.model.response.officeSelection.OfficeSearchDTO;
 import com.grs.api.model.response.organogram.OfficeOriginUnitOrganogramDTO;
 import com.grs.api.model.response.organogram.TreeNodeDTO;
 import com.grs.api.model.response.organogram.TreeNodeOfficerDTO;
@@ -15,16 +18,13 @@ import com.grs.api.model.response.roles.RoleContainerDTO;
 import com.grs.api.model.response.roles.SingleRoleDTO;
 import com.grs.core.dao.SafetyNetDAO;
 import com.grs.core.domain.ServiceType;
-import com.grs.core.domain.grs.CitizenCharter;
-import com.grs.core.domain.grs.OfficesGRO;
-import com.grs.core.domain.grs.ServiceOrigin;
-import com.grs.core.domain.projapoti.CustomOfficeLayer;
-import com.grs.core.domain.projapoti.Office;
-import com.grs.core.domain.projapoti.OfficeOrigin;
+import com.grs.core.domain.grs.*;
+import com.grs.core.domain.projapoti.*;
 import com.grs.core.service.*;
 import com.grs.utils.Constant;
 import com.grs.utils.StringUtil;
 import com.grs.utils.Utility;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -46,30 +46,19 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class OfficeController {
-    @Autowired
-    private OfficeService officeService;
-    @Autowired
-    private OfficeOrganogramService officeOrganogramService;
-    @Autowired
-    private CitizenCharterService citizenCharterService;
-    @Autowired
-    private GrievanceForwardingService grievanceForwardingService;
-    @Autowired
-    private MessageService messageService;
-    @Autowired
-    private OfficesGroService officesGroService;
-    @Autowired
-    private ActionToRoleService actionToRoleService;
-    @Autowired
-    private GrievanceService grievanceService;
-    @Autowired
-    private CacheService cacheService;
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private SafetyNetProgramService safetyNetProgramService;
+    private final OfficeService officeService;
+    private final OfficeOrganogramService officeOrganogramService;
+    private final CitizenCharterService citizenCharterService;
+    private final GrievanceForwardingService grievanceForwardingService;
+    private final MessageService messageService;
+    private final OfficesGroService officesGroService;
+    private final ActionToRoleService actionToRoleService;
+    private final GrievanceService grievanceService;
+    private final CacheService cacheService;
+    private final ObjectMapper objectMapper;
+    private final SafetyNetProgramService safetyNetProgramService;
 
     @RequestMapping(value = "/api/office-origin-unit-organograms/{officeOriginId}", method = RequestMethod.GET)
     public List<OfficeOriginUnitOrganogramDTO> getOfficeOriginUnitOrganogramsByOfficeOriginId(@PathVariable("officeOriginId") Long officeOriginId) {
@@ -385,9 +374,17 @@ public class OfficeController {
     }
 
     @RequestMapping(value = "/api/offices/ancestors", method = RequestMethod.GET)
-    public Object getOfficeAlongWithAncestorOffices(Authentication authentication) {
-        UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
-        return this.officeService.getOfficeAlongWithAncestorOffices(userInformation);
+    public List<Office> getOfficeAlongWithAncestorOffices(Object request) {
+        if (request instanceof Authentication){
+            UserInformation userInformation = Utility.extractUserInformationFromAuthentication(
+                    (Authentication) request
+            );
+            return this.officeService.getOfficeAlongWithAncestorOffices(userInformation);
+        } else if (request instanceof UserInformation){
+            return this.officeService.getOfficeAlongWithAncestorOffices((UserInformation) request);
+        } else {
+            return null;
+        }
     }
 
     @RequestMapping(value = "/api/office-origin/{layer_level}", method = RequestMethod.GET)
@@ -528,4 +525,120 @@ public class OfficeController {
                                                                  @RequestParam(value = "showChildOfficesOnly", defaultValue = "false") Boolean showChildOfficesOnly) {
         return officeService.getDropdownDataOnOfficeSearch(layerLevel, officeOriginId, customLayerId, officeId, grsEnabled, showChildOfficesOnly);
     }
+
+    @RequestMapping(value = "/getChildCountByParentOfficeId/{parentOfficeId}", method = RequestMethod.GET)
+    public Integer getChildCountByParentOfficeId(@PathVariable Long parentOfficeId){
+        return officeService.getChildCountByParentOfficeId(parentOfficeId);
+    }
+
+    @RequestMapping(value = "/findOneById/{id}", method = RequestMethod.GET)
+    public Office findOneById(@PathVariable Long id) {
+        return officeService.findOne(id);
+    }
+
+    @RequestMapping(value = "/findEmployeeOfficeByOfficeAndIsOfficeHead/{officeId}", method = RequestMethod.GET)
+    public EmployeeOffice findEmployeeOfficeByOfficeAndIsOfficeHead(@PathVariable Long officeId) {
+        return officeService.findEmployeeOfficeByOfficeAndIsOfficeHead(officeId);
+    }
+
+    @RequestMapping(value = "/findEmployeeOfficeByOfficeUnitOrganogramAndStatus", method = RequestMethod.POST)
+    public EmployeeOffice findEmployeeOfficeByOfficeUnitOrganogramAndStatus(
+            @RequestParam Long officeId,
+            @RequestParam Long officeUnitOrganogramId,
+            @RequestParam boolean status) {
+        return officeService.findEmployeeOfficeByOfficeAndOfficeUnitOrganogramAndStatus(
+                officeId,
+                officeUnitOrganogramId,
+                status);
+    }
+
+    @RequestMapping(value = "/getOffice/{officeId}", method = RequestMethod.GET)
+    public Office getOffice(@PathVariable Long officeId) {
+        return officeService.getOffice(officeId);
+    }
+
+    @RequestMapping(value = "/getOfficeOrigin/{officeOriginId}", method = RequestMethod.GET)
+    public OfficeOrigin getOfficeOrigin(@PathVariable Long officeOriginId) {
+        return officeService.getOfficeOrigin(officeOriginId);
+    }
+
+    @RequestMapping(value = "/getServiceOrigin/{id}", method = RequestMethod.GET)
+    public ServiceOrigin getServiceOrigin(@PathVariable Long id) {
+        return officeService.getServiceOrigin(id);
+    }
+
+    @RequestMapping(value = "/findEmployeeRecordById/{id}", method = RequestMethod.GET)
+    public EmployeeRecord findEmployeeRecordById(@PathVariable Long id) {
+        return officeService.findEmployeeRecordById(id);
+    }
+
+    @RequestMapping(value = "/findSingleRole", method = RequestMethod.POST)
+    public SingleRoleDTO findSingleRole(
+            @RequestParam Long officeId,
+            @RequestParam Long officeUnitOrganogramId
+    ) {
+        return officeService.findSingleRole(officeId, officeUnitOrganogramId);
+    }
+
+    @RequestMapping(value = "/getOfficeLayersByLayerLevel/{layerLevel}", method = RequestMethod.GET)
+    public List<OfficeLayer> getOfficeLayersByLayerLevel(@PathVariable Integer layerLevel) {
+        return officeService.getOfficeLayersByLayerLevel(layerLevel);
+    }
+
+    @RequestMapping(value = "/getOfficeLayersByLayerLevelAndMinistryId", method = RequestMethod.POST)
+    public List<OfficeLayer> getOfficeLayersByLayerLevelAndMinistryId(
+            @RequestParam Integer layerLevel,
+            @RequestParam Long ministryId) {
+        return officeService.getOfficeLayersByLayerLevelAndMinistryId(layerLevel, ministryId);
+    }
+
+    @RequestMapping(value = "/getOfficeLayersByLayerLevelAndCustomLayerId", method = RequestMethod.POST)
+    public List<OfficeLayer> getOfficeLayersByLayerLevelAndCustomLayerId(
+            @RequestParam Integer layerLevel,
+            @RequestParam Integer customLayerId) {
+        return officeService.getOfficeLayersByLayerLevelAndCustomLayerId(layerLevel, customLayerId);
+    }
+
+    @RequestMapping(value = "/getOfficeLayersByLayerLevelAndCustomLayerIdInList", method = RequestMethod.POST)
+    public List<OfficeLayer> getOfficeLayersByLayerLevelAndCustomLayerIdInList(
+            @RequestParam Integer layerLevel,
+            @RequestParam List<Integer> customLayerIdList) {
+        return officeService.getOfficeLayersByLayerLevelAndCustomLayerIdInList(layerLevel, customLayerIdList);
+    }
+
+    @RequestMapping(value = "/isMinistryOrDivisionLevelOffice/{officeId}", method = RequestMethod.GET)
+    public Boolean isMinistryOrDivisionLevelOffice(@PathVariable Long officeId) {
+        return officeService.isMinistryOrDivisionLevelOffice(officeId);
+    }
+
+    @RequestMapping(value = "/getOfficesByOfficeLayer", method = RequestMethod.POST)
+    public List<Office> getOfficesByOfficeLayer(@RequestParam List<OfficeLayer> officeLayers, @RequestParam Boolean grsEnabled) {
+        return officeService.getOfficesByOfficeLayer(officeLayers, grsEnabled);
+    }
+
+    @RequestMapping(value = "/getOfficeName/{id}", method = RequestMethod.GET)
+    public String getOfficeName(@PathVariable long id) {
+        return officeService.getOfficeName(id);
+    }
+
+    @RequestMapping(value = "/getOfficesByParentOfficeId/{parentOfficeId}", method = RequestMethod.GET)
+    public List<Office> getOfficesByParentOfficeId(@PathVariable Long parentOfficeId) {
+        return officeService.getOfficesByParentOfficeId(parentOfficeId);
+    }
+
+    @RequestMapping(value = "/findByOfficeIdInList", method = RequestMethod.POST)
+    public List<Office> findByOfficeIdInList(@RequestParam List<Long> idList) {
+        return officeService.findByOfficeIdInList(idList);
+    }
+
+    @RequestMapping(value = "/convertToService", method = RequestMethod.POST)
+    public ServiceOriginDTO convertToService(@RequestBody CitizenCharter citizenCharter) {
+        return officeService.convertToService(citizenCharter);
+    }
+
+    @RequestMapping(value = "/getServicesHavingServiceOfficerInfo", method = RequestMethod.POST)
+    public List<CitizenCharter> getServicesHavingServiceOfficerInfo(@RequestBody List<CitizenCharter> citizenCharters) {
+        return officeService.getServicesHavingServiceOfficerInfo(citizenCharters);
+    }
+
 }

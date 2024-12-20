@@ -18,7 +18,7 @@ public class ComplainantGateway extends BaseRestTemplate{
         String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/complainant/isBlacklistedUser/"+userId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Authorization", "Bearer " + getToken());
+//        headers.add("Authorization", "Bearer " + getToken());
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         ResponseEntity<Boolean> response = restTemplate.exchange(url,
