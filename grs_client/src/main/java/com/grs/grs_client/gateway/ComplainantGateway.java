@@ -15,7 +15,7 @@ public class ComplainantGateway extends BaseRestTemplate{
     String GRS_CORE_CONTEXT_PATH = "/grs_server";
 
     public boolean isBlacklistedUser(Long userId){
-        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/complainant/isBlacklistedUser/"+userId;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/complainantService/isBlacklistedUserByComplainantId/"+userId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 //        headers.add("Authorization", "Bearer " + getToken());
