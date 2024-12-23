@@ -53,13 +53,12 @@ public class NotificationGateway extends BaseRestTemplate{
 //                .build();
 //    }
     public NotificationsDTO findByOfficeIdAndEmployeeRecordIdAndOfficeUnitOrganogramIdOrderByIdDesc(Long officeId, Long employeeRecordId, Long officeUnitOrganogramId) {
-        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/notification/findByOfficeIdAndEmployeeRecordIdAndOfficeUnitOrganogramIdOrderByIdDesc";
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/findByOfficeIdAndEmployeeRecordIdAndOfficeUnitOrganogramIdOrderByIdDesc";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Authorization", "Bearer " + getToken());
+//        headers.add("Authorization", "Bearer " + getToken());
 
-        // Prepare request body
         Map<String, Long> requestBody = new HashMap<>();
         requestBody.put("officeId", officeId);
         requestBody.put("employeeRecordId", employeeRecordId);
@@ -74,7 +73,7 @@ public class NotificationGateway extends BaseRestTemplate{
                 NotificationsDTO.class
         );
 
-        return response.getBody(); // Return the NotificationsDTO
+        return response.getBody();
     }
 
 

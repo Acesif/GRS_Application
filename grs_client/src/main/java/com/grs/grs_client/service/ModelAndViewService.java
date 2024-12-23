@@ -114,12 +114,12 @@ public class ModelAndViewService {
 
         Boolean isGrsUser = Utility.isUserAnGRSUser(userInformation);
         Boolean isOthersComplainant = Utility.isUserAnOthersComplainant(userInformation);
-//        if(!isGrsUser && !userInformation.getUserType().equals(UserType.SYSTEM_USER)){
-//            NotificationsDTO notifications = this.notificationService.findByOfficeIdAndEmployeeRecordIdAndOfficeUnitOrganogramIdOrderByIdDesc(
-//                    userInformation.getOfficeInformation().getOfficeId(), userInformation.getOfficeInformation().getEmployeeRecordId(), userInformation.getOfficeInformation().getOfficeUnitOrganogramId()
-//            );
-//            model.addAttribute("notificationList", notifications);
-//        }
+        if(!isGrsUser && !userInformation.getUserType().equals(UserType.SYSTEM_USER)){
+            NotificationsDTO notifications = this.notificationService.findByOfficeIdAndEmployeeRecordIdAndOfficeUnitOrganogramIdOrderByIdDesc(
+                    userInformation.getOfficeInformation().getOfficeId(), userInformation.getOfficeInformation().getEmployeeRecordId(), userInformation.getOfficeInformation().getOfficeUnitOrganogramId()
+            );
+            model.addAttribute("notificationList", notifications);
+        }
         // todo: need to add Notification Service #blocker
         Boolean isMyGovLogin = userInformation.getIsMyGovLogin() != null && userInformation.getIsMyGovLogin();
         Boolean isMobileLogin = Utility.isLoggedInFromMobile(userInformation);
