@@ -1,6 +1,6 @@
 app:
   base:
-    url: http://localhost
+    url: http://94.250.203.197
 
 server:
   port: 80
