@@ -9,10 +9,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,28 +30,53 @@ public class NotificationGateway extends BaseRestTemplate{
         return response.getBody();
     }
 
+//    public NotificationsDTO findByOfficeIdAndEmployeeRecordIdAndOfficeUnitOrganogramIdOrderByIdDesc(Long officeId, Long employeeRecordId, Long officeUnitOrganogramId) {
+//        List<Notification> notifications;
+//
+//        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/notification/findByOfficeIdAndEmployeeRecordIdAndOfficeUnitOrganogramIdOrderByIdDesc/" + officeId + "/" + employeeRecordId + "/" + officeUnitOrganogramId;
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+//        headers.add("Authorization", "Bearer " + getToken());
+//        HttpEntity<String> entity = new HttpEntity<>(headers);
+//
+//        ResponseEntity<List<Notification>> response = restTemplate.exchange(url,
+//                HttpMethod.GET, entity, new ParameterizedTypeReference<List<Notification>>() {
+//                });
+//        notifications =  response.getBody();
+//
+//        return NotificationsDTO.builder()
+//                .countBangla(BanglaConverter.convertToBanglaDigit(notifications.stream().filter(notification -> !notification.getIsSeen()).count()))
+//                .count(notifications.stream().filter(notification -> !notification.getIsSeen()).count())
+//                .notifications(
+//                        notifications.stream().map(this::convertToNotificationDTO).collect(Collectors.toList())
+//                )
+//                .build();
+//    }
     public NotificationsDTO findByOfficeIdAndEmployeeRecordIdAndOfficeUnitOrganogramIdOrderByIdDesc(Long officeId, Long employeeRecordId, Long officeUnitOrganogramId) {
-        List<Notification> notifications;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/notification/findByOfficeIdAndEmployeeRecordIdAndOfficeUnitOrganogramIdOrderByIdDesc";
 
-        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/notification/findByOfficeIdAndEmployeeRecordIdAndOfficeUnitOrganogramIdOrderByIdDesc/" + officeId + "/" + employeeRecordId + "/" + officeUnitOrganogramId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());
-        HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<List<Notification>> response = restTemplate.exchange(url,
-                HttpMethod.GET, entity, new ParameterizedTypeReference<List<Notification>>() {
-                });
-        notifications =  response.getBody();
+        // Prepare request body
+        Map<String, Long> requestBody = new HashMap<>();
+        requestBody.put("officeId", officeId);
+        requestBody.put("employeeRecordId", employeeRecordId);
+        requestBody.put("officeUnitOrganogramId", officeUnitOrganogramId);
 
-        return NotificationsDTO.builder()
-                .countBangla(BanglaConverter.convertToBanglaDigit(notifications.stream().filter(notification -> !notification.getIsSeen()).count()))
-                .count(notifications.stream().filter(notification -> !notification.getIsSeen()).count())
-                .notifications(
-                        notifications.stream().map(this::convertToNotificationDTO).collect(Collectors.toList())
-                )
-                .build();
+        HttpEntity<Map<String, Long>> entity = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<NotificationsDTO> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                entity,
+                NotificationsDTO.class
+        );
+
+        return response.getBody(); // Return the NotificationsDTO
     }
+
 
     public NotificationDTO convertToNotificationDTO(Notification notification) {
         return NotificationDTO.builder()
