@@ -12,7 +12,7 @@ import javax.annotation.PostConstruct;
 
 @Component
 @PropertySources({
-        @PropertySource("classpath:application.properties")})
+        @PropertySource("classpath:application.yml")})
 public class BaseRestTemplate {
 
     @Autowired

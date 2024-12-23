@@ -1,10 +1,15 @@
 package com.grs.grs_client.controller;
 import com.grs.grs_client.common.IDP_Client;
 import com.grs.grs_client.common.SSOPropertyReader;
+import com.grs.grs_client.config.GrantedAuthorityImpl;
+import com.grs.grs_client.config.TokenAuthenticationServiceUtil;
+import com.grs.grs_client.config.UserDetailsImpl;
 import com.grs.grs_client.domain.RedirectMap;
 import com.grs.grs_client.enums.OISFUserType;
 import com.grs.grs_client.enums.UserType;
+import com.grs.grs_client.gateway.AuthGateway;
 import com.grs.grs_client.gateway.OfficesGateway;
+import com.grs.grs_client.model.LoginResponse;
 import com.grs.grs_client.model.Office;
 import com.grs.grs_client.model.SubMenuDTO;
 import com.grs.grs_client.model.UserInformation;
@@ -28,6 +33,8 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -37,6 +44,8 @@ public class ViewPageController {
     private ModelAndViewService modelViewService;
     @Autowired
     private OfficesGateway officeService;
+    @Autowired
+    private AuthGateway authGateway;
 
 
     @Value("${app.base.url:''}")
@@ -45,7 +54,37 @@ public class ViewPageController {
     private String idpUrl;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public ModelAndView firstPage(Authentication authentication, HttpServletRequest request, HttpServletResponse response, Model model) {
+    public ModelAndView firstPage(
+            Authentication authentication,
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Model model,
+            @RequestParam(required = false) String data
+    ) {
+
+        if (data != null) {
+
+            try {
+                LoginResponse loginResponse = authGateway.adminLogin(data);
+
+                List<GrantedAuthorityImpl> authorities = loginResponse.getAuthorities().stream()
+                        .map(GrantedAuthorityImpl::new)
+                        .collect(Collectors.toList());
+
+                UserDetailsImpl userDetails = UserDetailsImpl.builder()
+                        .username(loginResponse.getUserInformation().getUsername())
+                        .isAccountAuthenticated(true)
+                        .grantedAuthorities(authorities)
+                        .userInformation(loginResponse.getUserInformation())
+                        .build();
+
+                TokenAuthenticationServiceUtil.addAuthenticationForMyGov(userDetails, request, response);
+
+            } catch (Exception e) {
+                log.error("Message:", e);
+            }
+        }
+
         return modelViewService.returnViewsForNormalPages(authentication, model, request, "index");
     }
 

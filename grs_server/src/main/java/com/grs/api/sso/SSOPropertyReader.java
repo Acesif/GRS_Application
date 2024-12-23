@@ -37,7 +37,7 @@ public class SSOPropertyReader {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 //        InputStream resource = classLoader.getResourceAsStream(ssoPropertiesFileName);
         Properties applicationProperties = new Properties();
-        applicationProperties.load(classLoader.getResourceAsStream("application.properties"));
+        applicationProperties.load(classLoader.getResourceAsStream("application.yml"));
         activeProfile = applicationProperties.getProperty("spring.profiles.active");
         activeProfile = activeProfile != null ? activeProfile : "dev";
 
