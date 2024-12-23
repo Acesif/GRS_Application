@@ -1,0 +1,140 @@
+#server configuration
+server:
+  port: 80
+  address: 0.0.0.0
+  tomcat:
+    max-threads: 200
+
+environment:
+  production: true
+
+#jsp
+#spring.mvc.view.prefix: /WEB-INF/jsp/
+#spring.mvc.view.suffix: .html
+
+#thymeleaf
+spring:
+  thymeleaf:
+    mode: LEGACYHTML5
+    cache: false
+  datasource:
+    url: jdbc:mysql://db.grs.bd:3306/grs_only_3?useLegacyDatetimeCode=false&useEncoding=true&useSSL=false&characterEncoding=UTF-8&serverTime=Asia/Dhaka&zeroDateTimeBehavior=convertToNull&autoReconnect=true&failOverReadOnly=false
+    username: root
+    password: Bangladesh71_
+    driverClassName: com.mysql.jdbc.Driver
+    hibernate:
+      dialect: org.hibernate.dialect.MySQLDialect
+    secondary:
+      url: jdbc:mysql://db.grs.bd:3306/grs_doptor?useLegacyDatetimeCode=false&useEncoding=true&useSSL=false&characterEncoding=UTF-8&serverTime=Asia/Dhaka&zeroDateTimeBehavior=convertToNull&autoReconnect=true&failOverReadOnly=false
+      username: root
+      password: Bangladesh71_
+      driverClassName: com.mysql.jdbc.Driver
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        jpa:
+          show-sql: false
+          properties:
+            hibernate.format_sql: false
+  jpa:
+    properties:
+      hibernate.jdbc.time_zone: Asia/Dhaka
+    show-sql: false
+    properties.hibernate.format_sql: false
+  http:
+    multipart:
+      max-file-size: 5000MB
+      max-request-size: 5000MB
+  jackson:
+    serialization.fail-on-empty-beans: false
+
+spring.mvc:
+  favicon:
+    enabled: true
+
+#logging
+#spring.http.log-request-details: true
+#spring.jpa.show-sql: true
+#logging.level.web: debug
+#logging.level.org.hibernate.SQL: DEBUG
+#logging.level.org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+#logging.level.org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
+#logging.pattern.file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+#logging.file: grs.log
+
+#custom-sms-gateway-properties
+sms:
+  gateway:
+    user: CabinetDI
+    password: e10adc3949ba59abbe56e057f20f883e
+    encrypted-key: "*!!*"
+    userid: 2759
+
+#spring-boot-starter-mail properties
+spring.mail:
+  host: 43.229.13.210
+  port: 25
+  username: grsnotification@smail.bcc.gov.bd
+  password: Ndc#Bcc#9633
+  properties:
+    mail.smtp.auth: true
+    mail.smtp.starttls.enable: false
+
+service:
+  gov:
+    bd:
+      calendar:
+        url: http://api.training.mygov.bd/calendar
+      secret:
+        key: AEC759B2196510EBAE2FF3B768B06C03
+
+oisf:
+  core:
+    services:
+      api:
+        url: http://doptor.gov.bd
+        port: 8090
+  auth:
+    secret:
+      key: WpINcufSCOk49xcdk8kDIaj_4kKu
+  api:
+    flag: true
+
+esb:
+  connector:
+    server:
+      url: http://doptor.gov.bd:8090
+  secret:
+    key: WpINcufSCOk49xcdk8kDIaj_4kKu
+
+app:
+  base:
+    url: https://grs.gov.bd
+    #url: http://training.grs.gov.bd/login/success
+
+idp:
+  url: https://n-doptor-accounts.nothi.gov.bd/login?referer=
+
+nothi:
+  baseUrlv1: https://n-doptor-accounts.nothi.gov.bd
+  baseUrl: https://n-doptor-accounts.nothi.gov.bd
+  clientId: VXKO41
+  username: grscabinetbd@gmail.com
+  password: OCUOWHZ9
+  uri:
+    login: /api/client/login
+    district: /api/v1/district
+  logoutUrl: http://n-doptor-accounts.nothi.gov.bd/logout?referer=aHR0cDovL2dycy5nb3YuYmQ=
+
+upload:
+  file:
+    directory: /usr/local/grs_software
+max:
+  allowed:
+    upload:
+      size: 10
+
+google:
+  recaptcha:
+    key:
+      site: 6LezJA8qAAAAAGLqs4QywlGdUnK3xzcEDRf041hf
+      secret: 6LezJA8qAAAAAMpWvPUwtFxcX-KD4CmgO7T8SMYD

@@ -1,0 +1,60 @@
+app:
+  base:
+    url: https://grs.gov.bd
+
+server:
+  port: 80
+
+spring:
+  application:
+    name: grs_client
+  thymeleaf:
+    mode: LEGACYHTML5
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+  datasource:
+    url: jdbc:mysql://db.grs.bd:3306/grs_only_3?useLegacyDatetimeCode=false&useEncoding=true&useSSL=false&characterEncoding=UTF-8&serverTime=Asia/Dhaka&serverTimezone=Asia/Dhaka&zeroDateTimeBehavior=convertToNull&autoReconnect=true&failOverReadOnly=false
+    username: root
+    password: Bangladesh71_
+    driverClassName: com.mysql.jdbc.Driver
+    hibernate:
+      dialect: org.hibernate.dialect.MySQLDialect
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: Asia/Dhaka
+        format_sql: false
+    show-sql: false
+
+#database configurations
+
+settings:
+  maximum-file-size: 10485760
+  allowed-file-types: jpg,png,pdf,docx
+  file-size-label: "Maximum file size allowed: 10 MB"
+  file-types-label: "Allowed file types: JPG, PNG, PDF, DOCX"
+
+service:
+  gov:
+    bd:
+      calendar:
+        url: http://api.training.mygov.bd/calendar
+      secret:
+        key: AEC759B2196510EBAE2FF3B768B06C03
+
+idp:
+  url: https://n-doptor-accounts.nothi.gov.bd/login?referer=
+
+api:
+  service:
+    protocol: http
+    host: localhost
+    port: 8088
+
+google:
+  recaptcha:
+    key:
+      site: 6LezJA8qAAAAAGLqs4QywlGdUnK3xzcEDRf041hf
+      secret: 6LezJA8qAAAAAMpWvPUwtFxcX-KD4CmgO7T8SMYD
