@@ -5,13 +5,16 @@ import com.grs.grs_client.model.NotificationDTO;
 import com.grs.grs_client.model.NotificationsDTO;
 import com.grs.grs_client.model.SafetyNetProgram;
 import com.grs.grs_client.utils.BanglaConverter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class NotificationGateway extends BaseRestTemplate{
 
@@ -30,50 +33,43 @@ public class NotificationGateway extends BaseRestTemplate{
         return response.getBody();
     }
 
-//    public NotificationsDTO findByOfficeIdAndEmployeeRecordIdAndOfficeUnitOrganogramIdOrderByIdDesc(Long officeId, Long employeeRecordId, Long officeUnitOrganogramId) {
-//        List<Notification> notifications;
-//
-//        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/notification/findByOfficeIdAndEmployeeRecordIdAndOfficeUnitOrganogramIdOrderByIdDesc/" + officeId + "/" + employeeRecordId + "/" + officeUnitOrganogramId;
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        headers.add("Authorization", "Bearer " + getToken());
-//        HttpEntity<String> entity = new HttpEntity<>(headers);
-//
-//        ResponseEntity<List<Notification>> response = restTemplate.exchange(url,
-//                HttpMethod.GET, entity, new ParameterizedTypeReference<List<Notification>>() {
-//                });
-//        notifications =  response.getBody();
-//
-//        return NotificationsDTO.builder()
-//                .countBangla(BanglaConverter.convertToBanglaDigit(notifications.stream().filter(notification -> !notification.getIsSeen()).count()))
-//                .count(notifications.stream().filter(notification -> !notification.getIsSeen()).count())
-//                .notifications(
-//                        notifications.stream().map(this::convertToNotificationDTO).collect(Collectors.toList())
-//                )
-//                .build();
-//    }
-    public NotificationsDTO findByOfficeIdAndEmployeeRecordIdAndOfficeUnitOrganogramIdOrderByIdDesc(Long officeId, Long employeeRecordId, Long officeUnitOrganogramId) {
+    public NotificationsDTO findByOfficeIdAndEmployeeRecordIdAndOfficeUnitOrganogramIdOrderByIdDesc(
+            Long officeId, Long employeeRecordId, Long officeUnitOrganogramId) {
+
+        if (officeId == null || employeeRecordId == null || officeUnitOrganogramId == null) {
+            throw new IllegalArgumentException("Parameters officeId, employeeRecordId, and officeUnitOrganogramId cannot be null");
+        }
+
         String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/findByOfficeIdAndEmployeeRecordIdAndOfficeUnitOrganogramIdOrderByIdDesc";
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-//        headers.add("Authorization", "Bearer " + getToken());
+        headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
 
-        Map<String, Long> requestBody = new HashMap<>();
-        requestBody.put("officeId", officeId);
-        requestBody.put("employeeRecordId", employeeRecordId);
-        requestBody.put("officeUnitOrganogramId", officeUnitOrganogramId);
+        HttpEntity<NotificationsDTO> entity = new HttpEntity<>(headers);
 
-        HttpEntity<Map<String, Long>> entity = new HttpEntity<>(requestBody, headers);
+        String urlTemplate = UriComponentsBuilder.fromHttpUrl(url)
+                .queryParam("officeId", "{officeId}")
+                .queryParam("employeeRecordId", "{employeeRecordId}")
+                .queryParam("officeUnitOrganogramId", "{officeUnitOrganogramId}")
+                .buildAndExpand(officeId, employeeRecordId, officeUnitOrganogramId)
+                .toUriString();
 
-        ResponseEntity<NotificationsDTO> response = restTemplate.exchange(
-                url,
-                HttpMethod.POST,
-                entity,
-                NotificationsDTO.class
-        );
+        try {
+            ResponseEntity<NotificationsDTO> response = restTemplate.exchange(
+                    urlTemplate,
+                    HttpMethod.POST,
+                    entity,
+                    NotificationsDTO.class
+            );
 
-        return response.getBody();
+            return response.getBody();
+        } catch (HttpClientErrorException e) {
+            log.error("HTTP Client Error: {}", e.getResponseBodyAsString());
+            throw e;
+        } catch (Exception e) {
+            log.error("Unexpected Error: {}", e.getMessage());
+            throw e;
+        }
     }
 
 
