@@ -229,4 +229,17 @@ public class GrievanceGateway extends BaseRestTemplate {
                 });
         return response.getBody();
     }
+
+    public UnseenCountDTO getTotalCountForUser(String inboxType){
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/unseen/count/" + inboxType;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "Bearer " + getToken());
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<UnseenCountDTO> response = restTemplate.exchange(url,
+                HttpMethod.GET, entity, new ParameterizedTypeReference<UnseenCountDTO>() {
+                });
+        return response.getBody();
+    }
 }

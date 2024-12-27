@@ -646,4 +646,9 @@ public class GrievanceController {
                 htmlFragment,
                 "adminForOthers");
     }
+
+    @RequestMapping(value = "/api/total/count/{inboxType}", method = RequestMethod.GET)
+    public UnseenCountDTO getTotalCount(Authentication authentication, @PathVariable("inboxType") String inboxType) {
+        return authentication == null ? UnseenCountDTO.builder().build() : this.grievanceService.getTotalCountForUser(inboxType);
+    }
 }
