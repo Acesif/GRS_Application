@@ -1,10 +1,14 @@
 package com.grs.grs_client.gateway;
 
 
+import com.grs.grs_client.model.UserInformation;
+import com.grs.grs_client.utils.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -44,6 +48,8 @@ public class BaseRestTemplate {
         return SERVICE_URL;
     }
     protected String getToken(){
-        return "";
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
+        return userInformation.getToken();
     }
 }

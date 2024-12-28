@@ -107,6 +107,7 @@ public class TokenAuthenticationServiceUtil {
         Cookie cookie = new Cookie(Constant.HEADER_STRING, JWT);
         cookie.setMaxAge(Constant.COOKIE_EXPIRATION_TIME);
         response.addCookie(cookie);
+        userInformation.setToken(JWT);
 
         response.sendRedirect("/login/success");
 

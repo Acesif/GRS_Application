@@ -25,6 +25,7 @@ public class UserDetailsImpl implements UserDetails {
     private boolean isAccountAuthenticated;
     private List<GrantedAuthorityImpl> grantedAuthorities;
     private UserInformation userInformation;
+    private String accessToken;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
