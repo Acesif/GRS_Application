@@ -141,7 +141,7 @@ public class TokenAuthenticationServiceUtil {
             List<String> permissions = (ArrayList<String>) body.get(Constant.AUTHORITY);
 
             UserInformation userInformation = objectMapper.convertValue(body.get(Constant.USER_INFO), UserInformation.class);
-
+            userInformation.setToken(token);
             List<GrantedAuthorityImpl> grantedAuthorities = permissions.stream()
                     .map(permission -> {
                         return GrantedAuthorityImpl.builder()

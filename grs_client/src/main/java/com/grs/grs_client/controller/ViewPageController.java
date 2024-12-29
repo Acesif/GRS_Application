@@ -66,7 +66,7 @@ public class ViewPageController {
 
             try {
                 LoginResponse loginResponse = authGateway.adminLogin(data);
-                loginResponse.getUserInformation().setToken(loginResponse.getAccessToken());
+//                loginResponse.getUserInformation().setToken(loginResponse.getAccessToken());
                 List<GrantedAuthorityImpl> authorities = loginResponse.getAuthorities().stream()
                         .map(GrantedAuthorityImpl::new)
                         .collect(Collectors.toList());
