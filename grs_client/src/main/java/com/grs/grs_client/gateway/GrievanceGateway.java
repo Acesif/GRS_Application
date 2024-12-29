@@ -13,8 +13,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -231,15 +236,58 @@ public class GrievanceGateway extends BaseRestTemplate {
     }
 
     public UnseenCountDTO getTotalCountForUser(String inboxType){
-        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/unseen/count/" + inboxType;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/total/count/" + inboxType;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Authorization", "Bearer " + getToken());
+        headers.add("Authorization", "Bearer " + getTokenFromCookie());
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<UnseenCountDTO> response = restTemplate.exchange(url,
-                HttpMethod.GET, entity, new ParameterizedTypeReference<UnseenCountDTO>() {
-                });
-        return response.getBody();
+        try {
+            ResponseEntity<UnseenCountDTO> response = restTemplate.exchange(url,
+                    HttpMethod.GET, entity, new ParameterizedTypeReference<UnseenCountDTO>() {
+                    });
+            return response.getBody();
+        } catch (HttpClientErrorException e) {
+            log.error("HTTP Client Error: {}", e.getResponseBodyAsString());
+            throw e;
+        } catch (Exception e) {
+            log.error("Unexpected Error: {}", e.getMessage());
+            throw e;
+        }
     }
+
+    public Page<GrievanceDTO> searchGrievancesForUser(String listType, String value, Pageable pageable) {
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievance/" + listType + "/search";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "Bearer " + getTokenFromCookie());
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        String urlTemplate = UriComponentsBuilder.fromHttpUrl(url)
+                .queryParam("value", "{value}")
+                .queryParam("page", "{page}")
+                .queryParam("size", "{size}")
+                .buildAndExpand(value, pageable.getPageNumber(), pageable.getPageSize())
+                .toUriString();
+
+        try {
+            ResponseEntity<CustomPageImpl<GrievanceDTO>> response = restTemplate.exchange(
+                    urlTemplate,
+                    HttpMethod.GET,
+                    entity,
+                    new ParameterizedTypeReference<CustomPageImpl<GrievanceDTO>>() {}
+            );
+
+            return response.getBody();
+        } catch (HttpClientErrorException e) {
+            log.error("HTTP Client Error: {}", e.getResponseBodyAsString());
+            throw e;
+        } catch (Exception e) {
+            log.error("Unexpected Error: {}", e.getMessage());
+            throw e;
+        }
+    }
+
+
+
 }
