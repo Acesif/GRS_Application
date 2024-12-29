@@ -2,16 +2,19 @@ package com.grs.grs_client.gateway;
 
 import com.grs.grs_client.model.*;
 import com.grs.grs_client.utils.CacheUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class OfficesGateway extends BaseRestTemplate{
 
     @Autowired
@@ -80,5 +83,26 @@ public class OfficesGateway extends BaseRestTemplate{
                 .filter(id -> officeIdsInOfficesGro.contains(id))
                 .collect(Collectors.toList());
 
+    }
+
+    public RoleContainerDTO getOfficeUnitOrganogramsForLoggedInUser(UserInformation userInformation) {
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/user/organograms";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "Bearer " + getToken());
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<RoleContainerDTO> response = restTemplate.exchange(url,
+                    HttpMethod.GET, entity, new ParameterizedTypeReference<RoleContainerDTO>() {
+                    });
+            return response.getBody();
+        } catch (HttpClientErrorException e) {
+            log.error("HTTP Client Error: {}", e.getResponseBodyAsString());
+            throw e;
+        } catch (Exception e) {
+            log.error("Unexpected Error: {}", e.getMessage());
+            throw e;
+        }
     }
 }

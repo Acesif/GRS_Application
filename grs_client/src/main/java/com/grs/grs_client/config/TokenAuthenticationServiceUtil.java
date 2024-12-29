@@ -107,6 +107,7 @@ public class TokenAuthenticationServiceUtil {
         Cookie cookie = new Cookie(Constant.HEADER_STRING, JWT);
         cookie.setMaxAge(Constant.COOKIE_EXPIRATION_TIME);
         response.addCookie(cookie);
+        userInformation.setToken(JWT);
 
         response.sendRedirect("/login/success");
 
@@ -140,7 +141,7 @@ public class TokenAuthenticationServiceUtil {
             List<String> permissions = (ArrayList<String>) body.get(Constant.AUTHORITY);
 
             UserInformation userInformation = objectMapper.convertValue(body.get(Constant.USER_INFO), UserInformation.class);
-
+            userInformation.setToken(token);
             List<GrantedAuthorityImpl> grantedAuthorities = permissions.stream()
                     .map(permission -> {
                         return GrantedAuthorityImpl.builder()
