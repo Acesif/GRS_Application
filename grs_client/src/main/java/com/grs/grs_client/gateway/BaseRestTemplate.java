@@ -61,14 +61,14 @@ public class BaseRestTemplate {
         return userInformation.getToken();
     }
 
-    protected String getTokenFromCookie() {
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if ("Authorization".equals(cookie.getName())) {
-                    return cookie.getValue();
-                }
-            }
-        }
-        return null;
-    }
+//    protected String getTokenFromCookie() {
+//        if (request.getCookies() != null) {
+//            for (Cookie cookie : request.getCookies()) {
+//                if ("Authorization".equals(cookie.getName())) {
+//                    return cookie.getValue();
+//                }
+//            }
+//        }
+//        return null;
+//    }
 }

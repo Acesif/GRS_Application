@@ -239,7 +239,7 @@ public class GrievanceGateway extends BaseRestTemplate {
         String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/total/count/" + inboxType;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Authorization", "Bearer " + getTokenFromCookie());
+        headers.add("Authorization", "Bearer " + getToken());
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         try {
@@ -260,7 +260,7 @@ public class GrievanceGateway extends BaseRestTemplate {
         String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievance/" + listType + "/search";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Authorization", "Bearer " + getTokenFromCookie());
+        headers.add("Authorization", "Bearer " + getToken());
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         String urlTemplate = UriComponentsBuilder.fromHttpUrl(url)
