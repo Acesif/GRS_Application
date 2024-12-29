@@ -31,6 +31,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 .username(userName)
                 .password(password).build();
         LoginResponse user = authGateway.login(loginRequest);
+        System.out.println(user);
 
         if (user != null) {
             UserInformation userInformation = getUserInfo(user);

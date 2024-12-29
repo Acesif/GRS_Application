@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 
 @Component
 @PropertySources({
@@ -21,6 +23,9 @@ public class BaseRestTemplate {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private HttpServletRequest request;
 
     @Autowired
     protected RestTemplate restTemplate;
@@ -47,9 +52,21 @@ public class BaseRestTemplate {
     public static String getUrl() {
         return SERVICE_URL;
     }
+
     protected String getToken(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
         return userInformation.getToken();
+    }
+
+    protected String getTokenFromCookie() {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("Authorization".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 }

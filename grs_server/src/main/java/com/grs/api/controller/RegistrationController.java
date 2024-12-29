@@ -213,6 +213,7 @@ public class RegistrationController {
                     .build();
         }
         String newPincode = complainantService.getRandomPinNumber();
+        System.out.println("New Pin Code: " + newPincode);
         complainant.setPassword(bCryptPasswordEncoder.encode(newPincode));
         this.complainantService.save(complainant);
 //        shortMessageService.sendSMS(complainant.getPhoneNumber(), String.format("Your GRS login pincode has been reset, new pincode is %s.", newPincode));

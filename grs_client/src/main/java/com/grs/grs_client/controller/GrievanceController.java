@@ -12,6 +12,10 @@ import com.grs.grs_client.service.ModelAndViewService;
 import com.grs.grs_client.utils.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.ui.Model;
@@ -650,5 +654,15 @@ public class GrievanceController {
     @RequestMapping(value = "/api/total/count/{inboxType}", method = RequestMethod.GET)
     public UnseenCountDTO getTotalCount(Authentication authentication, @PathVariable("inboxType") String inboxType) {
         return authentication == null ? UnseenCountDTO.builder().build() : this.grievanceService.getTotalCountForUser(inboxType);
+    }
+
+    @RequestMapping(value = "api/grievance/{listType}/search", method = RequestMethod.GET)
+    public Page<GrievanceDTO> searchNormalGrievances(Authentication authentication,
+                                                     @PathVariable("listType") String listType,
+                                                     @RequestParam(value = "value") String value,
+                                                     @PageableDefault(value = Integer.MAX_VALUE) Pageable pageable) {
+        return authentication == null
+                ? new PageImpl<>(Collections.emptyList(), pageable, 0)
+                : this.grievanceService.searchGrievancesForUser(listType, value, pageable);
     }
 }
