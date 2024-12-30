@@ -161,6 +161,7 @@ public class ViewPageController {
             formTitleDTO = SubMenuDTO.builder().nameEnglish("Complainant Login").nameBangla("অভিযোগকারী লগইন").link("javascript:;").build();
         }
         String languageCode = CookieUtil.getValue(request, "lang");
+        System.out.println(languageCode);
         model.addAttribute("lang", languageCode);
         model.addAttribute("usernameFieldText", subMenuUsernameDTO);
         model.addAttribute("passwordFieldText", subMenuPasswordDTO);

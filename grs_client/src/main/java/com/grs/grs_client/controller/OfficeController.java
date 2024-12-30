@@ -18,9 +18,9 @@ public class OfficeController {
     @Autowired
     private OfficesGateway officeService;
 
-    @RequestMapping(value = "/api/user/organograms", method = RequestMethod.GET)
-    public RoleContainerDTO getOrganogramsForLoggedInUser(Authentication authentication) {
-        UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
-        return officeService.getOfficeUnitOrganogramsForLoggedInUser(userInformation);
-    }
+//    @RequestMapping(value = "/api/user/organograms", method = RequestMethod.GET)
+//    public RoleContainerDTO getOrganogramsForLoggedInUser(Authentication authentication) {
+//        UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
+//        return officeService.getOfficeUnitOrganogramsForLoggedInUser(userInformation);
+//    }
 }

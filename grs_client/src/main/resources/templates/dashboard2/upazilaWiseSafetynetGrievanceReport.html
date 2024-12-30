@@ -506,7 +506,7 @@
 
     function populateSpProgramForSafetynetComplaintReport() {
 
-        $.getJSON("/spProgrammeList/get/all", function (result) {
+        $.getJSON("/api/spProgrammeList/get/all", function (result) {
             var opt = new Option(languageCode == "en" ? "---Select Program---" : "---প্রোগ্রাম বাছাই করুন---", 0);
             // opt.setAttribute("style", "display: none;");
             $("#spProgrammeId").append(opt);

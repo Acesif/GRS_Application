@@ -130,19 +130,19 @@ public class GrievanceController {
         return this.grievanceService.getComplainantInfo(grievance);
     }
 
-    @RequestMapping(value = "/spProgrammeList/get", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/spProgrammeList/get", method = RequestMethod.GET)
     public List<com.grs.core.domain.grs.SpProgramme> getSpProgrammeList() {
         List<com.grs.core.domain.grs.SpProgramme> spProgrammeList = spProgrammeService.findAllByStatusAndOfficeIdNotNull();
         return spProgrammeList;
     }
 
-    @RequestMapping(value = "/spProgrammeList/get/all", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/spProgrammeList/get/all", method = RequestMethod.GET)
     public List<com.grs.core.domain.grs.SpProgramme> getAllSpProgrammeList() {
         List<com.grs.core.domain.grs.SpProgramme> spProgrammeList = spProgrammeService.findAll();
         return spProgrammeList;
     }
 
-    @RequestMapping(value = "/spProgramme/get/{programId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/spProgramme/get/{programId}", method = RequestMethod.GET)
     public SpProgramGroDto getSpProgrammeOfficeNameBn(@PathVariable("programId") Integer programId) {
         try {
             SpProgramGroDto dto = new SpProgramGroDto();

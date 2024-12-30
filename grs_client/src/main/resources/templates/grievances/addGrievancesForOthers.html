@@ -1415,7 +1415,7 @@
 
     function populateSpProgram() {
 
-        $.getJSON("/spProgrammeList/get", function (result) {
+        $.getJSON("/api/spProgrammeList/get", function (result) {
             var opt = new Option(languageCode == "en" ? "---Select Program---" : "---প্রোগ্রাম বাছাই করুন---");
             opt.setAttribute("style", "display: none;");
             $("#spProgrammeId").append(opt);
@@ -1479,7 +1479,7 @@
     function getOfficeNameForSpProgramme() {
         spProgramOfficeName = "নাই";
         var spProgramId = $("#spProgrammeId").val();
-        $.getJSON("/spProgramme/get/" + parseInt(spProgramId), function (result) {
+        $.getJSON("/api/spProgramme/get/" + parseInt(spProgramId), function (result) {
             spProgramOfficeName = result.officeName;
         }).done(function () {
         }).fail(function () {
