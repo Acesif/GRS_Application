@@ -6,8 +6,11 @@ import com.grs.api.model.request.*;
 import com.grs.api.model.response.GenericResponse;
 import com.grs.api.model.response.GrievanceForwardingEmployeeRecordsDTO;
 import com.grs.api.model.response.OpinionReceiverDTO;
+import com.grs.api.model.response.UnseenCountDTO;
+import com.grs.api.model.response.file.ExistingFileDerivedDTO;
 import com.grs.api.model.response.file.FileDerivedDTO;
 import com.grs.api.model.response.grievanceForwarding.GrievanceForwardingInvestigationDTO;
+import com.grs.core.model.EmployeeOrganogram;
 import com.grs.core.service.GrievanceForwardingService;
 import com.grs.utils.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +49,12 @@ public class GrievanceForwardingController {
     @RequestMapping(value = "/api/grievance/forward/complainant/{grievanceId}", method = RequestMethod.GET)
     public List<GrievanceForwardingEmployeeRecordsDTO> getAllComplainantComplaintMovements(@PathVariable("grievanceId") Long grievanceId, Authentication authentication) {
         return this.grievanceForwardingService.getAllComplainantComplaintMovementHistoryByGrievance(grievanceId, authentication);
+    }
+
+    @PostMapping(value = "/api/grievance/forward/complainant/complaintMovementHistoryByTrackingNumber")
+    public List<GrievanceForwardingEmployeeRecordsDTO> getAllComplainantComplaintMovementHistoryByTrackingNumber(
+            @RequestParam String trackingNumber) {
+        return grievanceForwardingService.getAllComplainantComplaintMovementHistoryByTrackingNumber(trackingNumber);
     }
 
     @RequestMapping(value = "/api/grievance/forward/{grievanceId}/files", method = RequestMethod.GET)
@@ -140,6 +149,19 @@ public class GrievanceForwardingController {
         return this.grievanceForwardingService.getGroHistory(grievanceId);
     }
 
+    @RequestMapping(value = "/api/gro/history/{grievanceId}", method =  RequestMethod.GET)
+    public EmployeeOrganogram getGroOfRecentmostGrievanceForwarding(@PathVariable("grievanceId") Long grievanceId) {
+        return this.grievanceForwardingService.getGroOfRecentmostGrievanceForwarding(grievanceId);
+    }
+
+    @GetMapping(value = "/api/file/list/{grievanceId}")
+    public List<ExistingFileDerivedDTO> getAllFilesList(
+            @PathVariable("grievanceId") Long grievanceId,
+            Authentication authentication) {
+        return this.grievanceForwardingService.getAllFilesList(grievanceId,authentication);
+
+    }
+
     @RequestMapping(value = "/api/grievance/inspection/initiate", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public GenericResponse initiateInvestigation(Authentication authentication, @Valid @RequestBody GrievanceForwardingInvestigationDTO grievanceForwardingInvestigationDTO) {
         return this.grievanceForwardingService.initiateInvestigation(grievanceForwardingInvestigationDTO, authentication);
@@ -206,5 +228,20 @@ public class GrievanceForwardingController {
     public GenericResponse retakeTimeExpiredComplaint(@PathVariable("grievanceId") Long grievanceId, Authentication authentication){
         Boolean complaintRevived = this.grievanceForwardingService.retakeTimeExpiredComplaint(grievanceId, authentication);
         return GenericResponse.builder().message("Retrieved").success(complaintRevived).build();
+    }
+
+    @PostMapping(value = "/api/grievance/unseenCountForUser")
+    public UnseenCountDTO getUnseenCountForUser(
+            Authentication authentication,
+            @RequestParam String inboxType) {
+        return grievanceForwardingService.getUnseenCountForUser(authentication,inboxType);
+
+    }
+
+    @PostMapping(value = "/api/grievance/totalCountForUser")
+    public UnseenCountDTO getTotalCountForUser(
+            Authentication authentication,
+            @RequestParam String inboxType) {
+        return grievanceForwardingService.getTotalCountForUser(authentication,inboxType);
     }
 }

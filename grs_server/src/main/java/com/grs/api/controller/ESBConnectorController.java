@@ -12,7 +12,7 @@ import java.util.WeakHashMap;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/ESBConnector")
-public class ESBConnectorController {
+public class  ESBConnectorController {
 
     private final ESBConnectorService esbConnectorService;
 
@@ -20,15 +20,7 @@ public class ESBConnectorController {
     public String getBaseUrlWithPort(){
         return this.esbConnectorService.getBaseUrlWithPort();
     }
-    //TODO:Need to do later
 
-//    @RequestMapping(value = "/objectFromESB",method = RequestMethod.POST)
-//    public Object getObjectFromESB(
-//          @RequestParam String URL,
-//          @RequestParam  Class objectClass){
-//        re
-//
-//    }
 
     @RequestMapping(value = "/authenticationToken",method=RequestMethod.GET)
     public Object getAuthenticationToken(){

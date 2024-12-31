@@ -1,20 +1,20 @@
-package com.grs.grs_client.controller;
-
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-
-/**
- * Created by Acer on 12-Mar-18.
- */
-@Slf4j
-@RestController
-public class CellController {
+//package com.grs.grs_client.controller;
+//
+//import lombok.extern.slf4j.Slf4j;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.security.core.Authentication;
+//import org.springframework.ui.Model;
+//import org.springframework.web.bind.annotation.*;
+//import org.springframework.web.servlet.ModelAndView;
+//
+//import javax.servlet.http.HttpServletRequest;
+//
+///**
+// * Created by Acer on 12-Mar-18.
+// */
+//@Slf4j
+//@RestController
+//public class CellController {
 //    @Autowired
 //    private CellService cellService;
 //    @Autowired
@@ -72,4 +72,4 @@ public class CellController {
 //        }
 //        return new ModelAndView("redirect:/error-page");
 //    }
-}
+//}
