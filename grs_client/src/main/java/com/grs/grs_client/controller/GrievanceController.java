@@ -651,18 +651,18 @@ public class GrievanceController {
                 "adminForOthers");
     }
 
-    @RequestMapping(value = "/api/total/count/{inboxType}", method = RequestMethod.GET)
-    public UnseenCountDTO getTotalCount(Authentication authentication, @PathVariable("inboxType") String inboxType) {
-        return authentication == null ? UnseenCountDTO.builder().build() : this.grievanceService.getTotalCountForUser(inboxType);
-    }
-
-    @RequestMapping(value = "api/grievance/{listType}/search", method = RequestMethod.GET)
-    public Page<GrievanceDTO> searchNormalGrievances(Authentication authentication,
-                                                     @PathVariable("listType") String listType,
-                                                     @RequestParam(value = "value") String value,
-                                                     @PageableDefault(value = Integer.MAX_VALUE) Pageable pageable) {
-        return authentication == null
-                ? new PageImpl<>(Collections.emptyList(), pageable, 0)
-                : this.grievanceService.searchGrievancesForUser(listType, value, pageable);
-    }
+//    @RequestMapping(value = "/api/total/count/{inboxType}", method = RequestMethod.GET)
+//    public UnseenCountDTO getTotalCount(Authentication authentication, @PathVariable("inboxType") String inboxType) {
+//        return authentication == null ? UnseenCountDTO.builder().build() : this.grievanceService.getTotalCountForUser(inboxType);
+//    }
+//
+//    @RequestMapping(value = "api/grievance/{listType}/search", method = RequestMethod.GET)
+//    public Page<GrievanceDTO> searchNormalGrievances(Authentication authentication,
+//                                                     @PathVariable("listType") String listType,
+//                                                     @RequestParam(value = "value") String value,
+//                                                     @PageableDefault(value = Integer.MAX_VALUE) Pageable pageable) {
+//        return authentication == null
+//                ? new PageImpl<>(Collections.emptyList(), pageable, 0)
+//                : this.grievanceService.searchGrievancesForUser(listType, value, pageable);
+//    }
 }

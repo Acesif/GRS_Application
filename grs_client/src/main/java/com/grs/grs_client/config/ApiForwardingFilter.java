@@ -15,6 +15,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -64,7 +65,7 @@ public class ApiForwardingFilter implements Filter {
                     // Write response with UTF-8 encoding
                     httpResponse.setStatus(responseEntity.getStatusCodeValue());
                     httpResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                    String responseBody = new String(responseEntity.getBody().getBytes(), "UTF-8");
+                    String responseBody = new String(responseEntity.getBody().getBytes(), StandardCharsets.UTF_8);
                     httpResponse.getWriter().write(responseBody);
                 } catch (HttpClientErrorException e) {
                     logError(httpResponse, e.getStatusCode(), e.getResponseBodyAsString());
