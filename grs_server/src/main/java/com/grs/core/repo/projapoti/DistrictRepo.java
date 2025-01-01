@@ -6,10 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Created by Acer on 02-Oct-17.
- */
 @Repository
 public interface DistrictRepo extends JpaRepository<District, Integer> {
-    public List<District> findByDivisionId(Integer divisionId);
+    List<District> findByDivisionId(Integer divisionId);
 }

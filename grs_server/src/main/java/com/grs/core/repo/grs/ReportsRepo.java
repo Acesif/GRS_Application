@@ -8,9 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by Acer on 22-Feb-18.
- */
 @Repository
 public interface ReportsRepo extends JpaRepository<DashboardData, Long> {
     @Query(nativeQuery = true,

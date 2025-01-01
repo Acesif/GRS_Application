@@ -8,13 +8,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Created by Acer on 9/6/2017.
- */
 @Repository
 public interface ServiceOriginRepo extends JpaRepository<ServiceOrigin, Long> {
     //public List<ServiceOrigin> findByOfficesNotOrOfficesIsNull(Office office);
-    public Page<ServiceOrigin> findByOrderByIdAsc(Pageable pageable);
+    Page<ServiceOrigin> findByOrderByIdAsc(Pageable pageable);
 
     ServiceOrigin findById(Long serviceId);
 

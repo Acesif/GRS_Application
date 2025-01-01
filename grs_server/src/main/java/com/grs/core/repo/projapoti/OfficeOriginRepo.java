@@ -8,9 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Created by HP on 4/9/2018.
- */
 @Repository
 public interface OfficeOriginRepo extends JpaRepository<OfficeOrigin, Long> {
     List<OfficeOrigin> findByOfficeLayerIdIn(List<Long> officeLayerIds);

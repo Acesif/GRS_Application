@@ -7,12 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-/**
- * Created by HP on 1/30/2018.
- */
+
 @Repository
 public interface OccupationRepo extends JpaRepository<Occupation, Long> {
-    public Page<Occupation> findByOrderByIdAsc(Pageable pageable);
-    public Integer countByOccupationBanglaAndOccupationEnglish(String occupationNameBng, String occcupationNameEng);
-    public List<Occupation> findByStatus(Boolean status);
+    Page<Occupation> findByOrderByIdAsc(Pageable pageable);
+    Integer countByOccupationBanglaAndOccupationEnglish(String occupationNameBng, String occcupationNameEng);
+    List<Occupation> findByStatus(Boolean status);
 }

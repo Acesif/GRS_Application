@@ -8,9 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Created by Acer on 9/6/2017.
- */
 @Repository
 public interface OfficeUnitRepo extends JpaRepository<OfficeUnit, Long> {
     List<OfficeUnit> findByOfficeMinistryAndOfficeAndParentOfficeUnit(OfficeMinistry officeMinistry, Office office, OfficeUnit parentOfficeUnit);
