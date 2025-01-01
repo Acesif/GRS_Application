@@ -8,9 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-/**
- * Created by Acer on 9/19/2017.
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

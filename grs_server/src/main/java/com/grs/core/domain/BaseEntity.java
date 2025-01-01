@@ -1,6 +1,5 @@
 package com.grs.core.domain;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
@@ -12,10 +11,6 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
 import java.util.Date;
 
-
-/**
- * Created by Morshed on 3/29/2017.
- */
 @MappedSuperclass
 @Data
 public class BaseEntity {

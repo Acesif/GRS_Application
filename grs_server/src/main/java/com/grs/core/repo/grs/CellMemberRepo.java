@@ -7,9 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Created by Acer on 11-Mar-18.
- */
+
 @Repository
 public interface CellMemberRepo extends JpaRepository<CellMember, Long> {
     CellMember findByOfficeIdAndCellOfficeUnitOrganogramId(Long officeId, Long officeUnitOrganogramId);

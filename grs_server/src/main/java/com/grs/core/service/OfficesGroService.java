@@ -22,9 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Created by Acer on 17-Dec-17.
- */
 @Service
 @Slf4j
 public class OfficesGroService {

@@ -31,9 +31,6 @@ import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
 
-/**
- * Created by Acer on 22-Feb-18.
- */
 @Slf4j
 @Service
 public class ReportsService {

@@ -531,7 +531,7 @@ public class OfficeController {
         return officeService.getChildCountByParentOfficeId(parentOfficeId);
     }
 
-    @RequestMapping(value = "/findOneById/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/hasAccessToAoAndSubOfficesDashboardById/{id}", method = RequestMethod.GET)
     public Office findOneById(@PathVariable Long id) {
         return officeService.findOne(id);
     }
@@ -550,6 +550,16 @@ public class OfficeController {
                 officeId,
                 officeUnitOrganogramId,
                 status);
+    }
+
+    @GetMapping("/hasAccessToAoAndSubOfficesDashboard/{officeId}")
+    public Boolean hasAccessToAoAndSubOfficesDashboard(
+            Authentication authentication,
+            @PathVariable Long officeId) {
+
+        UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
+        return officeService.hasAccessToAoAndSubOfficesDashboard(userInformation, officeId);
+
     }
 
     @RequestMapping(value = "/getOffice/{officeId}", method = RequestMethod.GET)

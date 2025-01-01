@@ -36,9 +36,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Created by Acer on 25-Oct-17.
- */
 @Slf4j
 @Service
 public class GrievanceForwardingService {

@@ -5,9 +5,6 @@ import com.grs.core.domain.projapoti.OfficeMinistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/**
- * Created by Acer on 19-Dec-17.
- */
 @Service
 public class OfficeMinistryService {
     @Autowired

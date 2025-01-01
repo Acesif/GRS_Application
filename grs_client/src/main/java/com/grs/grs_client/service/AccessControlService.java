@@ -58,7 +58,7 @@ public class AccessControlService {
                 return true;
             }
             List<GrievanceForwarding> grievanceForwardingList = grievanceForwardingService.getAllComplaintMovementByGrievance(grievance.getId());
-            List<Long> permittedOrganogramIdList = new ArrayList();
+            List<Long> permittedOrganogramIdList = new ArrayList<>();
             grievanceForwardingList.forEach(grievanceForwarding -> {
                 permittedOrganogramIdList.add(grievanceForwarding.getFromOfficeUnitOrganogramId());
                 permittedOrganogramIdList.add(grievanceForwarding.getToOfficeUnitOrganogramId());

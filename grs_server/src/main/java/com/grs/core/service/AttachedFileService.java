@@ -13,9 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * Created by Acer on 10/4/2017.
- */
+
 @Service
 public class AttachedFileService {
     @Autowired

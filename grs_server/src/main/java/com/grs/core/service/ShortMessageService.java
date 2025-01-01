@@ -31,9 +31,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-/**
- * Created by Acer on 22-Dec-17.
- */
 @Slf4j
 @Service
 public class ShortMessageService {

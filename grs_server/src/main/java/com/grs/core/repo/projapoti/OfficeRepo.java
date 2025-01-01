@@ -10,9 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Created by Acer on 8/30/2017.
- */
 @Repository
 public interface OfficeRepo extends JpaRepository<Office, Long> {
     List<Office> findByOfficeLayerInAndStatusTrueOrderByIdAsc(List<OfficeLayer> officeLayers);

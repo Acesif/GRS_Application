@@ -7,9 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * Created by Acer on 8/30/2017.
- */
 @Service
 public class OfficeMinistryDAO {
 

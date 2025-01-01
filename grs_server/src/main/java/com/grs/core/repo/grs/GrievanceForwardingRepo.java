@@ -14,33 +14,30 @@ import org.springframework.stereotype.Repository;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by Acer on 05-Oct-17.
- */
 @Repository
 public interface GrievanceForwardingRepo extends JpaRepository<GrievanceForwarding, Long>, JpaSpecificationExecutor<GrievanceForwarding> {
-    public List<GrievanceForwarding> findByGrievance(Grievance grievance);
+    List<GrievanceForwarding> findByGrievance(Grievance grievance);
 
-    public GrievanceForwarding findTopByGrievanceOrderByIdDesc(Grievance grievance);
+    GrievanceForwarding findTopByGrievanceOrderByIdDesc(Grievance grievance);
 
-    public GrievanceForwarding findByGrievanceAndToOfficeIdAndToOfficeUnitOrganogramIdAndIsCurrent(Grievance grievance, Long officeId, Long officeUnitOrganogramId, Boolean isCurrent);
+    GrievanceForwarding findByGrievanceAndToOfficeIdAndToOfficeUnitOrganogramIdAndIsCurrent(Grievance grievance, Long officeId, Long officeUnitOrganogramId, Boolean isCurrent);
 
     @Query(value = "select * from complaint_movements as cm \n" +
             "where cm.complaint_id=?1 and (cm.`action` like '%CLOSED%' or cm.`action` like '%REJECTED%') ORDER BY id desc limit 1",
             countQuery = "select count(*) from complaint_movements as cm \n" +
                     "where cm.complaint_id=?1 and (cm.`action` like '%CLOSED%' or cm.`action` like '%REJECTED%' or cm.`action` = 'FORWARDED_TO_AO') ORDER BY id desc limit 1",
             nativeQuery = true)
-    public GrievanceForwarding findRecentlyClosedOrRejectedOne(Long grievanceId);
+    GrievanceForwarding findRecentlyClosedOrRejectedOne(Long grievanceId);
 
-    public GrievanceForwarding findByIsCurrentAndToOfficeIdAndToOfficeUnitOrganogramIdAndGrievance(Boolean isCurrent, Long officeId, Long OfficeUnitOrganogramId, Grievance grievance);
+    GrievanceForwarding findByIsCurrentAndToOfficeIdAndToOfficeUnitOrganogramIdAndGrievance(Boolean isCurrent, Long officeId, Long OfficeUnitOrganogramId, Grievance grievance);
 
-    public GrievanceForwarding findByActionAndToOfficeIdAndToOfficeUnitOrganogramIdAndGrievance(String action, Long officeId, Long OfficeUnitOrganogramId, Grievance grievance);
+    GrievanceForwarding findByActionAndToOfficeIdAndToOfficeUnitOrganogramIdAndGrievance(String action, Long officeId, Long OfficeUnitOrganogramId, Grievance grievance);
 
     GrievanceForwarding findByGrievanceAndIsCurrentAndIsCommitteeHead(Grievance grievance, boolean isCurrent, boolean isCommitteeHead);
 
-    public Page<GrievanceForwarding> findAll(Specification specification, Pageable pageable);
+    Page<GrievanceForwarding> findAll(Specification specification, Pageable pageable);
 
-    public List<GrievanceForwarding> findAll(Specification specification);
+    List<GrievanceForwarding> findAll(Specification specification);
 
     GrievanceForwarding findTopByGrievanceAndActionLikeOrderByIdDesc(Grievance grievance, String action);
 

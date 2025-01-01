@@ -6,9 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Created by Acer on 02-Oct-17.
- */
 @Repository
 public interface UpazilaRepo extends JpaRepository<Upazila, Integer> {
     List<Upazila> findByDistrictId(Integer districtId);

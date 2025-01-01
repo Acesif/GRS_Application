@@ -357,7 +357,7 @@ public class GrievanceController {
         return this.grievanceService.getInboxDataDTO(officeId,officeUnitOrganogramId,userId);
     }
 
-    @RequestMapping(value = "api/grievance/appeal/{listType}/search", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/grievance/appeal/{listType}/search", method = RequestMethod.GET)
     public Page<GrievanceDTO> searchAppealGrievances(Authentication authentication,
                                                      @PathVariable(value = "listType") String listType,
                                                      @RequestParam(value = "value") String value,

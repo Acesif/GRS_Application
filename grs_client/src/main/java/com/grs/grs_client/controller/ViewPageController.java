@@ -5,20 +5,22 @@ import com.grs.grs_client.config.GrantedAuthorityImpl;
 import com.grs.grs_client.config.TokenAuthenticationServiceUtil;
 import com.grs.grs_client.config.UserDetailsImpl;
 import com.grs.grs_client.domain.RedirectMap;
+import com.grs.grs_client.enums.GRSUserType;
 import com.grs.grs_client.enums.OISFUserType;
 import com.grs.grs_client.enums.UserType;
 import com.grs.grs_client.gateway.AuthGateway;
+import com.grs.grs_client.gateway.ComplainantGateway;
+import com.grs.grs_client.gateway.MessageGateway;
 import com.grs.grs_client.gateway.OfficesGateway;
-import com.grs.grs_client.model.LoginResponse;
-import com.grs.grs_client.model.Office;
-import com.grs.grs_client.model.SubMenuDTO;
-import com.grs.grs_client.model.UserInformation;
+import com.grs.grs_client.model.*;
 import com.grs.grs_client.service.ModelAndViewService;
 import com.grs.grs_client.utils.Constant;
 import com.grs.grs_client.utils.CookieUtil;
 import com.grs.grs_client.utils.StringUtil;
 import com.grs.grs_client.utils.Utility;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.codec.binary.Base64;
+import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -46,6 +48,10 @@ public class ViewPageController {
     private OfficesGateway officeService;
     @Autowired
     private AuthGateway authGateway;
+    @Autowired
+    private MessageGateway messageService;
+    @Autowired
+    private ComplainantGateway complainantService;
 
 
     @Value("${app.base.url:''}")
@@ -243,6 +249,93 @@ public class ViewPageController {
         } else {
             response.sendRedirect("/");
         }
+    }
+
+    @RequestMapping(value = "/services.do", method = RequestMethod.GET)
+    public ModelAndView servicesPage(HttpServletRequest request, Authentication authentication, Model model) {
+        model.addAttribute("searchableOffices", officeService.getGrsEnabledOfficeSearchingData());
+        return modelViewService.returnViewsForNormalPages(authentication, model, request, "services");
+    }
+
+    @RequestMapping(value = "/groInformation.do", method = RequestMethod.GET)
+    public ModelAndView groInformationPage(HttpServletRequest request, Authentication authentication, Model model) {
+        model.addAttribute("searchableOffices", officeService.getGrsEnabledOfficeSearchingData());
+        return modelViewService.returnViewsForNormalPages(authentication, model, request, "groInformation");
+    }
+
+    @RequestMapping(value = "/dashboardMobile.do", method = RequestMethod.GET)
+    public ModelAndView getDashboardPage(HttpServletRequest request, Authentication authentication, Model model) {
+        UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
+        String fragmentName = "";
+        String viewName = "admin";
+        if (userInformation.getUserType().equals(UserType.COMPLAINANT)) {
+            Boolean isBlacklisted = complainantService.isBlacklistedUser(userInformation.getUserId());
+            model.addAttribute("isBlacklisted", isBlacklisted);
+            fragmentName = "dashboardCitizen";
+        } else if (userInformation.getUserType().equals(UserType.OISF_USER)) {
+            if (userInformation.getOisfUserType().equals(OISFUserType.GRO) || userInformation.getOisfUserType().equals(OISFUserType.HEAD_OF_OFFICE) || userInformation.getIsCentralDashboardUser()) {
+                String requestParams = request.getParameter("params");
+                OfficeInformation officeInformation = userInformation.getOfficeInformation();
+                Long officeId = officeInformation.getOfficeId();
+                String officeName = messageService.isCurrentLanguageInEnglish() ? officeInformation.getOfficeNameEnglish() : officeInformation.getOfficeNameBangla();
+                Boolean isDrilledDown = false;
+                if (StringUtil.isValidString(requestParams)) {
+                    String decodedParams = StringUtils.newStringUtf8(Base64.decodeBase64(requestParams.substring(20)));
+                    Long childOfficeId = Long.parseLong(decodedParams);
+                    Office childOffice = officeService.findOne(childOfficeId);
+                    List<Long> parentOfficeIds = officeService.getAncestorOfficeIds(childOfficeId);
+                    if (childOffice != null && (parentOfficeIds.contains(officeId) || userInformation.getIsCentralDashboardUser())) {
+                        officeId = childOfficeId;
+                        officeName = messageService.isCurrentLanguageInEnglish() ? childOffice.getNameEnglish() : childOffice.getNameBangla();
+                        isDrilledDown = true;
+                    } else {
+                        return new ModelAndView("redirect:/error-page");
+                    }
+                }
+                model.addAttribute("officeId", officeId);
+                model.addAttribute("officeName", officeName);
+                model.addAttribute("currentMonthYear", messageService.getCurrentMonthYearAsString());
+                model.addAttribute("isDrilledDown", isDrilledDown);
+                model.addAttribute("canViewAppealAndSubOfficeDashboard", officeService.hasAccessToAoAndSubOfficesDashboard(officeId));
+                fragmentName = "dashboardGro";
+            } else if (userInformation.getOisfUserType().equals(OISFUserType.SUPER_ADMIN)) {
+                fragmentName = "dashboardSuperAdmin";
+                viewName = "superAdmin";
+            } else {
+                fragmentName = "dashboard";
+            }
+        } else if (userInformation.getUserType().equals(UserType.SYSTEM_USER)) {
+            if (userInformation.getGrsUserType().equals(GRSUserType.SUPER_ADMIN)) {
+                return new ModelAndView("redirect:/viewOffice.do");
+            }
+        }
+        if (authentication != null) {
+            return modelViewService.addNecessaryAttributesAndReturnViewPage(model,
+                    authentication,
+                    request,
+                    "dashboard",
+                    fragmentName,
+                    viewName);
+        } else {
+            return new ModelAndView("redirect:/error-page");
+        }
+    }
+
+    @RequestMapping(value = "/centralDashboard.do", method = RequestMethod.GET)
+    public ModelAndView getCentralDashboardPage(HttpServletRequest request, Authentication authentication, Model model) {
+        if (authentication != null) {
+            UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
+            if (userInformation.getIsCentralDashboardUser()) {
+                model.addAttribute("currentMonthYear", messageService.getCurrentMonthYearAsString());
+                return modelViewService.addNecessaryAttributesAndReturnViewPage(model,
+                        authentication,
+                        request,
+                        "dashboard",
+                        "dashboardCentral",
+                        "admin");
+            }
+        }
+        return new ModelAndView("redirect:/error-page");
     }
 
     @RequestMapping(value = "/viewRegister.do", method = RequestMethod.GET)

@@ -6,9 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Created by Acer on 17-Oct-17.
- */
 @Repository
 public interface MunicipalityRepo extends JpaRepository<Municipality, Integer> {
     List<Municipality> findByDivisionIdAndDistrictId(Integer divisionId, Integer districtId);

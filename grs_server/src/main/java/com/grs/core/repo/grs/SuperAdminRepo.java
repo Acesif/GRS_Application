@@ -7,19 +7,16 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Created by HP on 1/24/2018.
- */
 @Repository
 public interface SuperAdminRepo extends JpaRepository<SuperAdmin, Long>  {
-    public SuperAdmin findByUsername(String Username);
-    public SuperAdmin findByUsernameAndPassword(String Username, String password);
+    SuperAdmin findByUsername(String Username);
+    SuperAdmin findByUsernameAndPassword(String Username, String password);
 
     @Query(value = "select c.*\n"+
             " from grs_users as c where c.user_role_id = ?1",
             nativeQuery = true)
-    public List<SuperAdmin> findByUserRoleId(long role);
+    List<SuperAdmin> findByUserRoleId(long role);
 
-    public SuperAdmin findByPhoneNumber(String phoneNumber);
-    public Integer countByUsername(String Username);
+    SuperAdmin findByPhoneNumber(String phoneNumber);
+    Integer countByUsername(String Username);
 }

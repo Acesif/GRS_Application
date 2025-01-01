@@ -7,11 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Created by HP on 3/11/2018.
- */
 @Repository
 public interface GrsRoleToEmailRepo extends JpaRepository <GrsRoleToEmail, Long> {
-    public List<GrsRoleToEmail> findByEmailTemplate(EmailTemplate emailTemplate);
-    public List<GrsRoleToEmail> findByEmailTemplateAndStatus(EmailTemplate emailTemplate, Boolean status);
+    List<GrsRoleToEmail> findByEmailTemplate(EmailTemplate emailTemplate);
+    List<GrsRoleToEmail> findByEmailTemplateAndStatus(EmailTemplate emailTemplate, Boolean status);
 }

@@ -33,9 +33,6 @@ import java.util.List;
 import java.util.WeakHashMap;
 import java.util.regex.Pattern;
 
-/**
- * Created by Acer on 10/2/2017.
- */
 @Slf4j
 @Service
 public class StorageService {

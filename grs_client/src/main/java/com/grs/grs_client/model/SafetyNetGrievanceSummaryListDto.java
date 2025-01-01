@@ -12,6 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class SafetyNetGrievanceSummaryListDto {
-    public List<SafetyNetGrievanceSummaryDto> safetyNetGrievanceSummaryList;
-    public Integer recordCount;
+    private List<SafetyNetGrievanceSummaryDto> safetyNetGrievanceSummaryList;
+    private Integer recordCount;
 }

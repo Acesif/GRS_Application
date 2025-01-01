@@ -550,7 +550,7 @@ public class GrievanceController {
             (@RequestBody SafetyNetGrievanceSummaryRequest request, Model model) {
         SafetyNetGrievanceSummaryListDto safetyNetGrievanceSummaryListDto
                 = this.grievanceService.getSafetyNetGrievanceSummary(request);
-        model.addAttribute("resultList", safetyNetGrievanceSummaryListDto.safetyNetGrievanceSummaryList);
+        model.addAttribute("resultList", safetyNetGrievanceSummaryListDto.getSafetyNetGrievanceSummaryList());
         return safetyNetGrievanceSummaryListDto;
     }
 

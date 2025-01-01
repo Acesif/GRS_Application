@@ -16,9 +16,6 @@ import javax.annotation.PostConstruct;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-/**
- * Created by Acer on 03-Jan-18.
- */
 @Slf4j
 @Service
 public class ESBConnectorService {

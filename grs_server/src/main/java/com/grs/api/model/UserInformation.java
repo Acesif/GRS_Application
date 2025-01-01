@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.grs.api.myGov.MyGovTokenResponse;
 import lombok.*;
 
-/**
- * Created by Acer on 10/4/2017.
- */
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

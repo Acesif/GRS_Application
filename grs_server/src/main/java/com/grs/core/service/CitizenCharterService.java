@@ -25,9 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Created by Acer on 05-Oct-17.
- */
 @Slf4j
 @Service
 public class CitizenCharterService {

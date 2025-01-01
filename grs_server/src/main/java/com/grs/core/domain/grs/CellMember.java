@@ -8,9 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-/**
- * Created by Acer on 11-Mar-18.
- */
+
 @Entity
 @Data
 @Builder

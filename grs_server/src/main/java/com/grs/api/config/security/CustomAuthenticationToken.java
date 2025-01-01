@@ -8,9 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
 
-/**
- * Created by Acer on 10/4/2017.
- */
+
 @Data
 public class CustomAuthenticationToken extends UsernamePasswordAuthenticationToken {
     private UserInformation userInformation;
