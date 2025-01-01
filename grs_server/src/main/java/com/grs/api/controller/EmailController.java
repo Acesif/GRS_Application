@@ -18,6 +18,15 @@ import org.springframework.web.bind.annotation.*;
 public class EmailController {
     private final EmailService emailService;
 
+
+    @PostMapping(value = "/sendEmail")
+    public void sendEmail(@RequestParam String to,
+                          @RequestParam String subject,
+                          @RequestParam String text) {
+         emailService.sendEmail(to,subject,text);
+
+    }
+
     @RequestMapping(value = "/emailTempletes", method = RequestMethod.GET)
     public Page<EmailTemplateDTO> findAllEmailTemplates(
             @PageableDefault(value = Integer.MAX_VALUE) Pageable pageable) {

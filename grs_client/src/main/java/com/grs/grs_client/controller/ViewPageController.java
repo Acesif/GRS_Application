@@ -66,7 +66,7 @@ public class ViewPageController {
 
             try {
                 LoginResponse loginResponse = authGateway.adminLogin(data);
-
+//                loginResponse.getUserInformation().setToken(loginResponse.getAccessToken());
                 List<GrantedAuthorityImpl> authorities = loginResponse.getAuthorities().stream()
                         .map(GrantedAuthorityImpl::new)
                         .collect(Collectors.toList());
@@ -76,6 +76,7 @@ public class ViewPageController {
                         .isAccountAuthenticated(true)
                         .grantedAuthorities(authorities)
                         .userInformation(loginResponse.getUserInformation())
+                        .accessToken(loginResponse.getAccessToken())
                         .build();
 
                 TokenAuthenticationServiceUtil.addAuthenticationForMyGov(userDetails, request, response);
