@@ -9,9 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Created by Acer on 14-Mar-18.
- */
+
 @Repository
 public interface CellMeetingRepo extends JpaRepository<CellMeeting, Long> {
     Long countByStatus(boolean status);

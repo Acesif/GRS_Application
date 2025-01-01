@@ -37,9 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Created by Acer on 12-Oct-17.
- */
 @Service
 public class ComplainantService {
     @Autowired

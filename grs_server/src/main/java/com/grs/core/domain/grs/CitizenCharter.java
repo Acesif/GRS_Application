@@ -14,9 +14,7 @@ import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 
-/**
- * Created by Acer on 9/12/2017.
- */
+
 @Entity
 @Data
 @NoArgsConstructor

@@ -21,9 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Created by Acer on 08-Oct-17.
- */
 @Slf4j
 @Service
 public class OfficesGroDAO {

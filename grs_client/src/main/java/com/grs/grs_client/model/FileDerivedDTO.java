@@ -2,9 +2,6 @@ package com.grs.grs_client.model;
 
 import lombok.*;
 
-/**
- * Created by Acer on 10/2/2017.
- */
 @Data
 @EqualsAndHashCode(callSuper=true)
 @AllArgsConstructor

@@ -13,9 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-/**
- * Created by User on 10/3/2017.
- */
 @Service
 public class SuggestionDAO {
     @Autowired

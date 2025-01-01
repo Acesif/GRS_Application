@@ -15,9 +15,7 @@ import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by Acer on 14-Mar-18.
- */
+
 @Entity
 @Data
 @Builder

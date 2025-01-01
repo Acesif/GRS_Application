@@ -3,9 +3,6 @@ package com.grs.core.domain;
 import java.util.WeakHashMap;
 import java.util.Map;
 
-/**
- * Created by User on 10/19/2017.
- */
 public enum RedirectMap {
     PUBLIC_GRIEVANCE_SUBMIT("/addPublicGrievances.do"), STAFF_GRIEVANCE_SUBMIT("/addStaffGrievances.do"), DASHBOARD("/dashboard.do");
 

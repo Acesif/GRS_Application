@@ -1,8 +1,5 @@
 package com.grs.core.model;
 
-/**
- * Created by Acer on 02-Jan-18.
- */
 public enum ListViewType {
     NORMAL_INBOX,
     NORMAL_OUTBOX,

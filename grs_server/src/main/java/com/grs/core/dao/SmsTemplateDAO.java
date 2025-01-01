@@ -12,9 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-/**
- * Created by HP on 2/6/2018.
- */
 @Service
 public class SmsTemplateDAO {
     @Autowired

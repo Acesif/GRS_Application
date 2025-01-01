@@ -5,9 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Created by Acer on 15-Apr-18.
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

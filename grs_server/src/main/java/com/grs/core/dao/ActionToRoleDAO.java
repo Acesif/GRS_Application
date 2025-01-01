@@ -10,9 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * Created by Acer on 9/28/2017.
- */
 @Service
 public class ActionToRoleDAO {
     @Autowired

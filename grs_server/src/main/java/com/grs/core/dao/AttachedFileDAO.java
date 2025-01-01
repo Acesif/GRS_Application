@@ -22,9 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-/**
- * Created by Acer on 10/4/2017.
- */
+
 @Service
 public class AttachedFileDAO {
     @Autowired

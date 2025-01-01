@@ -6,9 +6,6 @@ import com.grs.grs_client.enums.OISFUserType;
 import com.grs.grs_client.enums.UserType;
 import lombok.*;
 
-/**
- * Created by Acer on 10/4/2017.
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

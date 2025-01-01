@@ -44,9 +44,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * Created by Acer on 9/14/2017.
- */
 @Slf4j
 @Service
 public class GrievanceDAO {

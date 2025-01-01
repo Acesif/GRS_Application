@@ -147,15 +147,15 @@
             setAdditionalRole();
         }
 
-        function setAdditionalRole() {
-            $.getJSON("/api/user/organograms", function (response) {
-                if ($("[name='showDrawerMenu']").val() == "true") {
-                    insertAdditionalRolesInLeftMenu(response);
-                } else {
-                    insertAdditionalRolesInTopHeader(response);
-                }
-            });
-        }
+        // function setAdditionalRole() {
+        //     $.getJSON("/api/user/organograms", function (response) {
+        //         if ($("[name='showDrawerMenu']").val() == "true") {
+        //             insertAdditionalRolesInLeftMenu(response);
+        //         } else {
+        //             insertAdditionalRolesInTopHeader(response);
+        //         }
+        //     });
+        // }
 
         function setBangla() {
             $.cookie("lang", "fr");

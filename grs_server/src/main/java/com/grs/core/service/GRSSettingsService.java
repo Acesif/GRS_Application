@@ -18,9 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Created by Aftab on 2/20/2018.
- */
 @Service
 public class GRSSettingsService {
     @Autowired

@@ -8,9 +8,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
-/**
- * Created by Acer on 17-Dec-17.
- */
 @Service
 public class OfficeUnitOrganogramService {
     @Autowired
