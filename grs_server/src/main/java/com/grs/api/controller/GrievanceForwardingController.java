@@ -149,7 +149,7 @@ public class GrievanceForwardingController {
         return this.grievanceForwardingService.getGroHistory(grievanceId);
     }
 
-    @RequestMapping(value = "/api/gro/history/{grievanceId}", method =  RequestMethod.GET)
+    @RequestMapping(value = "/api/gro/recentmostGrievanceForwarding/{grievanceId}", method =  RequestMethod.GET)
     public EmployeeOrganogram getGroOfRecentmostGrievanceForwarding(@PathVariable("grievanceId") Long grievanceId) {
         return this.grievanceForwardingService.getGroOfRecentmostGrievanceForwarding(grievanceId);
     }
