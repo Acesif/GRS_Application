@@ -16,7 +16,6 @@ public class SafetyNetProgramGateway extends BaseRestTemplate{
         String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/citizenCharter/getSafetyNetPrograms";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Authorization", "Bearer " + getToken());
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         ResponseEntity<List<SafetyNetProgram>> response = restTemplate.exchange(url,

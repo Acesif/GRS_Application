@@ -1,13 +1,14 @@
 package com.grs.grs_client.config;
 
 import com.grs.grs_client.model.UserInformation;
-import lombok.Data;
+import lombok.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
 
-@Data
+@Getter
+@Setter
 public class CustomAuthenticationToken extends UsernamePasswordAuthenticationToken {
     private UserInformation userInformation;
 

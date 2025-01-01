@@ -1,7 +1,7 @@
 app:
   base:
-#    url: http://94.250.203.197
-    url: http://localhost
+    url: http://94.250.203.197
+#    url: http://localhost
 
 server:
   port: 80
