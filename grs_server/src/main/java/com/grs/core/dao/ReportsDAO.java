@@ -9,9 +9,6 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by Acer on 22-Feb-18.
- */
 @Slf4j
 @Service
 public class ReportsDAO {

@@ -9,9 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * Created by User on 10/3/2017.
- */
 @Service
 public class GRSSettingsDAO {
     @Autowired

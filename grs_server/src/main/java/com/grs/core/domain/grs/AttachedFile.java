@@ -8,9 +8,7 @@ import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 
-/**
- * Created by Acer on 10/4/2017.
- */
+
 @Entity
 @Data
 @EqualsAndHashCode(callSuper=true)

@@ -11,23 +11,20 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Created by Tanvir on 9/7/2017.
- */
 @Repository
 public interface EmployeeOfficeRepo extends JpaRepository<EmployeeOffice, Long> {
 
-    public List<EmployeeOffice> findByStatusAndOfficeUnitOrganogram(Boolean status, OfficeUnitOrganogram officeUnitOrganogram);
+    List<EmployeeOffice> findByStatusAndOfficeUnitOrganogram(Boolean status, OfficeUnitOrganogram officeUnitOrganogram);
 
-    public List<EmployeeOffice> findByOfficeAndOfficeUnitOrganogramAndStatus(Office office, OfficeUnitOrganogram officeUnitOrganogram, boolean status);
+    List<EmployeeOffice> findByOfficeAndOfficeUnitOrganogramAndStatus(Office office, OfficeUnitOrganogram officeUnitOrganogram, boolean status);
 
-    public EmployeeOffice findByEmployeeRecord(EmployeeRecord employeeRecord);
+    EmployeeOffice findByEmployeeRecord(EmployeeRecord employeeRecord);
 
-    public EmployeeOffice findByOfficeAndEmployeeRecordAndStatus(Office office, EmployeeRecord employeeRecord, Boolean status);
+    EmployeeOffice findByOfficeAndEmployeeRecordAndStatus(Office office, EmployeeRecord employeeRecord, Boolean status);
 
-    public List<EmployeeOffice> findByEmployeeRecordIdAndStatus(Long employeeRecordId, Boolean status);
+    List<EmployeeOffice> findByEmployeeRecordIdAndStatus(Long employeeRecordId, Boolean status);
 
-    public List<EmployeeOffice> findEmployeeOfficeByOfficeIdAndIsOfficeHeadAndStatus(Long officeId, Boolean isOfficeHead, Boolean status);
+    List<EmployeeOffice> findEmployeeOfficeByOfficeIdAndIsOfficeHeadAndStatus(Long officeId, Boolean isOfficeHead, Boolean status);
 
     //EmployeeOffice findByOfficeIdAndOfficeUnitOrganogramId(Long officeId, Long officeUnitOrganogramId);
 

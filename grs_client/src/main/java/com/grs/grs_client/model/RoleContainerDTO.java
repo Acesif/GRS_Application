@@ -14,7 +14,6 @@ import java.util.List;
 public class RoleContainerDTO {
     List<SingleRoleDTO> roles;
 
-
     @Data
     private static class SingleRoleDTO {
         private Long officeUnitOrganogramId;

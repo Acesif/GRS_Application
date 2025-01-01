@@ -23,9 +23,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.WeakHashMap;
 
-/**
- * Created by Acer on 03-Jan-18.
- */
 @Slf4j
 @Service
 public class MyGovConnectorService {

@@ -12,9 +12,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Created by Acer on 9/14/2017.
- */
 @Repository
 public interface GrievanceRepo extends JpaRepository<Grievance, Long> {
     @Query(value="SELECT coalesce(max(CONVERT(tracking_number ,UNSIGNED INTEGER)),0) FROM complaints c where tracking_number not like '01%' and tracking_number not like '1%'",
@@ -44,21 +41,21 @@ public interface GrievanceRepo extends JpaRepository<Grievance, Long> {
     @Query(value = "SELECT * FROM grs_only_3.complaints WHERE complainant_id IN (SELECT id FROM grs_only_3.complainants WHERE mobile_number = :mobile_number)", nativeQuery = true)
     List<Grievance> findGrievancesByMobileNumber(@Param("mobile_number") String mobile_number);
 
-    public Page<Grievance> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    Page<Grievance> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
-    public Page<Grievance> findByOfficeIdAndGrievanceCurrentStatusNotOrderByCreatedAtAsc(Long officeId, GrievanceCurrentStatus grievanceCurrentStatus, Pageable pageable);
+    Page<Grievance> findByOfficeIdAndGrievanceCurrentStatusNotOrderByCreatedAtAsc(Long officeId, GrievanceCurrentStatus grievanceCurrentStatus, Pageable pageable);
 
-    public Page<Grievance> findByOfficeIdAndGrievanceCurrentStatusOrderByCreatedAtDesc(Long officeId, GrievanceCurrentStatus currentStatus, Pageable pageable);
+    Page<Grievance> findByOfficeIdAndGrievanceCurrentStatusOrderByCreatedAtDesc(Long officeId, GrievanceCurrentStatus currentStatus, Pageable pageable);
 
-    public Page<Grievance> findByOfficeIdAndGrievanceCurrentStatusStartingWithOrderByCreatedAtDesc(Long officeId, String prefix, Pageable pageable);
+    Page<Grievance> findByOfficeIdAndGrievanceCurrentStatusStartingWithOrderByCreatedAtDesc(Long officeId, String prefix, Pageable pageable);
 
-    public Page<Grievance> findByOfficeIdAndGrievanceCurrentStatusInOrderByCreatedAtDesc(Long officeId, List<GrievanceCurrentStatus> currentStatusList, Pageable pageable);
+    Page<Grievance> findByOfficeIdAndGrievanceCurrentStatusInOrderByCreatedAtDesc(Long officeId, List<GrievanceCurrentStatus> currentStatusList, Pageable pageable);
 
-    public Page<Grievance> findByComplainantIdAndGrsUserOrderByUpdatedAtDesc(Long userId, Pageable pageable, Boolean grsUser);
+    Page<Grievance> findByComplainantIdAndGrsUserOrderByUpdatedAtDesc(Long userId, Pageable pageable, Boolean grsUser);
 
-    public Page<Grievance> findByCreatedByAndSourceOfGrievanceOrderByUpdatedAtDesc(Long userId, Pageable pageable, String sourceOfGrievance);
+    Page<Grievance> findByCreatedByAndSourceOfGrievanceOrderByUpdatedAtDesc(Long userId, Pageable pageable, String sourceOfGrievance);
 
-    public List<Grievance> findByCreatedByAndSourceOfGrievanceOrderByUpdatedAtDesc(Long userId, String sourceOfGrievance);
+    List<Grievance> findByCreatedByAndSourceOfGrievanceOrderByUpdatedAtDesc(Long userId, String sourceOfGrievance);
 
     @Query(value = "select c.*\n"+
             "from complaints as c , (select cm.complaint_id from (select max(id) as id \n" +
@@ -79,14 +76,14 @@ public interface GrievanceRepo extends JpaRepository<Grievance, Long> {
                     "where c.id=outboxAppeal.complaint_id and c.current_status not in ('APPEAL_REJECTED','APPEAL_CLOSED')\n"+
                     "ORDER BY ?#{#pageable} ",
             nativeQuery = true)
-    public Page<Grievance> getOutboxAppealGrievances(Long officeId, Long officeUnitOrganogramId, Pageable pageable);
+    Page<Grievance> getOutboxAppealGrievances(Long officeId, Long officeUnitOrganogramId, Pageable pageable);
 
 
-    public Long countByOfficeId(Long officeId);
+    Long countByOfficeId(Long officeId);
 
     @Query(nativeQuery = true,
             value = "SELECT COUNT(*) FROM complaints AS c WHERE (c.current_status LIKE '%REJECTED%' OR c.current_status LIKE 'CLOSED%') AND office_id=?1")
-    public Long getCountOfResolvedGrievancesByOfficeId(Long officeId);
+    Long getCountOfResolvedGrievancesByOfficeId(Long officeId);
 
     @Query(nativeQuery = true,
             value = "SELECT COUNT(*) FROM complaints AS c WHERE " +
@@ -94,7 +91,7 @@ public interface GrievanceRepo extends JpaRepository<Grievance, Long> {
                     "AND c.current_status NOT LIKE 'CLOSED%' " +
                     "AND c.created_at < CURRENT_DATE - INTERVAL '2' MONTH) " +
                     "AND office_id=?1")
-    public Long getCountOfUnresolvedGrievancesByOfficeId(Long officeId);
+    Long getCountOfUnresolvedGrievancesByOfficeId(Long officeId);
 
     @Query(nativeQuery = true,
             value = "SELECT COUNT(*) FROM complaints AS c WHERE " +
@@ -102,15 +99,15 @@ public interface GrievanceRepo extends JpaRepository<Grievance, Long> {
                     "AND c.current_status NOT LIKE 'CLOSED%' " +
                     "AND c.created_at >= CURRENT_DATE - INTERVAL '2' MONTH) " +
                     "AND office_id=?1")
-    public Long getCountOfRunningGrievancesByOfficeId(Long officeId);
+    Long getCountOfRunningGrievancesByOfficeId(Long officeId);
 
-    public Long countAllByOfficeId(Long officeId);
+    Long countAllByOfficeId(Long officeId);
 
-    public Page<Grievance> findByTrackingNumber(String trackingNumber, Pageable pageable);
+    Page<Grievance> findByTrackingNumber(String trackingNumber, Pageable pageable);
 
-    public Grievance findByTrackingNumber(String trackingNumber);
+    Grievance findByTrackingNumber(String trackingNumber);
 
-    public Grievance findByTrackingNumberAndComplainantId(String trackingNumber, Long complainantId);
+    Grievance findByTrackingNumberAndComplainantId(String trackingNumber, Long complainantId);
 
     List<Grievance> findByIdIn(List<Long> grievanceIds);
 
@@ -128,6 +125,6 @@ public interface GrievanceRepo extends JpaRepository<Grievance, Long> {
             "\tand current_status not like '%CELL_MEETING%' and current_status not like '%REJECTED%';")
     List<Grievance> findByCellOffice();
 
-    public Page<Grievance> findAll(Specification specification, Pageable pageable);
+    Page<Grievance> findAll(Specification specification, Pageable pageable);
 
 }

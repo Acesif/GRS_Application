@@ -7,9 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * Created by Acer on 11-Mar-18.
- */
+
 @Service
 public class CellMemberDAO {
     @Autowired

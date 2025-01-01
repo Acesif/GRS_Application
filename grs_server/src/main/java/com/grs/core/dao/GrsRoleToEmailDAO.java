@@ -11,9 +11,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Created by HP on 3/11/2018.
- */
 @Service
 public class GrsRoleToEmailDAO {
     @Autowired

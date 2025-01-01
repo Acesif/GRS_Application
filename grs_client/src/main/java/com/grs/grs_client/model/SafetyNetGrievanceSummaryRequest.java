@@ -12,11 +12,11 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 public class SafetyNetGrievanceSummaryRequest {
-    Date fromDate;
-    Date toDate;
-    String languageCode;
-    String spProgrammeId;
-    String division;
-    String district;
-    String upazila;
+    private Date fromDate;
+    private Date toDate;
+    private String languageCode;
+    private String spProgrammeId;
+    private String division;
+    private String district;
+    private String upazila;
 }

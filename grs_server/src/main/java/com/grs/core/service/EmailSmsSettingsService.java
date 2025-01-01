@@ -18,9 +18,6 @@ import java.util.WeakHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by HP on 3/13/2018.
- */
 @Slf4j
 @Service
 public class EmailSmsSettingsService {

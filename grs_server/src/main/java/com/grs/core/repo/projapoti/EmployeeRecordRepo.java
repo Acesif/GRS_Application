@@ -10,13 +10,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Created by Acer on 9/6/2017.
- */
 @Repository
 public interface EmployeeRecordRepo extends JpaRepository<EmployeeRecord, Long> {
-    public List<EmployeeRecord> findByEmployeeOfficesIn(List<EmployeeOffice> employeeOffices);
-    public List<EmployeeRecord> findByOffices(Office office);
-    public Page<EmployeeRecord> findDistinctByOfficesOrderByIdAsc(Office office, Pageable pageable);
-    public Page<EmployeeRecord> findByIdInOrderByIdAsc(List<Long> employeeRecordIdList, Pageable pageable);
+    List<EmployeeRecord> findByEmployeeOfficesIn(List<EmployeeOffice> employeeOffices);
+    List<EmployeeRecord> findByOffices(Office office);
+    Page<EmployeeRecord> findDistinctByOfficesOrderByIdAsc(Office office, Pageable pageable);
+    Page<EmployeeRecord> findByIdInOrderByIdAsc(List<Long> employeeRecordIdList, Pageable pageable);
 }

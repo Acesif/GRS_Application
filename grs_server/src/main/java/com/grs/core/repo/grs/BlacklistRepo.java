@@ -8,9 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * Created by Acer on 9/27/2017.
- */
+
 @Repository
 public interface BlacklistRepo extends JpaRepository<Blacklist, Long> {
     List<Blacklist> findByComplainantId(Long complainantId);

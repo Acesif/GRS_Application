@@ -11,9 +11,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Random;
 
-/**
- * Created by Tanvir on 4/13/2017.
- */
 @Slf4j
 @Service
 public class UserDAO {

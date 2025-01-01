@@ -6,10 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Created by Acer on 8/30/2017.
- */
 @Repository
 public interface PermissionsToUsersRepo extends JpaRepository <PermissionsToUsers, Long> {
-    public List<PermissionsToUsers> findByUserIdAndUserType(Long userId, String userType);
+    List<PermissionsToUsers> findByUserIdAndUserType(Long userId, String userType);
 }

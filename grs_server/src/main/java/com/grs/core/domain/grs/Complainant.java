@@ -11,9 +11,7 @@ import org.hibernate.annotations.NotFoundAction;
 import javax.persistence.*;
 import java.util.Date;
 
-/**
- * Created by Acer on 9/27/2017.
- */
+
 @Entity
 @Data
 @EqualsAndHashCode(callSuper=true)

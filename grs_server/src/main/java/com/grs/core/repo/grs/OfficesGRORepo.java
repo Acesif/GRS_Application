@@ -11,29 +11,26 @@ import org.springframework.stereotype.Repository;
 import java.math.BigInteger;
 import java.util.List;
 
-/**
- * Created by Acer on 08-Oct-17.
- */
 @Repository
 public interface OfficesGRORepo extends JpaRepository<OfficesGRO, Long> {
-    public List<OfficesGRO> findAll(Specification specification);
+    List<OfficesGRO> findAll(Specification specification);
 
-    public OfficesGRO findByOfficeId(Long id);
+    OfficesGRO findByOfficeId(Long id);
 
     @Query(nativeQuery = true, value = "select office_id from offices_gro")
-    public List<BigInteger> findOfficeIds();
+    List<BigInteger> findOfficeIds();
 
-    public List<OfficesGRO> findByGroOfficeUnitOrganogramIdIsNull();
+    List<OfficesGRO> findByGroOfficeUnitOrganogramIdIsNull();
 
-    public List<OfficesGRO> findByAppealOfficerOfficeUnitOrganogramIdIsNull();
+    List<OfficesGRO> findByAppealOfficerOfficeUnitOrganogramIdIsNull();
 
-    public List<OfficesGRO> findByAdminOfficeUnitOrganogramIdIsNull();
+    List<OfficesGRO> findByAdminOfficeUnitOrganogramIdIsNull();
 
-    public List<OfficesGRO> findByAppealOfficerOfficeUnitOrganogramId(Long officeUnitOrganogramId);
+    List<OfficesGRO> findByAppealOfficerOfficeUnitOrganogramId(Long officeUnitOrganogramId);
 
-    public List<OfficesGRO> findByAdminOfficeUnitOrganogramId(Long officeUnitOrganogramId);
+    List<OfficesGRO> findByAdminOfficeUnitOrganogramId(Long officeUnitOrganogramId);
 
-    public Integer countByOfficeId(Long officeId);
+    Integer countByOfficeId(Long officeId);
 
     @Query(nativeQuery = true, value = "select office_id from offices_gro where office_id in ?1")
     List<BigInteger> findGRSEnabledOfficeIdIn(List<Long> officeIdList);

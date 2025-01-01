@@ -7,13 +7,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-
-/**
- * Created on 22/8/2023.
- */
 @Repository
 public interface SpProgrammeRepo extends JpaRepository <SpProgramme, Integer> {
-    public Optional<SpProgramme> findById(Integer id);
-    public Integer countByNameEnOrNameBn(String nameEn, String nameBn);
-    public List<SpProgramme> findAllByStatus(Boolean status);
+    Optional<SpProgramme> findById(Integer id);
+    Integer countByNameEnOrNameBn(String nameEn, String nameBn);
+    List<SpProgramme> findAllByStatus(Boolean status);
 }

@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class OfficeUnitWithDesignationDTO {
-    String officeUnitNameBangla;
-    String officeUnitNameEnglish;
-    String designation;
-    Long officeUnitOrganogramId;
+    private String officeUnitNameBangla;
+    private String officeUnitNameEnglish;
+    private String designation;
+    private Long officeUnitOrganogramId;
 }

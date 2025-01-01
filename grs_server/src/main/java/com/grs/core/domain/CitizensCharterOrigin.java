@@ -12,9 +12,7 @@ import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import java.util.List;
-/**
- * Created by Acer on 23-Apr-18.
- */
+
 @Entity
 @Data
 @Builder

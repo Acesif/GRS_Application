@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class SafetyNetGrievanceSummaryDto {
-    public String spProgramName;
-    public String divisionName;
-    public String districtName;
-    public String upazilaName;
-    public Integer totalGrievances;
-    public Integer resolvedGrievances;
-    public Integer outstandingGrievances;
+    private String spProgramName;
+    private String divisionName;
+    private String districtName;
+    private String upazilaName;
+    private Integer totalGrievances;
+    private Integer resolvedGrievances;
+    private Integer outstandingGrievances;
 }

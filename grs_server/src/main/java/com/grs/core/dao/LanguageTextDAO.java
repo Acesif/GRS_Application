@@ -8,9 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * Created by HP on 2/7/2018.
- */
 @Service
 public class LanguageTextDAO {
     @Autowired

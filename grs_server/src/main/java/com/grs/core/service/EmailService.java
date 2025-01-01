@@ -21,9 +21,6 @@ import javax.mail.internet.MimeMessage;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Created by Acer on 18-Dec-17.
- */
 @Slf4j
 @Service
 public class EmailService {

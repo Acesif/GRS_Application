@@ -20,9 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Created by Acer on 9/11/2017.
- */
 @Slf4j
 @Service
 public class ModelViewService {

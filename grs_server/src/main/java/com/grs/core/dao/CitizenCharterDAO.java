@@ -15,9 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Created by Acer on 9/12/2017.
- */
+
 @Service
 public class CitizenCharterDAO {
     @Autowired

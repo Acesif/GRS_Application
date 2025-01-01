@@ -18,9 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Created by Acer on 9/27/2017.
- */
+
 @Slf4j
 @Component
 public class CustomAuthenticationProvider implements AuthenticationProvider {
