@@ -6,7 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.ArrayList;
@@ -104,5 +106,32 @@ public class OfficesGateway extends BaseRestTemplate{
             log.error("Unexpected Error: {}", e.getMessage());
             throw e;
         }
+    }
+
+    public Office findOne(Long officeId) {
+
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/findOneById/"+officeId;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<Office> response = restTemplate.exchange(url,
+                HttpMethod.GET, entity, new ParameterizedTypeReference<Office>() {
+                });
+        return response.getBody();
+    }
+
+    public Boolean hasAccessToAoAndSubOfficesDashboard(Long officeId) {
+
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/hasAccessToAoAndSubOfficesDashboard/"+officeId;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "Bearer " + getToken());
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<Boolean> response = restTemplate.exchange(url,
+                HttpMethod.GET, entity, new ParameterizedTypeReference<Boolean>() {
+                });
+        return response.getBody();
+
+
     }
 }
