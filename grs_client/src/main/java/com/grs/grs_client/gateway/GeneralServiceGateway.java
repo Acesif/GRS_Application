@@ -11,9 +11,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.List;
 
 
 @Service
@@ -149,6 +151,25 @@ public class GeneralServiceGateway extends BaseRestTemplate{
 
 
         return response.getBody();
+    }
+
+
+    public String getSettingsValueByFieldName( String name) {
+
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/generalSettings/getSettingsValueByFieldName";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        url = UriComponentsBuilder.fromHttpUrl(url)
+                .queryParam("name", name)
+                .toUriString();
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange(url,
+                HttpMethod.GET, entity, new ParameterizedTypeReference<String>() {
+                });
+        return response.getBody();
+
+
     }
 
 }

@@ -82,7 +82,7 @@ public class OfficesGateway extends BaseRestTemplate{
         }
         List<Long> officeIdsInOfficesGro = this.officesGroService.findAllOffficeIds();
         return officeIds.stream()
-                .filter(id -> officeIdsInOfficesGro.contains(id))
+                .filter(officeIdsInOfficesGro::contains)
                 .collect(Collectors.toList());
 
     }
@@ -133,5 +133,124 @@ public class OfficesGateway extends BaseRestTemplate{
         return response.getBody();
 
 
+    }
+
+    public ServiceOrigin getServiceOriginDTObyId(Long id) {
+
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/office/serviceOriginDTObyId/"+id;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<ServiceOrigin> response = restTemplate.exchange(url,
+                HttpMethod.GET, entity, new ParameterizedTypeReference<ServiceOrigin>() {
+                });
+        return response.getBody();
+
+    }
+
+    public List<OfficeOriginUnitDTO> getOfficeOriginUnitDTOListByOfficeOriginId(Long officeOriginId) {
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/office-origins/" + officeOriginId + "/office-origin-units";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<List<OfficeOriginUnitDTO>> response = restTemplate.exchange(url,
+                HttpMethod.GET, entity, new ParameterizedTypeReference<List<OfficeOriginUnitDTO>>() {
+                });
+        return response.getBody();
+    }
+
+    public List<OfficeOriginUnitOrganogramDTO> getOfficeOriginUnitOrganogramDTOListByOfficeOriginUnitId(Long officeOriginUnitId) {
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/office-origin-units/" + officeOriginUnitId + "/office-origin-unit-organograms";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<List<OfficeOriginUnitOrganogramDTO>> response = restTemplate.exchange(url,
+                HttpMethod.GET, entity, new ParameterizedTypeReference<List<OfficeOriginUnitOrganogramDTO>>() {
+                });
+        return response.getBody();
+    }
+
+    public List<OfficeSearchDTO> getOfficeSearchingData(){
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/office/getOfficeSearchingData";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<List<OfficeSearchDTO>> response = restTemplate.exchange(url,
+                HttpMethod.GET, entity, new ParameterizedTypeReference<List<OfficeSearchDTO>>() {
+                });
+        return response.getBody();
+    }
+
+    public ServiceOrigin getServiceOrigin(Long id) {
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/getServiceOrigin/" + id;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<ServiceOrigin> response = restTemplate.exchange(url,
+                HttpMethod.GET, entity, new ParameterizedTypeReference<ServiceOrigin>() {
+                });
+        return response.getBody();
+    }
+
+    public Boolean isMinistryOrDivisionLevelOffice(Long officeId) {
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/isMinistryOrDivisionLevelOffice/" + officeId;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<Boolean> response = restTemplate.exchange(url,
+                HttpMethod.GET, entity, new ParameterizedTypeReference<Boolean>() {
+                });
+        return response.getBody();
+    }
+
+    public List<OfficeSearchDTO> getDescendantOfficeSearchingData() {
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/office/getDescendantOfficeSearchingData";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<List<OfficeSearchDTO>> response = restTemplate.exchange(url,
+                HttpMethod.GET, entity, new ParameterizedTypeReference<List<OfficeSearchDTO>>() {
+                });
+        return response.getBody();
+    }
+
+
+    public List<OfficeSearchDTO> getTopLayerOffices() {
+
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/office/getTopLayerOffices";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<List<OfficeSearchDTO>> response = restTemplate.exchange(url,
+                HttpMethod.GET, entity, new ParameterizedTypeReference<List<OfficeSearchDTO>>() {
+                });
+        return response.getBody();
+
+    }
+
+    public Boolean canViewDashboardAsFieldCoordinator(Long officeId){
+
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/office/canViewDashboardAsFieldCoordinator/" + officeId;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "Bearer " + getToken());
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<Boolean> response = restTemplate.exchange(url,
+                HttpMethod.GET, entity, new ParameterizedTypeReference<Boolean>() {
+                });
+        return response.getBody();
+
+    }
+
+    public Office getOffice( Long officeId){
+
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/office/getOffice/" + officeId;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<Office> response = restTemplate.exchange(url,
+                HttpMethod.GET, entity, new ParameterizedTypeReference<Office>() {
+                });
+        return response.getBody();
     }
 }

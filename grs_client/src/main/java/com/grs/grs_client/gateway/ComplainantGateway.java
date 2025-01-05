@@ -15,7 +15,7 @@ public class ComplainantGateway extends BaseRestTemplate{
     String GRS_CORE_CONTEXT_PATH = "/grs_server";
 
     public boolean isBlacklistedUser(Long userId){
-        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/complainantService/isBlacklistedUserByComplainantId/"+userId;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/complainantService/isBlacklistedUserByComplainantId/"+userId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 //        headers.add("Authorization", "Bearer " + getToken());
@@ -79,5 +79,20 @@ public class ComplainantGateway extends BaseRestTemplate{
                 HttpMethod.GET, entity, new ParameterizedTypeReference<Complainant>() {
                 });
         return response.getBody();
+    }
+
+
+    public Long countAll() {
+        String url = getUrl() + "/api/complainantService/countAll";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<Long> response = restTemplate.exchange(url,
+                HttpMethod.GET, entity, new ParameterizedTypeReference<Long>() {
+                });
+        return response.getBody();
+
     }
 }
