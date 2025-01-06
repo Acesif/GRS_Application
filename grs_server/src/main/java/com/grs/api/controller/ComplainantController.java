@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
-@RequestMapping("/complainantService")
+@RequestMapping("/api/complainantService")
 @RequiredArgsConstructor
 public class ComplainantController {
 

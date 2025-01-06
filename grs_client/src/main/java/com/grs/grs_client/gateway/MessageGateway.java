@@ -78,4 +78,71 @@ public class MessageGateway extends BaseRestTemplate {
 
         return response.getBody();
     }
+
+
+
+    public String getCurrentDateMonthYearAsString(){
+
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/message/getCurrentDateMonthYearAsString";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
+
+
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+
+
+        ResponseEntity<String> response = null;
+        try {
+
+            response = restTemplate.exchange(
+                    url, HttpMethod.GET, entity, new ParameterizedTypeReference<String>() {
+
+                    }
+            );
+
+        } catch (HttpClientErrorException e) {
+            log.error("HTTP client Error: ", e.getResponseBodyAsString());
+            throw e;
+        } catch (Exception e) {
+            log.error("Unexpected Error ", e.getMessage());
+        }
+
+
+        return response.getBody();
+
+
+    }
+
+    public String getCurrentYearString(){
+
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/message/getCurrentYearString";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
+
+
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+
+
+        ResponseEntity<String> response = null;
+        try {
+
+            response = restTemplate.exchange(
+                    url, HttpMethod.GET, entity, new ParameterizedTypeReference<String>() {
+
+                    }
+            );
+
+        } catch (HttpClientErrorException e) {
+            log.error("HTTP client Error: ", e.getResponseBodyAsString());
+            throw e;
+        } catch (Exception e) {
+            log.error("Unexpected Error ", e.getMessage());
+        }
+
+
+        return response.getBody();
+
+    }
 }

@@ -59,4 +59,17 @@ public class OfficesGroGateway  extends BaseRestTemplate{
                 .sorted()
                 .collect(Collectors.toList());
     }
+
+    public List<OfficesGRO> findAll(){
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/officegro/findAll";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<List<OfficesGRO>> response = restTemplate.exchange(url,
+                HttpMethod.GET, entity, new ParameterizedTypeReference<List<OfficesGRO>>() {
+                });
+        return response.getBody();
+    }
+
 }

@@ -21,7 +21,7 @@ public class CitizenCharterGateway extends BaseRestTemplate{
         String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/citizenCharter/getCitizenCharterByOfficeCitizenCharterId/"+officeCitizenCharterId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Authorization", "Bearer " + getToken());
+//        headers.add("Authorization", "Bearer " + getToken());
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         ResponseEntity<CitizenCharter> response = restTemplate.exchange(url,

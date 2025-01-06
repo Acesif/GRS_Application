@@ -21,6 +21,7 @@ import com.grs.core.domain.ServiceType;
 import com.grs.core.domain.grs.*;
 import com.grs.core.domain.projapoti.*;
 import com.grs.core.service.*;
+import com.grs.utils.CacheUtil;
 import com.grs.utils.Constant;
 import com.grs.utils.StringUtil;
 import com.grs.utils.Utility;
@@ -108,8 +109,8 @@ public class OfficeController {
 
     @RequestMapping(value = "/api/office/{office_id}/offices-citizen-charters/details", method = RequestMethod.GET)
     public Object getOfficesCitizenChartersForOffice(@PathVariable("office_id") Long officeId,
-                                                                         @RequestParam("layerLevel") Long layerLevel,
-                                                                         @RequestParam("officeOriginId") Long officeOriginId) {
+                                                     @RequestParam("layerLevel") Long layerLevel,
+                                                     @RequestParam("officeOriginId") Long officeOriginId) {
         try {
             Office office = officeService.findOne(officeId);
             if (officeOriginId == 0) {
@@ -381,12 +382,12 @@ public class OfficeController {
 
     @RequestMapping(value = "/api/offices/ancestors", method = RequestMethod.GET)
     public List<Office> getOfficeAlongWithAncestorOffices(Object request) {
-        if (request instanceof Authentication){
+        if (request instanceof Authentication) {
             UserInformation userInformation = Utility.extractUserInformationFromAuthentication(
                     (Authentication) request
             );
             return this.officeService.getOfficeAlongWithAncestorOffices(userInformation);
-        } else if (request instanceof UserInformation){
+        } else if (request instanceof UserInformation) {
             return this.officeService.getOfficeAlongWithAncestorOffices((UserInformation) request);
         } else {
             return null;
@@ -394,7 +395,7 @@ public class OfficeController {
     }
 
     @RequestMapping(value = "/api/office-origin/{layer_level}", method = RequestMethod.GET)
-    public List<OfficeOrigin> getOfficeOrigins( @PathVariable("layer_level") Integer layerLevel,
+    public List<OfficeOrigin> getOfficeOrigins(@PathVariable("layer_level") Integer layerLevel,
                                                @RequestParam(value = "grsEnabled", defaultValue = "true") Boolean grsEnabled,
                                                @RequestParam(value = "showChildOfficesOnly", defaultValue = "false") Boolean showChildOfficesOnly) {
         return this.officeService.getOfficeOriginsByLayerLevel(layerLevel, grsEnabled, showChildOfficesOnly);
@@ -516,7 +517,7 @@ public class OfficeController {
 
     @RequestMapping(value = "/api/offices/{officeId}/check-if-user-from-ancestors", method = RequestMethod.GET)
     public boolean checkIfUserFromParentOffices(Authentication authentication, @PathVariable("officeId") Long officeId) {
-        if(authentication == null) {
+        if (authentication == null) {
             return false;
         }
         return officeService.checkIfUserOfficeExistsInAncestorsList(officeId);
@@ -533,7 +534,7 @@ public class OfficeController {
     }
 
     @RequestMapping(value = "/getChildCountByParentOfficeId/{parentOfficeId}", method = RequestMethod.GET)
-    public Integer getChildCountByParentOfficeId(@PathVariable Long parentOfficeId){
+    public Integer getChildCountByParentOfficeId(@PathVariable Long parentOfficeId) {
         return officeService.getChildCountByParentOfficeId(parentOfficeId);
     }
 
@@ -657,4 +658,31 @@ public class OfficeController {
         return officeService.getServicesHavingServiceOfficerInfo(citizenCharters);
     }
 
+    @RequestMapping(value = "/api/office/serviceOriginDTObyId/{id}", method = RequestMethod.GET)
+    public ServiceOriginDTO getServiceOriginDTObyId(@PathVariable Long id) {
+        return this.officeService.getServiceOriginDTObyId(id);
+
+    }
+
+    @RequestMapping(value = "/api/office/getOfficeSearchingData", method = RequestMethod.GET)
+    public List<OfficeSearchDTO> getOfficeSearchingData() {
+        return officeService.getOfficeSearchingData();
+    }
+
+    @RequestMapping(value = "/api/office/getDescendantOfficeSearchingData", method = RequestMethod.GET)
+    public List<OfficeSearchDTO> getDescendantOfficeSearchingData() {
+        return officeService.getDescendantOfficeSearchingData();
+    }
+
+    @RequestMapping(value = "/api/office/getTopLayerOffices", method = RequestMethod.GET)
+    public List<OfficeSearchDTO> getTopLayerOffices() {
+        return officeService.getTopLayerOffices();
+    }
+
+    @RequestMapping(value = "/api/office/canViewDashboardAsFieldCoordinator/{officeId}", method = RequestMethod.GET)
+    public Boolean canViewDashboardAsFieldCoordinator(Authentication authentication,
+                                                      @PathVariable Long officeId) {
+        return officeService.canViewDashboardAsFieldCoordinator(authentication,officeId);
+
+    }
 }

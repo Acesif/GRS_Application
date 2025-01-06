@@ -161,7 +161,7 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
         String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievanceforwarding/findByGrievanceIdAndAssignedRole/" + grievanceId + "/" + roleType;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Authorization", "Bearer " + getToken());
+//        headers.add("Authorization", "Bearer " + getToken());
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         ResponseEntity<List<GrievanceForwarding>> response = restTemplate.exchange(url,

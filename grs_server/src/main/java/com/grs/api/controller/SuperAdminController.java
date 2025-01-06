@@ -50,8 +50,13 @@ public class SuperAdminController {
     private SpProgrammeService spProgrammeService;
 
     @RequestMapping(value = "/api/settings/email-sms", method = RequestMethod.GET)
-    public List<EmailSmsSettings> getEmailSmsSettings() {
+    public List<EmailSmsSettings> findEmailSmsSettings() {
         return this.emailSmsSettingsService.findEmailSmsSettings();
+    }
+
+    @RequestMapping(value = "/api/settings/getEmailSmsSettings/{id}", method = RequestMethod.GET)
+    public EmailSmsSettings getEmailSmsSettings(@PathVariable("id") Long id) {
+        return this.emailSmsSettingsService.getEmailSmsSettings(id);
     }
 
     @RequestMapping(value = "/api/settings/email-sms/{id}", method = RequestMethod.PUT)
