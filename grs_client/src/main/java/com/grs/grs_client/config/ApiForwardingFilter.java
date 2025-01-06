@@ -23,7 +23,7 @@ import java.util.Map;
 @WebFilter(urlPatterns = "/api/*")
 public class ApiForwardingFilter implements Filter {
 
-    private static final String SERVER_BASE_URL = "http://localhost:8081/grs_server";
+    private static final String SERVER_BASE_URL = "http://localhost:8088/grs_server";
 
     @Autowired
     private RestTemplate restTemplate;
@@ -49,7 +49,6 @@ public class ApiForwardingFilter implements Filter {
             if (requestURI.startsWith("/api/")) {
                 String serverUrl = SERVER_BASE_URL + requestURI;
                 String method = httpRequest.getMethod();
-
                 try {
                     ResponseEntity<String> responseEntity;
                     if ("GET".equalsIgnoreCase(method)) {
@@ -80,6 +79,17 @@ public class ApiForwardingFilter implements Filter {
         }
     }
 
+    private boolean extractAuthorizationFromCookie(String cookieHeader) {
+//        System.out.println("cookieHeader : " + cookieHeader);
+        String[] cookies = cookieHeader.split("; ");
+        for (String cookie : cookies) {
+            if (cookie.startsWith("Authorization=")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     protected String getToken() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
@@ -89,7 +99,18 @@ public class ApiForwardingFilter implements Filter {
     private ResponseEntity<String> forwardGetRequest(String serverUrl, HttpServletRequest httpRequest) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Authorization", "Bearer " + getToken());
+
+        String cookieHeader = httpRequest.getHeader("Cookie");
+
+        if (extractAuthorizationFromCookie(cookieHeader)) {
+            headers.add( "Authorization", "Bearer " + getToken());
+        }
+
+        // Check if the incoming request contains an Authorization header
+        String incomingAuthHeader = httpRequest.getHeader("Authorization");
+        if (incomingAuthHeader != null && !incomingAuthHeader.isEmpty()) {
+            headers.add("Authorization", incomingAuthHeader);
+        }
 
         // Append query parameters if present
         String queryString = httpRequest.getQueryString();
@@ -100,6 +121,7 @@ public class ApiForwardingFilter implements Filter {
         HttpEntity<String> entity = new HttpEntity<>(headers);
         return restTemplate.exchange(serverUrl, HttpMethod.GET, entity, String.class);
     }
+
 
     private ResponseEntity<String> forwardPostRequest(String serverUrl, HttpServletRequest httpRequest) throws IOException {
         HttpHeaders headers = new HttpHeaders();

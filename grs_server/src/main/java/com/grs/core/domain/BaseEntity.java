@@ -14,25 +14,25 @@ import java.util.Date;
 @MappedSuperclass
 @Data
 public class BaseEntity {
-    @JsonIgnore
+//    @JsonIgnore
     @CreationTimestamp
     @Column(name = "created_at")
     private Date createdAt;
 
-    @JsonIgnore
+//    @JsonIgnore
     @UpdateTimestamp
     @Column(name = "modified_at")
     private Date updatedAt;
 
-    @JsonIgnore
+//    @JsonIgnore
     @Column(name = "created_by")
     private Long createdBy;
 
-    @JsonIgnore
+//    @JsonIgnore
     @Column(name = "modified_by")
     private Long modifiedBy;
 
-    @JsonIgnore
+//    @JsonIgnore
     @Column(name = "status")
     private Boolean status;
 }

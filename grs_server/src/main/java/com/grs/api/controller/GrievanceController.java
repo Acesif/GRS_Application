@@ -12,6 +12,7 @@ import com.grs.api.model.response.grievance.GrievanceDTO;
 import com.grs.api.model.response.grievance.GrievanceDetailsDTO;
 import com.grs.api.model.response.grievance.OISFIntermediateDashboardDTO;
 import com.grs.core.config.CaptchaSettings;
+import com.grs.core.dao.GrievanceForwardingDAO;
 import com.grs.core.domain.ServicePair;
 import com.grs.core.domain.ServiceType;
 import com.grs.core.domain.grs.Complainant;
@@ -54,28 +55,15 @@ public class GrievanceController {
     @Autowired
     private GrievanceForwardingService grievanceForwardingService;
     @Autowired
-    private CitizenCharterService citizenCharterService;
+    private GrievanceForwardingDAO grievanceForwardingDAO;
     @Autowired
     private MessageService messageService;
-    @Autowired
-    private ModelViewService modelViewService;
     @Autowired
     private NotificationService notificationService;
     @Autowired
     private ComplainantService complainantService;
     @Autowired
-    private AccessControlService accessControlService;
-    @Autowired
-    private SafetyNetProgramService safetyNetProgramService;
-
-    @Autowired
     private com.grs.core.service.SpProgrammeService spProgrammeService;
-
-    @Autowired
-    private SpProgrammeDAO spProgrammeDAO;
-
-    @Autowired
-    private CaptchaSettings captchaSettings;
 
 
     @RequestMapping(value = "/api/findGrievanceById/{grievanceId}", method = RequestMethod.GET)
@@ -504,5 +492,12 @@ public class GrievanceController {
     public WeakHashMap<String, Object> reassignGrievance(Authentication authentication, @RequestBody ReassignGrievanceDTO reassignGrievance) {
         UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
         return grievanceService.reassignGrievance(reassignGrievance, userInformation);
+    }
+    @GetMapping("/api/grievanceforwarding/findByGrievanceIdAndAssignedRole/{grievanceId}/{roleType}")
+    public List<GrievanceForwarding> findByGrievanceIdAndAssignedRole(
+            @PathVariable Long grievanceId,
+            @PathVariable("roleType") String roleName
+    ){
+        return this.grievanceForwardingDAO.findByGrievanceIdAndAssignedRole(grievanceId, roleName);
     }
 }
