@@ -14,9 +14,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * Created by Acer on 12-Mar-18.
- */
 @Slf4j
 @RestController
 public class CellController {

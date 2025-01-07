@@ -18,9 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
-/**
- * Created by Acer on 9/14/2017.
- */
 @Slf4j
 @RestController
 public class CustomErrorController extends AbstractErrorController {

@@ -10,6 +10,7 @@ import com.grs.api.model.response.UnseenCountDTO;
 import com.grs.api.model.response.file.ExistingFileDerivedDTO;
 import com.grs.api.model.response.file.FileDerivedDTO;
 import com.grs.api.model.response.grievanceForwarding.GrievanceForwardingInvestigationDTO;
+import com.grs.core.domain.grs.GrievanceForwarding;
 import com.grs.core.model.EmployeeOrganogram;
 import com.grs.core.service.GrievanceForwardingService;
 import com.grs.utils.Utility;
@@ -21,11 +22,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
+import java.util.Date;
 import java.util.List;
 
-/**
- * Created by Acer on 25-Oct-17.
+/*
+ *  Has old code
  */
+
 @RestController
 public class GrievanceForwardingController {
     @Autowired
@@ -80,9 +83,19 @@ public class GrievanceForwardingController {
 
     @RequestMapping(value = "/api/grievance/forward/opinion", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public GenericResponse sendForOpinion(Authentication authentication, @Valid @RequestBody OpinionRequestDTO grievanceOpinionRequestDTO) {
+        /* Old Logic
+
         if (!(grievanceOpinionRequestDTO.getPostNode() != null
                 && !grievanceOpinionRequestDTO.getPostNode().isEmpty()
                 && grievanceOpinionRequestDTO.getPostNode().size() <= 1
+                && grievanceOpinionRequestDTO.getPostNode().get(0) != null)) {
+            return new GenericResponse(false, "অনুগ্রহ করে মতামতের জন্য অন্ততপক্ষে যে কোন একজনকে নির্বাচন করুন");
+        }
+
+        */
+
+        if (!(grievanceOpinionRequestDTO.getPostNode() != null
+                && grievanceOpinionRequestDTO.getPostNode().size() == 1
                 && grievanceOpinionRequestDTO.getPostNode().get(0) != null)) {
             return new GenericResponse(false, "অনুগ্রহ করে মতামতের জন্য অন্ততপক্ষে যে কোন একজনকে নির্বাচন করুন");
         }
@@ -215,7 +228,7 @@ public class GrievanceForwardingController {
                 "/apps";
         RestTemplate restTemplate = new RestTemplate();
 
-        ResponseEntity responseEntity = restTemplate.getForEntity(url,Object.class);
+        ResponseEntity<Object> responseEntity = restTemplate.getForEntity(url,Object.class);
         return responseEntity.getBody();
     }
 
@@ -244,4 +257,99 @@ public class GrievanceForwardingController {
             @RequestParam String inboxType) {
         return grievanceForwardingService.getTotalCountForUser(authentication,inboxType);
     }
+
+
+
+    @GetMapping("/api/grievanceforwarding/getLastForwadingForGivenGrievance/{grievanceId}")
+    public GrievanceForwarding getLastForwadingForGivenGrievance(@PathVariable Long grievanceId){
+
+    }
+
+    @GetMapping("/api/grievanceforwarding/findByGrievanceAndIsCurrent/{grievanceId}")
+    public List<GrievanceForwarding> findByGrievanceAndIsCurrent(@PathVariable Long grievanceId){
+
+    }
+
+    @GetMapping("/api/grievanceforwarding/getAllComplaintMovementByGrievance/{grievanceId}")
+    public List<GrievanceForwarding> getAllComplaintMovementByGrievance(@PathVariable Long grievanceId) {
+
+    }
+
+    @GetMapping("/api/grievanceforwarding/getLastClosedOrRejectedForwarding/{grievanceId}")
+    public GrievanceForwarding getLastClosedOrRejectedForwarding(@PathVariable Long grievanceId) {
+
+    }
+
+
+    @GetMapping("/api/grievanceforwarding/getByActionAndToOfficeIdAndToOfficeUnitOrganogramIdAndGrievance/{grievanceId}/{officeId}/{officeOrganogramId}/{action}")
+    public GrievanceForwarding getByActionAndToOfficeIdAndToOfficeUnitOrganogramIdAndGrievance(
+            @PathVariable Long grievanceId,
+            @PathVariable Long officeId,
+            @PathVariable Long officeOrganogramId,
+            @PathVariable String action
+    ){
+
+    }
+
+    @GetMapping("/api/grievanceforwarding/findByGrievanceAndActionLikeOrderByIdDesc/{grievanceId}/{action}")
+    public List<GrievanceForwarding> findByGrievanceAndActionLikeOrderByIdDesc(
+            @PathVariable Long grievanceId,
+            @PathVariable String action){
+
+    }
+
+    @GetMapping("/api/grievanceforwarding/findByGrievanceAndActionLikeAndCurrentStatusLike/{grievanceId}/{action}/{status}")
+    public GrievanceForwarding findByGrievanceAndActionLikeAndCurrentStatusLike(
+            @PathVariable Long grievanceId,
+            @PathVariable String action,
+            @PathVariable  String status){
+
+    }
+
+    @GetMapping("/api/grievanceforwarding/findByGrievanceAndActionLikeAndCurrentStatusNotLike/{grievanceId}/{action}/{status}")
+    public GrievanceForwarding findByGrievanceAndActionLikeAndCurrentStatusNotLike(
+            @PathVariable Long grievanceId,
+            @PathVariable String action,
+            @PathVariable  String status){
+
+    }
+
+
+    @PostMapping("/api/grievanceforwarding/getAllRelatedComplaintMovementsBetweenDates")
+    public List<GrievanceForwarding> getAllRelatedComplaintMovementsBetweenDates(
+            @RequestParam Long grievanceId,
+            @RequestParam Long officeId,
+            @RequestParam List<Long> officeUnitOrganogramId,
+            @RequestParam String action,
+            @RequestParam Date start,
+            @RequestParam Date finish
+    ){
+
+    }
+
+    @PostMapping("/api/grievanceforwarding/getAllRelatedComplaintMovements")
+    public List<GrievanceForwarding> getAllRelatedComplaintMovements(
+            @RequestParam Long grievanceId,
+            @RequestParam Long officeId,
+            @RequestParam List<Long> officeUnitOrganogramId,
+            @RequestParam String action
+    ){
+
+    }
+
+    @GetMapping("/api/grievanceforwarding/getLastActiveGrievanceForwardingOfCurrentUser/{grievanceId}/{userOfficeId}/{userOrganogramId}")
+    public GrievanceForwarding getLastActiveGrievanceForwardingOfCurrentUser(
+            @PathVariable Long grievanceId,
+            @PathVariable Long userOfficeId,
+            @PathVariable Long userOrganogramId){
+
+    }
+
+    @PostMapping("/api/grievanceforwarding/saveGrievanceForwardingHistory")
+    public GrievanceForwarding saveGrievanceForwardingHistory(
+            @RequestBody GrievanceForwarding grievanceForwarding){
+
+
+    }
+
 }

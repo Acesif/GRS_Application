@@ -24,9 +24,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
-/**
- * Created by Acer on 9/14/2017.
- */
 @Slf4j
 @RestController
 public class CustomErrorController extends AbstractErrorController {
@@ -40,8 +37,7 @@ public class CustomErrorController extends AbstractErrorController {
     @RequestMapping(value = PATH, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Map<String, Object> handleError(HttpServletRequest request) {
-        Map<String, Object> errorAttributes = super.getErrorAttributes(request, true);
-        return errorAttributes;
+        return super.getErrorAttributes(request, true);
     }
 
     @RequestMapping(value = "/error-page")

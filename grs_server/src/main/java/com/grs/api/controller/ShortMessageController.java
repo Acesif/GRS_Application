@@ -37,7 +37,6 @@ public class ShortMessageController {
                 smsACtionRoleDTO.getActionToRoleDTO());
     }
 
-
     @PostMapping(value = "/api/shortMessage/smsTemplateID/{smsTemplateID}")
     public Boolean updateSmsTemplate(
             @PathVariable("smsTemplateID") Long smsTemplateID,

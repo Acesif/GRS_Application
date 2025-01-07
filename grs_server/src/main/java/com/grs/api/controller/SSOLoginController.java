@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.stream.Collectors;
@@ -100,10 +99,10 @@ public class SSOLoginController {
             List<OfficesGRO> userAsAppealOfficerList = this.officesGroDAO.findByAppealOfficeUnitOrganogramId(officeUnitOrganogramId);
             List<OfficesGRO> userAsOfficeAdminList = officesGroDAO.findByAdminOfficeUnitOrganogramId(officeUnitOrganogramId);
             Boolean hasCentralDashboardAccess = centralDashboardRecipientDAO.hasAccessToCentralDashboard(userInformation.getOfficeInformation().getOfficeId(), officeUnitOrganogramId);
-            Boolean isCellGRO = cellService.isCellGRO(officeInformation);
+            boolean isCellGRO = cellService.isCellGRO(officeInformation);
 
-            userInformation.setIsAppealOfficer(userAsAppealOfficerList.size() > 0 || isCellGRO);
-            userInformation.setIsOfficeAdmin(userAsOfficeAdminList.size() > 0);
+            userInformation.setIsAppealOfficer(!userAsAppealOfficerList.isEmpty() || isCellGRO);
+            userInformation.setIsOfficeAdmin(!userAsOfficeAdminList.isEmpty());
             userInformation.setIsCentralDashboardUser(hasCentralDashboardAccess);
             userInformation.setIsCellGRO(isCellGRO);
 
@@ -133,7 +132,7 @@ public class SSOLoginController {
             }
 
         } catch (Exception ex) {
-            ex.printStackTrace();
+            ex.fillInStackTrace();
             request.getSession().invalidate();
             log.error(" Could not redirect to idp login page : " + ex.getLocalizedMessage());
         }
@@ -147,7 +146,7 @@ public class SSOLoginController {
             CookieUtil.clear(response, Constant.HEADER_STRING);
             response.sendRedirect(appLogoutRequest.buildLogoutRequest());
         } catch (Exception e) {
-            e.printStackTrace();
+            e.fillInStackTrace();
             return;
         }
     }
@@ -161,8 +160,7 @@ public class SSOLoginController {
         }
 
         Object token = esbConnectorService.getAuthenticationToken();
-        String auth = token== null ? null : token.toString();
-        Constant.OISF_ACCESS_TOKEN = auth;
+        Constant.OISF_ACCESS_TOKEN = token== null ? null : token.toString();
         HttpHeaders headers = new HttpHeaders();
         headers.clear();
         headers.add("Authorization", "Bearer " + Constant.OISF_ACCESS_TOKEN);
@@ -174,10 +172,9 @@ public class SSOLoginController {
                 "/apps";
 
 //        ResponseEntity responseEntity = restTemplate.getForEntity(url, Object[].class);
-        ResponseEntity responseEntity = restTemplate.exchange(url, HttpMethod.GET, newEntity, Object[].class);
+        ResponseEntity<Object[]> responseEntity = restTemplate.exchange(url, HttpMethod.GET, newEntity, Object[].class);
         try {
-            String jsonInString = mapper.writeValueAsString(responseEntity.getBody());
-            return jsonInString;
+            return mapper.writeValueAsString(responseEntity.getBody());
         } catch (Exception e) {
             return "{}";
         }
@@ -244,12 +241,12 @@ public class SSOLoginController {
             response.sendRedirect("/login/success");
 
         } catch (Exception e) {
-            e.printStackTrace();
+            e.fillInStackTrace();
             request.getSession().invalidate();
             try {
                 response.sendRedirect("/login?a=2");
             } catch (IOException e1) {
-                e1.printStackTrace();
+                e1.fillInStackTrace();
             }
         }
     }

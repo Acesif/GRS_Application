@@ -11,16 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-/**
- * Created by Acer on 02-Oct-17.
- */
 @RestController
 public class GeoController {
     @Autowired
     private GeoService geoService;
 
 
-    @RequestMapping(value = "/api/geo/upazilas", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/geo/upazilas/{upazilaId}", method = RequestMethod.GET)
     public Upazila getUpazilaById(@PathVariable("upazilaId") Integer upazilaId) {
         return this.geoService.getUpazilaById(upazilaId);
     }

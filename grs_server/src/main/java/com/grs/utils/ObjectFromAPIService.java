@@ -30,7 +30,7 @@ public class ObjectFromAPIService {
         authToken = "";
     }
 
-    public Object getObject(String url, Class objectClass, MultiValueMap<String, String> body) {
+    public Object getObject(String url, Class<?> objectClass, MultiValueMap<String, String> body) {
         init();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -40,8 +40,8 @@ public class ObjectFromAPIService {
         try {
             responseEntity = restTemplate.exchange(url, HttpMethod.POST, entity, objectClass);
         } catch (HttpClientErrorException e) {
-            log.error(e.getMessage());
-            log.error(entity.toString());
+//            log.error(e.getMessage());
+//            log.error(entity.toString());
         }
         if (responseEntity == null) {
             return null;

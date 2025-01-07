@@ -54,7 +54,7 @@ public class GrievanceController {
     @RequestMapping(value = "/viewGrievances.do", method = RequestMethod.GET)
     public ModelAndView getViewGrievancesPage(Authentication authentication, Model model, HttpServletRequest request) {
         if (authentication != null) {
-            Boolean isBlacklisted = false;
+            boolean isBlacklisted = false;
             UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
             if (userInformation.getUserType().equals(UserType.COMPLAINANT)) {
                 isBlacklisted =  complainantService.isBlacklistedUser(userInformation.getUserId());
@@ -322,11 +322,11 @@ public class GrievanceController {
 
     @RequestMapping(value = "/addPublicGrievances.do", method = RequestMethod.GET)
     public ModelAndView getAddGrievancesPage(Authentication authentication, Model model, HttpServletRequest request,
-                                             @RequestParam(value = "serviceInfo", defaultValue = "-1") Optional<String> serviceInfo
+                                             @RequestParam(value = "serviceInfo", defaultValue = "-1", required = false) String serviceInfo
     ) throws IOException, IllegalAccessException {
         model.addAttribute("grievanceDTO", new GrievanceRequestDTO());
-        if (!serviceInfo.get().equals("-1")) {
-            ServiceRelatedInfoRequestDTO serviceRelatedInfoRequestDTO = this.grievanceService.convertFromBase64encodedString(serviceInfo.get());
+        if (!serviceInfo.equals("-1")) {
+            ServiceRelatedInfoRequestDTO serviceRelatedInfoRequestDTO = this.grievanceService.convertFromBase64encodedString(serviceInfo);
             model.addAttribute("serviceId", serviceRelatedInfoRequestDTO.getServiceId());
             model.addAttribute("officeId", serviceRelatedInfoRequestDTO.getOfficeId());
             model.addAttribute("officeName", serviceRelatedInfoRequestDTO.getOfficeName());
@@ -362,7 +362,7 @@ public class GrievanceController {
                     "adminForOthers");
 
         }
-        return new ModelAndView("redirect:/login?a=0&redirectUrl=addPublicGrievances.do?serviceInfo=" + serviceInfo.get());
+        return new ModelAndView("redirect:/login?a=0&redirectUrl=addPublicGrievances.do?serviceInfo=" + serviceInfo);
     }
 
 

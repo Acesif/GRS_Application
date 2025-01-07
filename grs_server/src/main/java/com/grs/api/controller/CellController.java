@@ -36,12 +36,6 @@ public class CellController {
     private CellService cellService;
     @Autowired
     private OfficeService officeService;
-    @Autowired
-    private ModelViewService modelViewService;
-    @Autowired
-    private GeneralSettingsService generalSettingsService;
-
-
 
     @RequestMapping(value = "/celMemberEntry/{officeUnitOrganogramId}",method = RequestMethod.GET)
     public CellMember getCellMemberEntry(@PathVariable("officeUnitOrganogramId") Long officeUnitOrganogramId){
@@ -53,55 +47,6 @@ public class CellController {
            @RequestParam List<Long> officeIds,
           @RequestParam  List<Long> officeUnitOrganogramIds){
         return this.cellService.getCellMemberEntry(officeIds,officeUnitOrganogramIds);
-    }
-
-    @RequestMapping(value = "/viewMeetings.do", method = RequestMethod.GET)
-    public ModelAndView getViewMeetingsPage(Authentication authentication, Model model, HttpServletRequest request) {
-        if (authentication != null) {
-            String fragmentFolder = "cell_meeting";
-            String fragmentName = "viewMeetings";
-            return modelViewService.addNecessaryAttributesAndReturnViewPage(model,
-                    authentication,
-                    request,
-                    fragmentFolder,
-                    fragmentName,
-                    "admin");
-        }
-        return new ModelAndView("redirect:/error-page");
-    }
-
-    @RequestMapping(value = "/addMeetings.do", method = RequestMethod.GET)
-    public ModelAndView getAddMeetingsPage(Authentication authentication, Model model, HttpServletRequest request) {
-        if (authentication != null) {
-            String fragmentFolder = "cell_meeting";
-            String fragmentName = "addMeetings";
-            return modelViewService.addNecessaryAttributesAndReturnViewPage(model,
-                    authentication,
-                    request,
-                    fragmentFolder,
-                    fragmentName,
-                    "admin");
-        }
-        return new ModelAndView("redirect:/error-page");
-    }
-
-    @RequestMapping(value = "/viewMeetings.do", method = RequestMethod.GET, params = "id")
-    public ModelAndView getViewMeetingDetailsPage(Authentication authentication, Model model, HttpServletRequest request, @RequestParam Long id) {
-        if (authentication != null) {
-            Integer maxFileSize = generalSettingsService.getMaximumFileSize();
-            String allowedFileTypes = generalSettingsService.getAllowedFileTypes();
-            model.addAttribute("maxFileSize", maxFileSize);
-            model.addAttribute("allowedFileTypes", allowedFileTypes);
-            model.addAttribute("fileSizeLabel", generalSettingsService.getAllowedFileSizeLabel());
-            model.addAttribute("fileTypesLabel", generalSettingsService.getAllowedFileTypesLabel());
-            return modelViewService.addNecessaryAttributesAndReturnViewPage(model,
-                    authentication,
-                    request,
-                    "cell_meeting",
-                    "viewMeetingsDetails",
-                    "admin");
-        }
-        return new ModelAndView("redirect:/error-page");
     }
 
     @RequestMapping(value = "/api/cell/meeting", method = RequestMethod.POST)
@@ -136,21 +81,25 @@ public class CellController {
     }
 
     @RequestMapping(value = "/api/cell/members", method = RequestMethod.POST)
-    public GenericResponse addCellMember(Authentication authentication, @RequestBody CellMemberDTO cellMemberDTO) {
+    // had auth
+    public GenericResponse addCellMember(@RequestBody CellMemberDTO cellMemberDTO) {
         return this.cellService.addNewCellMember(cellMemberDTO);
     }
 
     @RequestMapping(value = "/api/cell/members/{id}", method = RequestMethod.DELETE)
-    public GenericResponse removeCellMember(Authentication authentication, @PathVariable("id") Long memberId) {
+    // had auth
+    public GenericResponse removeCellMember(@PathVariable("id") Long memberId) {
         return this.cellService.removeCellMember(memberId);
     }
 
     @RequestMapping(value = "/api/cell/members/gro/{id}", method = RequestMethod.PUT)
-    public GenericResponse assignCellGRO(Authentication authentication, @PathVariable("id") Long memberId) {
+    // had auth
+    public GenericResponse assignCellGRO(@PathVariable("id") Long memberId) {
         return this.cellService.assignCellGRO(memberId);
     }
     @RequestMapping(value = "/api/cell/members/ao/{id}", method = RequestMethod.PUT)
-    public GenericResponse assignCellAO(Authentication authentication, @PathVariable("id") Long memberId) {
+    // had auth
+    public GenericResponse assignCellAO(@PathVariable("id") Long memberId) {
         return this.cellService.assignCellAO(memberId);
     }
 }
