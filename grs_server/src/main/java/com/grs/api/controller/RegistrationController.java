@@ -442,23 +442,4 @@ public class RegistrationController {
                 .message("Sorry the password could not be changed")
                 .build();
     }
-
-
-    @RequestMapping(value = "/api/blacklist/findBlacklistByComplainantId/{complainantId}", method = RequestMethod.GET)
-    public List<Blacklist> findBlacklistByComplainantId(@PathVariable Long complainantId){
-
-
-    }
-
-    @RequestMapping(value = "/api/blacklist/findBlacklistedOffices/{complainantId}", method = RequestMethod.GET)
-    public List<Long> findBlacklistedOffices(@PathVariable Long complainantId) {
-
-
-    }
-
-    @RequestMapping(value = "/api/complainant/getComplainantByUserId/{userId}", method = RequestMethod.GET)
-    public Complainant getComplainantByUserId(Long userId) {
-
-    }
-
 }

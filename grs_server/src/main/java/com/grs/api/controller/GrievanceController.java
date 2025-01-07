@@ -13,13 +13,10 @@ import com.grs.api.model.response.grievance.ComplainantInfoDTO;
 import com.grs.api.model.response.grievance.GrievanceDTO;
 import com.grs.api.model.response.grievance.GrievanceDetailsDTO;
 import com.grs.api.model.response.grievance.OISFIntermediateDashboardDTO;
+import com.grs.core.domain.grs.*;
 import com.grs.core.service.SpProgrammeService;
 
 import com.grs.core.dao.GrievanceForwardingDAO;
-import com.grs.core.domain.grs.Complainant;
-import com.grs.core.domain.grs.Grievance;
-import com.grs.core.domain.grs.GrievanceForwarding;
-import com.grs.core.domain.grs.Notification;
 import com.grs.core.domain.projapoti.EmployeeRecord;
 import com.grs.core.model.EmployeeOrganogram;
 import com.grs.core.model.ListViewType;
@@ -517,5 +514,10 @@ public class GrievanceController {
     public SafetyNetGrievanceSummaryListDto getSafetyNetGrievanceSummary
             (@RequestBody SafetyNetGrievanceSummaryRequest request) {
         return grievanceService.getSafetyNetGrievanceSummary(request);
+    }
+
+    @RequestMapping(value = "/api/blacklist/findBlacklistByGrievanceId/{grievanceId}", method = RequestMethod.GET)
+    public Boolean findBlacklistByComplainantId(@PathVariable Long grievanceId){
+        return grievanceService.isComplainantBlackListedByGrievanceId(grievanceId);
     }
 }

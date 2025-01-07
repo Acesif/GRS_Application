@@ -139,7 +139,7 @@ public class GrievanceController {
                 soAppealOption = this.grievanceForwardingService.soAppealActivationFlag(grievance);
             }
             if(!isGrsUser) {
-                isComplainantBlacklisted = complainantService.isBlacklistedUserByComplainantId(grievance.getComplainantId());
+                isComplainantBlacklisted = grievanceService.isComplainantBlackListedByGrievanceId(grievance.getId());
                 canRetakeComplaint = grievanceForwardingService.getComplaintRetakeFlag(grievance, userInformation);
             }
             List<FeedbackResponseDTO> feedbacks = this.grievanceService.getFeedbacks(grievance);
@@ -214,7 +214,7 @@ public class GrievanceController {
                 soAppealOption = this.grievanceForwardingService.soAppealActivationFlag(grievance);
             }
             if(!isGrsUser) {
-                isComplainantBlacklisted = complainantService.isBlacklistedUserByComplainantId(grievance.getComplainantId());
+                isComplainantBlacklisted = grievanceService.isComplainantBlackListedByGrievanceId(grievance.getId());
                 canRetakeComplaint = grievanceForwardingService.getComplaintRetakeFlag(grievance, userInformation);
             }
             List<FeedbackResponseDTO> feedbacks = this.grievanceService.getFeedbacks(grievance);
@@ -284,7 +284,7 @@ public class GrievanceController {
                 soAppealOption = this.grievanceForwardingService.soAppealActivationFlag(grievance);
             }
             if(!isGrsUser) {
-                isComplainantBlacklisted = complainantService.isBlacklistedUserByComplainantId(grievance.getComplainantId());
+                isComplainantBlacklisted = grievanceService.isComplainantBlackListedByGrievanceId(grievance.getId());
                 canRetakeComplaint = grievanceForwardingService.getComplaintRetakeFlag(grievance, userInformation);
             }
             model = modelViewService.addFileSettingsAttributesToModel(model);

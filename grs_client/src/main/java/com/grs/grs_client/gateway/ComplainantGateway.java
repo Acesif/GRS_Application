@@ -18,7 +18,6 @@ public class ComplainantGateway extends BaseRestTemplate{
         String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/complainantService/isBlacklistedUserByComplainantId/"+userId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-//        headers.add("Authorization", "Bearer " + getToken());
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         ResponseEntity<Boolean> response = restTemplate.exchange(url,
@@ -43,10 +42,9 @@ public class ComplainantGateway extends BaseRestTemplate{
     }
 
     public List<Blacklist> findBlacklistByComplainantId(Long complainantId){
-        String url = getUrl() + "/api/blacklist/findByComplainantId/"+complainantId;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/blacklist/findBlacklistByComplainantId/"+complainantId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Authorization", "Bearer " + getToken());
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         ResponseEntity<List<Blacklist>> response = restTemplate.exchange(url,
@@ -56,10 +54,9 @@ public class ComplainantGateway extends BaseRestTemplate{
     }
 
     public List<Long> findBlacklistedOffices(Long complainantId) {
-        String url = getUrl() + "/api/blacklist/findBlacklistedOffices/"+complainantId;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/complainantService/findBlacklistedOffices/" + complainantId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Authorization", "Bearer " + getToken());
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         ResponseEntity<List<Long>> response = restTemplate.exchange(url,
@@ -69,10 +66,9 @@ public class ComplainantGateway extends BaseRestTemplate{
     }
 
     public Complainant getComplainantByUserId(Long userId) {
-        String url = getUrl() + "/api/complainant/getComplainantByUserId/"+userId;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/complainantService/findOne/" + userId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Authorization", "Bearer " + getToken());
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         ResponseEntity<Complainant> response = restTemplate.exchange(url,
@@ -83,7 +79,7 @@ public class ComplainantGateway extends BaseRestTemplate{
 
 
     public Long countAll() {
-        String url = getUrl() + "/api/complainantService/countAll";
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/complainantService/countAll";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
