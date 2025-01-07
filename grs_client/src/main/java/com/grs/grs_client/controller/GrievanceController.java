@@ -322,13 +322,8 @@ public class GrievanceController {
 
     @RequestMapping(value = "/addPublicGrievances.do", method = RequestMethod.GET)
     public ModelAndView getAddGrievancesPage(Authentication authentication, Model model, HttpServletRequest request,
-<<<<<<< HEAD
                                              @RequestParam(value = "serviceInfo", defaultValue = "-1", required = false) String serviceInfo
-    ) throws IOException {
-=======
-                                             @RequestParam(value = "serviceInfo", defaultValue = "-1") Optional<String> serviceInfo
     ) throws IOException, IllegalAccessException {
->>>>>>> 5f207f8f54453583566895b71d3dc0a866f7f4d2
         model.addAttribute("grievanceDTO", new GrievanceRequestDTO());
         if (!serviceInfo.equals("-1")) {
             ServiceRelatedInfoRequestDTO serviceRelatedInfoRequestDTO = this.grievanceService.convertFromBase64encodedString(serviceInfo);

@@ -40,8 +40,8 @@ public class ObjectFromAPIService {
         try {
             responseEntity = restTemplate.exchange(url, HttpMethod.POST, entity, objectClass);
         } catch (HttpClientErrorException e) {
-            log.error(e.getMessage());
-            log.error(entity.toString());
+//            log.error(e.getMessage());
+//            log.error(entity.toString());
         }
         if (responseEntity == null) {
             return null;
