@@ -64,7 +64,6 @@ public class OfficesGateway extends BaseRestTemplate{
         String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/office/getOfficeByOfficeId/"+officeId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Authorization", "Bearer " + getToken());
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         ResponseEntity<Office> response = restTemplate.exchange(url,

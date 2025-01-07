@@ -444,6 +444,7 @@ public class RegistrationController {
     }
 
 
+
     @RequestMapping(value = "/api/blacklist/findBlacklistByComplainantId/{complainantId}", method = RequestMethod.GET)
     public List<Blacklist> findBlacklistByComplainantId(@PathVariable Long complainantId){
 

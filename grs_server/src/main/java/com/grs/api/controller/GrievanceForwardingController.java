@@ -10,9 +10,12 @@ import com.grs.api.model.response.UnseenCountDTO;
 import com.grs.api.model.response.file.ExistingFileDerivedDTO;
 import com.grs.api.model.response.file.FileDerivedDTO;
 import com.grs.api.model.response.grievanceForwarding.GrievanceForwardingInvestigationDTO;
+import com.grs.core.dao.GrievanceForwardingDAO;
+import com.grs.core.domain.grs.Grievance;
 import com.grs.core.domain.grs.GrievanceForwarding;
 import com.grs.core.model.EmployeeOrganogram;
 import com.grs.core.service.GrievanceForwardingService;
+import com.grs.core.service.GrievanceService;
 import com.grs.utils.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -33,6 +36,10 @@ import java.util.List;
 public class GrievanceForwardingController {
     @Autowired
     private GrievanceForwardingService grievanceForwardingService;
+    @Autowired
+    private GrievanceForwardingDAO grievanceForwardingDAO;
+    @Autowired
+    private GrievanceService grievanceService;
 
     @RequestMapping(value = "/api/grievance/forward", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public GenericResponse forwardGrievanceToAnotherOffice(Authentication authentication, @RequestBody ForwardToAnotherOfficeDTO forwardToAnotherOfficeDTO) {
@@ -262,40 +269,52 @@ public class GrievanceForwardingController {
 
     @GetMapping("/api/grievanceforwarding/getLastForwadingForGivenGrievance/{grievanceId}")
     public GrievanceForwarding getLastForwadingForGivenGrievance(@PathVariable Long grievanceId){
-        return null;
+
+        return grievanceForwardingDAO.getLastForwadingForGivenGrievance(grievanceService.findGrievanceById(grievanceId));
+
     }
 
     @GetMapping("/api/grievanceforwarding/findByGrievanceAndIsCurrent/{grievanceId}")
     public List<GrievanceForwarding> findByGrievanceAndIsCurrent(@PathVariable Long grievanceId){
-        return null;
+
+        return grievanceForwardingDAO.findByGrievanceAndIsCurrent(grievanceService.findGrievanceById(grievanceId), true);
+
     }
 
     @GetMapping("/api/grievanceforwarding/getAllComplaintMovementByGrievance/{grievanceId}")
     public List<GrievanceForwarding> getAllComplaintMovementByGrievance(@PathVariable Long grievanceId) {
-        return null;
+
+        return grievanceService.getAllComplaintMovementByGrievance(grievanceService.findGrievanceById(grievanceId));
+
     }
 
     @GetMapping("/api/grievanceforwarding/getLastClosedOrRejectedForwarding/{grievanceId}")
     public GrievanceForwarding getLastClosedOrRejectedForwarding(@PathVariable Long grievanceId) {
-        return null;
+
+        return grievanceForwardingDAO.getLastClosedOrRejectedForwarding(grievanceService.findGrievanceById(grievanceId));
+
     }
 
 
-    @GetMapping("/api/grievanceforwarding/getByActionAndToOfficeIdAndToOfficeUnitOrganogramIdAndGrievance/{grievanceId}/{officeId}/{officeOrganogramId}/{action}")
+    @GetMapping("/api/grievanceforwarding/getByActionAndToOfficeIdAndToOfficeUnitOrganogramIdAndGrievance/{grievanceId}/{officeId}/{officeUnitOrganogramId}/{action}")
     public GrievanceForwarding getByActionAndToOfficeIdAndToOfficeUnitOrganogramIdAndGrievance(
             @PathVariable Long grievanceId,
             @PathVariable Long officeId,
-            @PathVariable Long officeOrganogramId,
+            @PathVariable Long officeUnitOrganogramId,
             @PathVariable String action
     ){
-        return null;
+
+        return grievanceForwardingDAO.getByActionAndToOfficeIdAndToOfficeUnitOrganogramIdAndGrievance(grievanceService.findGrievanceById(grievanceId), officeId, officeUnitOrganogramId, action);
+
     }
 
     @GetMapping("/api/grievanceforwarding/findByGrievanceAndActionLikeOrderByIdDesc/{grievanceId}/{action}")
     public List<GrievanceForwarding> findByGrievanceAndActionLikeOrderByIdDesc(
             @PathVariable Long grievanceId,
             @PathVariable String action){
-        return null;
+
+        return grievanceForwardingDAO.findByGrievanceAndActionLikeOrderByIdDesc(grievanceService.findGrievanceById(grievanceId), action);
+
     }
 
     @GetMapping("/api/grievanceforwarding/findByGrievanceAndActionLikeAndCurrentStatusLike/{grievanceId}/{action}/{status}")
@@ -303,7 +322,10 @@ public class GrievanceForwardingController {
             @PathVariable Long grievanceId,
             @PathVariable String action,
             @PathVariable  String status){
-        return null;
+
+
+        return grievanceForwardingDAO.findByGrievanceAndActionLikeAndCurrentStatusLike(grievanceService.findGrievanceById(grievanceId), action, status);
+
     }
 
     @GetMapping("/api/grievanceforwarding/findByGrievanceAndActionLikeAndCurrentStatusNotLike/{grievanceId}/{action}/{status}")
@@ -311,7 +333,11 @@ public class GrievanceForwardingController {
             @PathVariable Long grievanceId,
             @PathVariable String action,
             @PathVariable  String status){
-        return null;
+
+
+        return grievanceForwardingDAO.findByGrievanceAndActionLikeAndCurrentStatusNotLike(grievanceService.findGrievanceById(grievanceId), action, status);
+
+
     }
 
 
@@ -324,7 +350,10 @@ public class GrievanceForwardingController {
             @RequestParam Date start,
             @RequestParam Date finish
     ){
-        return null;
+
+
+        return grievanceForwardingDAO.getAllRelatedComplaintMovementsBetweenDates(grievanceId, officeId, officeUnitOrganogramId, action, start, finish);
+
     }
 
     @PostMapping("/api/grievanceforwarding/getAllRelatedComplaintMovements")
@@ -334,22 +363,27 @@ public class GrievanceForwardingController {
             @RequestParam List<Long> officeUnitOrganogramId,
             @RequestParam String action
     ){
-        return null;
+
+        return grievanceForwardingDAO.getAllRelatedComplaintMovements(grievanceId, officeId, officeUnitOrganogramId, action);
+
     }
 
-    @GetMapping("/api/grievanceforwarding/getLastActiveGrievanceForwardingOfCurrentUser/{grievanceId}/{userOfficeId}/{userOrganogramId}")
+    @GetMapping("/api/grievanceforwarding/getLastActiveGrievanceForwardingOfCurrentUser/{grievanceId}/{officeId}/{officeUnitOrganogramId}")
     public GrievanceForwarding getLastActiveGrievanceForwardingOfCurrentUser(
             @PathVariable Long grievanceId,
-            @PathVariable Long userOfficeId,
-            @PathVariable Long userOrganogramId){
-        return null;
+
+            @PathVariable Long officeId,
+            @PathVariable Long officeUnitOrganogramId){
+
+        return grievanceForwardingDAO.getLastActiveGrievanceForwardingOfCurrentUser(grievanceService.findGrievanceById(grievanceId), officeId, officeUnitOrganogramId);
+
     }
 
-    @PostMapping("/api/grievanceforwarding/saveGrievanceForwardingHistory")
+    @PostMapping("/api/grievanceforwarding/update")
     public GrievanceForwarding saveGrievanceForwardingHistory(
             @RequestBody GrievanceForwarding grievanceForwarding){
 
-        return null;
+        return grievanceForwardingDAO.save(grievanceForwarding);
     }
 
 }

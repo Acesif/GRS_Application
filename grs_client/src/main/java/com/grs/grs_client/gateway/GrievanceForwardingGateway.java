@@ -304,7 +304,6 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
         String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievanceforwarding/update";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Authorization", "Bearer " + getToken());
         ObjectMapper objectMapper = new ObjectMapper();
         String body = "";
         try {
@@ -451,8 +450,6 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
             if (!grievanceForwarding.getIsSeen()) {
                 grievanceForwarding.setIsSeen(true);
                 this.updateGrievanceForwarding(grievanceForwarding);
-                this.saveGrievanceForwardingHistory(grievanceForwarding);
-                return;
             }
         }
     }
