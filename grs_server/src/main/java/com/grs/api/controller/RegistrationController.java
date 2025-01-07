@@ -15,6 +15,7 @@ import com.grs.api.model.response.IdPhoneMessageDTO;
 import com.grs.api.model.response.grievance.ComplainantInfoBlacklistReqDTO;
 import com.grs.api.model.response.grievance.ComplainantInfoDTO;
 import com.grs.core.domain.ServicePair;
+import com.grs.core.domain.grs.Blacklist;
 import com.grs.core.domain.grs.Complainant;
 import com.grs.core.domain.grs.SuperAdmin;
 import com.grs.core.service.*;
@@ -434,6 +435,24 @@ public class RegistrationController {
                 .success(false)
                 .message("Sorry the password could not be changed")
                 .build();
+    }
+
+
+    @RequestMapping(value = "/api/blacklist/findBlacklistByComplainantId/{complainantId}", method = RequestMethod.GET)
+    public List<Blacklist> findBlacklistByComplainantId(@PathVariable Long complainantId){
+
+
+    }
+
+    @RequestMapping(value = "/api/blacklist/findBlacklistedOffices/{complainantId}", method = RequestMethod.GET)
+    public List<Long> findBlacklistedOffices(@PathVariable Long complainantId) {
+
+
+    }
+
+    @RequestMapping(value = "/api/complainant/getComplainantByUserId/{userId}", method = RequestMethod.GET)
+    public Complainant getComplainantByUserId(Long userId) {
+
     }
 
 }

@@ -10,6 +10,7 @@ import com.grs.api.model.response.UnseenCountDTO;
 import com.grs.api.model.response.file.ExistingFileDerivedDTO;
 import com.grs.api.model.response.file.FileDerivedDTO;
 import com.grs.api.model.response.grievanceForwarding.GrievanceForwardingInvestigationDTO;
+import com.grs.core.domain.grs.GrievanceForwarding;
 import com.grs.core.model.EmployeeOrganogram;
 import com.grs.core.service.GrievanceForwardingService;
 import com.grs.utils.Utility;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -244,4 +246,99 @@ public class GrievanceForwardingController {
             @RequestParam String inboxType) {
         return grievanceForwardingService.getTotalCountForUser(authentication,inboxType);
     }
+
+
+
+    @GetMapping("/api/grievanceforwarding/getLastForwadingForGivenGrievance/{grievanceId}")
+    public GrievanceForwarding getLastForwadingForGivenGrievance(@PathVariable Long grievanceId){
+
+    }
+
+    @GetMapping("/api/grievanceforwarding/findByGrievanceAndIsCurrent/{grievanceId}")
+    public List<GrievanceForwarding> findByGrievanceAndIsCurrent(@PathVariable Long grievanceId){
+
+    }
+
+    @GetMapping("/api/grievanceforwarding/getAllComplaintMovementByGrievance/{grievanceId}")
+    public List<GrievanceForwarding> getAllComplaintMovementByGrievance(@PathVariable Long grievanceId) {
+
+    }
+
+    @GetMapping("/api/grievanceforwarding/getLastClosedOrRejectedForwarding/{grievanceId}")
+    public GrievanceForwarding getLastClosedOrRejectedForwarding(@PathVariable Long grievanceId) {
+
+    }
+
+
+    @GetMapping("/api/grievanceforwarding/getByActionAndToOfficeIdAndToOfficeUnitOrganogramIdAndGrievance/{grievanceId}/{officeId}/{officeOrganogramId}/{action}")
+    public GrievanceForwarding getByActionAndToOfficeIdAndToOfficeUnitOrganogramIdAndGrievance(
+            @PathVariable Long grievanceId,
+            @PathVariable Long officeId,
+            @PathVariable Long officeOrganogramId,
+            @PathVariable String action
+    ){
+
+    }
+
+    @GetMapping("/api/grievanceforwarding/findByGrievanceAndActionLikeOrderByIdDesc/{grievanceId}/{action}")
+    public List<GrievanceForwarding> findByGrievanceAndActionLikeOrderByIdDesc(
+            @PathVariable Long grievanceId,
+            @PathVariable String action){
+
+    }
+
+    @GetMapping("/api/grievanceforwarding/findByGrievanceAndActionLikeAndCurrentStatusLike/{grievanceId}/{action}/{status}")
+    public GrievanceForwarding findByGrievanceAndActionLikeAndCurrentStatusLike(
+            @PathVariable Long grievanceId,
+            @PathVariable String action,
+            @PathVariable  String status){
+
+    }
+
+    @GetMapping("/api/grievanceforwarding/findByGrievanceAndActionLikeAndCurrentStatusNotLike/{grievanceId}/{action}/{status}")
+    public GrievanceForwarding findByGrievanceAndActionLikeAndCurrentStatusNotLike(
+            @PathVariable Long grievanceId,
+            @PathVariable String action,
+            @PathVariable  String status){
+
+    }
+
+
+    @PostMapping("/api/grievanceforwarding/getAllRelatedComplaintMovementsBetweenDates")
+    public List<GrievanceForwarding> getAllRelatedComplaintMovementsBetweenDates(
+            @RequestParam Long grievanceId,
+            @RequestParam Long officeId,
+            @RequestParam List<Long> officeUnitOrganogramId,
+            @RequestParam String action,
+            @RequestParam Date start,
+            @RequestParam Date finish
+    ){
+
+    }
+
+    @PostMapping("/api/grievanceforwarding/getAllRelatedComplaintMovements")
+    public List<GrievanceForwarding> getAllRelatedComplaintMovements(
+            @RequestParam Long grievanceId,
+            @RequestParam Long officeId,
+            @RequestParam List<Long> officeUnitOrganogramId,
+            @RequestParam String action
+    ){
+
+    }
+
+    @GetMapping("/api/grievanceforwarding/getLastActiveGrievanceForwardingOfCurrentUser/{grievanceId}/{userOfficeId}/{userOrganogramId}")
+    public GrievanceForwarding getLastActiveGrievanceForwardingOfCurrentUser(
+            @PathVariable Long grievanceId,
+            @PathVariable Long userOfficeId,
+            @PathVariable Long userOrganogramId){
+
+    }
+
+    @PostMapping("/api/grievanceforwarding/saveGrievanceForwardingHistory")
+    public GrievanceForwarding saveGrievanceForwardingHistory(
+            @RequestBody GrievanceForwarding grievanceForwarding){
+
+
+    }
+
 }

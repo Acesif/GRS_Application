@@ -678,4 +678,9 @@ public class OfficeController {
         return officeService.canViewDashboardAsFieldCoordinator(authentication,officeId);
 
     }
+
+    @RequestMapping(value = "/api/office/getOfficeByOfficeId/{officeId}", method = RequestMethod.GET)
+    public Office getOfficeByOfficeId(Long officeId) {
+
+    }
 }
