@@ -29,22 +29,6 @@ import java.util.List;
 public class ReportController {
     @Autowired
     private ReportsService reportsService;
-    @Autowired
-    private ModelViewService modelViewService;
-
-    @RequestMapping(value = "/viewFieldCoordination.do", method = RequestMethod.GET)
-    public ModelAndView getFieldCoordinationPage(HttpServletRequest request, Authentication authentication, Model model) {
-        if (authentication == null) {
-            return new ModelAndView("redirect:/error-page");
-        }
-        return modelViewService.addNecessaryAttributesAndReturnViewPage(model,
-                authentication,
-                request,
-                "reports",
-                "fieldCoordination",
-                "admin"
-        );
-    }
 
     @RequestMapping(value = "/api/grievances/monthly/field/coordination/reports", method = RequestMethod.GET, params = "month")
     public List<GrievanceMonthlyReportsDTO> getMonthlyFieldCoordinationReports(Authentication authentication, @RequestParam String month) {
@@ -226,7 +210,7 @@ public class ReportController {
                                                                            @PathVariable("fromMonth") Integer fromMonth,
                                                                            @PathVariable("toYear") Integer toYear,
                                                                            @PathVariable("toMonth") Integer toMonth) {
-        log.info("View Page Request : /api/locationBased/division/{}/district/{}/upazilla/{}/reports/from/{}/{}/to/{}/{}", division, district, fromYear, upazilla, fromYear, fromMonth, toYear, toMonth);
+        log.info("View Page Request : /api/locationBased/division/{}/district/{}/upazilla/{}/reports/from/{}/{}/to/{}/{}", division, district, upazilla, fromYear, fromMonth, toYear, toMonth);
         if (authentication != null) {
             return reportsService.getLocationBasedReport(authentication, division, district, upazilla, fromYear, fromMonth, toYear, toMonth);
         } else {

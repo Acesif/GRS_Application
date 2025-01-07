@@ -184,9 +184,11 @@ public class SharedApiController {
             apiClient.setUpdatedAt(new Date());
             apiClient = apiClientDAO.save(apiClient);
             String newToken = apiClient.getAccessToken();
-            return new WeakHashMap() {{
-                put("token", newToken);
-            }};
+
+            WeakHashMap<String, String> tokenMap = new WeakHashMap<>();
+            tokenMap.put("token", newToken);
+            return tokenMap;
+
         } else {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Secret");
             return null;
@@ -251,28 +253,47 @@ public class SharedApiController {
             return null;
         }
         refreshToken = refreshToken.replace(Constant.TOKEN_PREFIX, "").trim();
-        if(true) {
-            ApiClient apiClient = apiClientDAO.getByRefreshToken(refreshToken);
-            if(apiClient == null) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Refresh Token");
-                return null;
-            }
-            String accessToken = UUID.randomUUID().toString().replace("-", "");
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.SECOND, Constant.API_CLIENT_TOKEN_DURATION);
-            apiClient.setAccessToken(accessToken);
-            apiClient.setRefreshToken(refreshToken);
-            apiClient.setExpiryTime(calendar.getTime());
-            apiClient.setUpdatedAt(new Date());
-            apiClient = apiClientDAO.save(apiClient);
-            DoptorTokenCreateResponseDTO responseDTO = new DoptorTokenCreateResponseDTO();
-            responseDTO.setAccess_token(accessToken);
-            responseDTO.setRefresh_token(refreshToken);
-            return responseDTO;
-        } else {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Secret");
+
+//        if(true) {
+//            ApiClient apiClient = apiClientDAO.getByRefreshToken(refreshToken);
+//            if(apiClient == null) {
+//                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Refresh Token");
+//                return null;
+//            }
+//            String accessToken = UUID.randomUUID().toString().replace("-", "");
+//            Calendar calendar = Calendar.getInstance();
+//            calendar.add(Calendar.SECOND, Constant.API_CLIENT_TOKEN_DURATION);
+//            apiClient.setAccessToken(accessToken);
+//            apiClient.setRefreshToken(refreshToken);
+//            apiClient.setExpiryTime(calendar.getTime());
+//            apiClient.setUpdatedAt(new Date());
+//            apiClient = apiClientDAO.save(apiClient);
+//            DoptorTokenCreateResponseDTO responseDTO = new DoptorTokenCreateResponseDTO();
+//            responseDTO.setAccess_token(accessToken);
+//            responseDTO.setRefresh_token(refreshToken);
+//            return responseDTO;
+//        } else {
+//            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Secret");
+//            return null;
+//        }
+
+        ApiClient apiClient = apiClientDAO.getByRefreshToken(refreshToken);
+        if(apiClient == null) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Refresh Token");
             return null;
         }
+        String accessToken = UUID.randomUUID().toString().replace("-", "");
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.SECOND, Constant.API_CLIENT_TOKEN_DURATION);
+        apiClient.setAccessToken(accessToken);
+        apiClient.setRefreshToken(refreshToken);
+        apiClient.setExpiryTime(calendar.getTime());
+        apiClient.setUpdatedAt(new Date());
+        apiClientDAO.save(apiClient);
+        DoptorTokenCreateResponseDTO responseDTO = new DoptorTokenCreateResponseDTO();
+        responseDTO.setAccess_token(accessToken);
+        responseDTO.setRefresh_token(refreshToken);
+        return responseDTO;
     }
 
     @RequestMapping(value = "/api/submit/complaint", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -357,24 +378,56 @@ public class SharedApiController {
                 for (String rawUrL: myGovRequestDTO.getFileUriList()) {
 
                     URL url = new URL(rawUrL);
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    InputStream is = null;
-                    try {
-                        is = url.openStream ();
+
+//                    try {
+//                        is = url.openStream ();
+//                        byte[] byteChunk = new byte[4096]; // Or whatever size you want to read in at a time.
+//                        int n;
+//
+//                        while ( (n = is.read(byteChunk)) > 0 ) {
+//                            baos.write(byteChunk, 0, n);
+//                        }
+//
+//                        CustomMultipartFile customMultipartFile = new CustomMultipartFile(baos.toByteArray(), rawUrL);
+//
+//                        DerivedFileContainerDTO fileContainerDTO = this.storageService.storeDerivedFile(null, new CustomMultipartFile[] { customMultipartFile });
+//
+//                        List<FileDTO> grievanceFiles = new ArrayList<>();
+//                        for (FileDerivedDTO fileDerivedDTO: fileContainerDTO.getFiles()) {
+//                            grievanceFiles.add(FileDTO.builder()
+//                                    .name(fileDerivedDTO.getName())
+//                                    .url(fileDerivedDTO.getUrl())
+//                                    .build());
+//                        }
+//
+//                        if (grievanceRequestDTO.getFiles() == null) grievanceRequestDTO.setFiles(new ArrayList<>());
+//                        grievanceRequestDTO.getFiles().addAll(grievanceFiles);
+//
+//                    }
+//                    catch (IOException e) {
+//                        System.err.printf("Failed while reading bytes from %s: %s", url.toExternalForm(), e.getMessage());
+//                        e.fillInStackTrace();
+//                        // Perform any other exception handling that's appropriate.
+//                    }
+//                    finally {
+//                        if (is != null) { is.close(); }
+//                        baos.close();
+//                    }
+
+                    try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); InputStream is = url.openStream()) {
                         byte[] byteChunk = new byte[4096]; // Or whatever size you want to read in at a time.
                         int n;
 
-                        while ( (n = is.read(byteChunk)) > 0 ) {
+                        while ((n = is.read(byteChunk)) > 0) {
                             baos.write(byteChunk, 0, n);
                         }
 
-                        String fileName = rawUrL;
-                        CustomMultipartFile customMultipartFile = new CustomMultipartFile(baos.toByteArray(), fileName);
+                        CustomMultipartFile customMultipartFile = new CustomMultipartFile(baos.toByteArray(), rawUrL);
 
-                        DerivedFileContainerDTO fileContainerDTO = this.storageService.storeDerivedFile(null, new CustomMultipartFile[] { customMultipartFile });
+                        DerivedFileContainerDTO fileContainerDTO = this.storageService.storeDerivedFile(null, new CustomMultipartFile[]{customMultipartFile});
 
                         List<FileDTO> grievanceFiles = new ArrayList<>();
-                        for (FileDerivedDTO fileDerivedDTO: fileContainerDTO.getFiles()) {
+                        for (FileDerivedDTO fileDerivedDTO : fileContainerDTO.getFiles()) {
                             grievanceFiles.add(FileDTO.builder()
                                     .name(fileDerivedDTO.getName())
                                     .url(fileDerivedDTO.getUrl())
@@ -384,15 +437,9 @@ public class SharedApiController {
                         if (grievanceRequestDTO.getFiles() == null) grievanceRequestDTO.setFiles(new ArrayList<>());
                         grievanceRequestDTO.getFiles().addAll(grievanceFiles);
 
-                    }
-                    catch (IOException e) {
-                        System.err.printf ("Failed while reading bytes from %s: %s", url.toExternalForm(), e.getMessage());
-                        e.printStackTrace ();
-                        // Perform any other exception handling that's appropriate.
-                    }
-                    finally {
-                        if (is != null) { is.close(); }
-                        baos.close();
+                    } catch (IOException e) {
+                        System.err.printf("Failed while reading bytes from %s: %s", url.toExternalForm(), e.getMessage());
+                        e.fillInStackTrace();
                     }
 
                 }
@@ -453,7 +500,7 @@ public class SharedApiController {
 
 
     @RequestMapping(value = "/api/grievancesByPhoneNumber", method = RequestMethod.POST)
-    public Object getGrievancesByPhoneNumber(ServletRequest req, ServletResponse res,  @RequestParam(required = true) String body) throws IOException {
+    public Object getGrievancesByPhoneNumber(ServletRequest req, ServletResponse res,  @RequestParam String body) throws IOException {
 
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
@@ -548,12 +595,14 @@ public class SharedApiController {
             }
             String accessToken = apiClient.getAccessToken();
             Date expiryTime = apiClient.getExpiryTime();
-            Long timeDiff = expiryTime.getTime() - (new Date()).getTime();
-            Long duration = timeDiff > 0L ? TimeUnit.SECONDS.convert(timeDiff, TimeUnit.MILLISECONDS) : 0L;
-            return new WeakHashMap() {{
-                put("token", accessToken);
-                put("duration", duration.toString());
-            }};
+            long timeDiff = expiryTime.getTime() - (new Date()).getTime();
+            long duration = timeDiff > 0L ? TimeUnit.SECONDS.convert(timeDiff, TimeUnit.MILLISECONDS) : 0L;
+
+            WeakHashMap<String, String> map = new WeakHashMap<>();
+            map.put("token", accessToken);
+            map.put("duration", Long.toString(duration));
+
+            return map;
         } else {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Secret");
             return null;
@@ -619,12 +668,11 @@ public class SharedApiController {
             }
             dashboardDTOS.add(dashboardDTO);
         }
-        OISFGrievanceListDTO dto = OISFGrievanceListDTO.builder()
+        return OISFGrievanceListDTO.builder()
                 .summary(oisfIntermediateDashboardDTO.getGrievanceDTOS())
                 .dashboard(dashboardDTOS)
                 .designation_id(officeUnitOrganogramId)
                 .build();
-        return dto;
 //        return this.grievanceForwardingService.getUserInboxList(65L, 89104L, 3078L);
     }
 

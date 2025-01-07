@@ -24,10 +24,12 @@ public class GrsUserController {
     public SuperAdmin save(@RequestBody SuperAdmin superAdmin) {
         return grsUserService.save(superAdmin);
     }
+
     @RequestMapping(value = "/addGrsUsers", method = RequestMethod.POST)
     public Boolean register(@RequestBody GrsUserDTO grsUserDTO){
         return grsUserService.register(grsUserDTO);
     }
+
     @RequestMapping(value = "/findGrsUserByPhoneNumber", method = RequestMethod.POST)
     public SuperAdmin findGrsUserByPhoneNumber(@RequestParam String phoneNumber){
         return grsUserService.findGrsUserByPhoneNumber(phoneNumber);
@@ -36,5 +38,4 @@ public class GrsUserController {
     public List<SuperAdmin> findByRole(@PathVariable("role") long role){
         return grsUserService.findByRole(role);
     }
-
 }

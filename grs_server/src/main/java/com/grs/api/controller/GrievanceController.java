@@ -1,8 +1,6 @@
 package com.grs.api.controller;
 
-import com.grs.api.model.OISFUserType;
 import com.grs.api.model.UserInformation;
-import com.grs.api.model.UserType;
 import com.grs.api.model.request.*;
 import com.grs.api.model.response.*;
 import com.grs.api.model.response.file.ExistingFileDerivedDTO;
@@ -11,9 +9,7 @@ import com.grs.api.model.response.grievance.ComplainantInfoDTO;
 import com.grs.api.model.response.grievance.GrievanceDTO;
 import com.grs.api.model.response.grievance.GrievanceDetailsDTO;
 import com.grs.api.model.response.grievance.OISFIntermediateDashboardDTO;
-import com.grs.core.config.CaptchaSettings;
-import com.grs.core.domain.ServicePair;
-import com.grs.core.domain.ServiceType;
+import com.grs.core.service.SpProgrammeService;
 import com.grs.core.domain.grs.Complainant;
 import com.grs.core.domain.grs.Grievance;
 import com.grs.core.domain.grs.GrievanceForwarding;
@@ -24,7 +20,6 @@ import com.grs.core.model.ListViewType;
 import com.grs.core.service.*;
 import com.grs.utils.ListViewConditionOnCurrentStatusGenerator;
 import com.grs.utils.Utility;
-import com.grs.core.dao.SpProgrammeDAO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -32,17 +27,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.*;
 
-/**
- * Created by Tanvir on 9/14/2017.
+/*
+ *  Has old code
  */
+
 @Slf4j
 @RestController
 public class GrievanceController {
@@ -54,29 +45,13 @@ public class GrievanceController {
     @Autowired
     private GrievanceForwardingService grievanceForwardingService;
     @Autowired
-    private CitizenCharterService citizenCharterService;
-    @Autowired
     private MessageService messageService;
-    @Autowired
-    private ModelViewService modelViewService;
     @Autowired
     private NotificationService notificationService;
     @Autowired
     private ComplainantService complainantService;
     @Autowired
-    private AccessControlService accessControlService;
-    @Autowired
-    private SafetyNetProgramService safetyNetProgramService;
-
-    @Autowired
-    private com.grs.core.service.SpProgrammeService spProgrammeService;
-
-    @Autowired
-    private SpProgrammeDAO spProgrammeDAO;
-
-    @Autowired
-    private CaptchaSettings captchaSettings;
-
+    private SpProgrammeService spProgrammeService;
 
     @RequestMapping(value = "/api/findGrievanceById/{grievanceId}", method = RequestMethod.GET)
     public Grievance findGrievanceById(@PathVariable("grievanceId") Long grievanceId) {
@@ -132,26 +107,31 @@ public class GrievanceController {
 
     @RequestMapping(value = "/api/spProgrammeList/get", method = RequestMethod.GET)
     public List<com.grs.core.domain.grs.SpProgramme> getSpProgrammeList() {
-        List<com.grs.core.domain.grs.SpProgramme> spProgrammeList = spProgrammeService.findAllByStatusAndOfficeIdNotNull();
-        return spProgrammeList;
+        return spProgrammeService.findAllByStatusAndOfficeIdNotNull();
     }
 
     @RequestMapping(value = "/api/spProgrammeList/get/all", method = RequestMethod.GET)
     public List<com.grs.core.domain.grs.SpProgramme> getAllSpProgrammeList() {
-        List<com.grs.core.domain.grs.SpProgramme> spProgrammeList = spProgrammeService.findAll();
-        return spProgrammeList;
+        return spProgrammeService.findAll();
     }
 
     @RequestMapping(value = "/api/spProgramme/get/{programId}", method = RequestMethod.GET)
     public SpProgramGroDto getSpProgrammeOfficeNameBn(@PathVariable("programId") Integer programId) {
-        try {
-            SpProgramGroDto dto = new SpProgramGroDto();
-            dto.setOfficeName(officeService.getOffice(spProgrammeService.getSpProgramme(programId).
-                    getOfficeId()).getNameBangla());
-            return dto;
-        } catch (Exception ex) {
-            throw ex;
-        }
+//        try {
+//            SpProgramGroDto dto = new SpProgramGroDto();
+//            dto.setOfficeName(officeService.getOffice(spProgrammeService.getSpProgramme(programId).
+//                    getOfficeId()).getNameBangla());
+//            return dto;
+//        } catch (Exception ex) {
+//            throw ex;
+//        }
+        SpProgramGroDto dto = new SpProgramGroDto();
+        dto.setOfficeName(
+                officeService.getOffice(
+                        spProgrammeService.getSpProgramme(programId).getOfficeId()
+                ).getNameBangla()
+        );
+        return dto;
     }
 
     @RequestMapping(value = "/getSpProgrammeGroDetailList", method = RequestMethod.GET)
@@ -424,26 +404,38 @@ public class GrievanceController {
 
     @RequestMapping(value = "/api/grievance/feedback", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public GenericResponse getFeedbackByComplainant(Authentication authentication, @RequestBody FeedbackRequestDTO feedbackRequestDTO) {
-        boolean status = true;
-        String msg = "";
+//        boolean status = true;
+//        String msg = "";
+//        try {
+//            Grievance grievance = this.grievanceService.getFeedbackByComplainant(feedbackRequestDTO);
+//            msg = this.messageService.getMessage("feedback.saved");
+//        } catch (Exception ex) {
+//            status = false;
+//            msg = this.messageService.getMessage("feedback.saved.failed");
+//            log.info(ex.getMessage());
+//        } finally {
+//            return GenericResponse.builder()
+//                    .success(status)
+//                    .message(msg)
+//                    .build();
+//        }
+        boolean success = true;
+        String message;
+
         try {
-            Grievance grievance = this.grievanceService.getFeedbackByComplainant(feedbackRequestDTO);
-            msg = this.messageService.getMessage("feedback.saved");
+            grievanceService.getFeedbackByComplainant(feedbackRequestDTO);
+            message = messageService.getMessage("feedback.saved");
         } catch (Exception ex) {
-            status = false;
-            msg = this.messageService.getMessage("feedback.saved.failed");
-            log.info(ex.getMessage());
-        } finally {
-            return GenericResponse.builder()
-                    .success(status)
-                    .message(msg)
-                    .build();
+            success = false;
+            message = messageService.getMessage("feedback.saved.failed");
+            log.error("Error saving feedback: {}", ex.getMessage(), ex);
         }
+        return GenericResponse.builder()
+                .success(success)
+                .message(message)
+                .build();
     }
 
-//    public List<Grievance> getGrievancesByIds(List<Long> grievanceIds){
-//
-//    }
 
     @RequestMapping(value = "/api/notification/update", method = RequestMethod.PUT)
     public NotificationUrlDTO updateNotification(@RequestParam("id") Long id) {

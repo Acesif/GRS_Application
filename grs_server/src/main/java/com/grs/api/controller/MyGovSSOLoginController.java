@@ -41,49 +41,17 @@ import java.util.stream.Collectors;
 @RestController
 public class MyGovSSOLoginController {
     @Autowired
-    private CellService cellService;
-    @Autowired
-    private EmployeeOfficeDAO employeeOfficeDAO;
-    @Autowired
-    private OISFUserDetailsServiceImpl userDetailsService;
-    @Autowired
-    private GrsRoleDAO grsRoleDAO;
-    @Autowired
-    private ESBConnectorService esbConnectorService;
-    @Autowired
-    private OfficesGroDAO officesGroDAO;
-    @Autowired
-    private CentralDashboardRecipientDAO centralDashboardRecipientDAO;
-    @Autowired
-    private FcmService fcmService;
-    @Autowired
-    private CellMemberDAO cellMemberDAO;
-    @Autowired
     private ComplainantService complainantService;
     @Autowired
     private GrievanceService grievanceService;
     @Autowired
     private GrsRoleDAO roleDAO;
     @Autowired
-    private Gson gson;
-    @Autowired
     private LoginTraceService loginTraceService;
     @Autowired
     private RestTemplate restTemplate;
     @Autowired
     private MyGovConnectorService myGovConnectorService;
-
-
-    @RequestMapping(value = "/mygovlogout1", method = RequestMethod.GET)
-    public ModelAndView getLogoutPage() throws Exception {
-
-
-        IDP_Client idp = new IDP_Client(SSOPropertyReader.getInstance().getBaseUri() + Constant.myGovLogoutRedirectSuffix);
-        String url = idp.logoutRequest();
-        idp = null;
-        return new ModelAndView("redirect:" + url);
-    }
-
 
     @RequestMapping(value = "/afterLoginFromMyGov", method = RequestMethod.GET)
     public void redirectAfterMyGovLoginSuccessPOST(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "code") String code) throws IOException {
@@ -141,8 +109,6 @@ public class MyGovSSOLoginController {
                 }
 
             }
-
-
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("/");
@@ -203,7 +169,5 @@ public class MyGovSSOLoginController {
 
 //            if (url != null) response.sendRedirect(url);
         response.sendRedirect("/");
-
-
     }
 }
