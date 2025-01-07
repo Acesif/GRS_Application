@@ -5,11 +5,16 @@ import com.grs.api.model.request.*;
 import com.grs.api.model.response.*;
 import com.grs.api.model.response.file.ExistingFileDerivedDTO;
 import com.grs.api.model.response.file.FileDerivedDTO;
+
+import com.grs.api.model.response.grievance.*;
+import com.grs.core.config.CaptchaSettings;
+
 import com.grs.api.model.response.grievance.ComplainantInfoDTO;
 import com.grs.api.model.response.grievance.GrievanceDTO;
 import com.grs.api.model.response.grievance.GrievanceDetailsDTO;
 import com.grs.api.model.response.grievance.OISFIntermediateDashboardDTO;
 import com.grs.core.service.SpProgrammeService;
+
 import com.grs.core.dao.GrievanceForwardingDAO;
 import com.grs.core.domain.grs.Complainant;
 import com.grs.core.domain.grs.Grievance;
@@ -507,4 +512,13 @@ public class GrievanceController {
     ){
         return this.grievanceForwardingDAO.findByGrievanceIdAndAssignedRole(grievanceId, roleName);
     }
+
+    @RequestMapping(value = "/api/grievance/getSafetyNetGrievanceSummary", method = RequestMethod.POST)
+    public SafetyNetGrievanceSummaryListDto getSafetyNetGrievanceSummary
+            (@RequestBody SafetyNetGrievanceSummaryRequest request) {
+
+
+    }
+
+
 }
