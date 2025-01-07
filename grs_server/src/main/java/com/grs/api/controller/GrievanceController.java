@@ -10,6 +10,7 @@ import com.grs.api.model.response.grievance.GrievanceDTO;
 import com.grs.api.model.response.grievance.GrievanceDetailsDTO;
 import com.grs.api.model.response.grievance.OISFIntermediateDashboardDTO;
 import com.grs.core.service.SpProgrammeService;
+import com.grs.core.dao.GrievanceForwardingDAO;
 import com.grs.core.domain.grs.Complainant;
 import com.grs.core.domain.grs.Grievance;
 import com.grs.core.domain.grs.GrievanceForwarding;
@@ -44,6 +45,8 @@ public class GrievanceController {
     private OfficeService officeService;
     @Autowired
     private GrievanceForwardingService grievanceForwardingService;
+    @Autowired
+    private GrievanceForwardingDAO grievanceForwardingDAO;
     @Autowired
     private MessageService messageService;
     @Autowired
@@ -496,5 +499,12 @@ public class GrievanceController {
     public WeakHashMap<String, Object> reassignGrievance(Authentication authentication, @RequestBody ReassignGrievanceDTO reassignGrievance) {
         UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
         return grievanceService.reassignGrievance(reassignGrievance, userInformation);
+    }
+    @GetMapping("/api/grievanceforwarding/findByGrievanceIdAndAssignedRole/{grievanceId}/{roleType}")
+    public List<GrievanceForwarding> findByGrievanceIdAndAssignedRole(
+            @PathVariable Long grievanceId,
+            @PathVariable("roleType") String roleName
+    ){
+        return this.grievanceForwardingDAO.findByGrievanceIdAndAssignedRole(grievanceId, roleName);
     }
 }

@@ -140,7 +140,6 @@ public class OfficeController {
                 .services(this.officeService.getServices(officeID))
                 .build();
     }
-
     @RequestMapping(value = "/api/services/{service_id}", method = RequestMethod.GET)
     public ServiceOriginDTO getServiceById(@PathVariable("service_id") Long serviceId) {
         ServiceOrigin serviceOrigin = officeService.getServiceOrigin(serviceId);

@@ -49,10 +49,10 @@ public class GrievanceGateway extends BaseRestTemplate {
     String GRS_CORE_CONTEXT_PATH = "/grs_server";
 
     public Grievance findGrievanceById(Long grievanceId) {
-        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievance/findGrievanceById/" + grievanceId;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/findGrievanceById/" + grievanceId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Authorization", "Bearer " + getToken());
+//        headers.add("Authorization", "Bearer " + getToken());
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         ResponseEntity<Grievance> response = restTemplate.exchange(url,
