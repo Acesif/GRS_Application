@@ -2,6 +2,7 @@ package com.grs.grs_client.service;
 
 import com.grs.grs_client.enums.OISFUserType;
 import com.grs.grs_client.enums.UserType;
+import com.grs.grs_client.gateway.GeneralServiceGateway;
 import com.grs.grs_client.gateway.NotificationGateway;
 import com.grs.grs_client.model.NotificationsDTO;
 import com.grs.grs_client.model.SubMenuDTO;
@@ -25,23 +26,26 @@ import java.util.stream.Collectors;
 @Service
 public class ModelAndViewService {
 
-    @Value("${settings.maximum-file-size}")
-    Integer maxFileSize;
-
-    @Value("${settings.allowed-file-types}")
-    String allowedFileTypes;
-
-    @Value("${settings.file-size-label}")
-    String fileSizeLabel;
-
-    @Value("${settings.file-types-label}")
-    String fileTypesLabel;
+//    @Value("${settings.maximum-file-size}")
+//    Integer maxFileSize;
+//
+//    @Value("${settings.allowed-file-types}")
+//    String allowedFileTypes;
+//
+//    @Value("${settings.file-size-label}")
+//    String fileSizeLabel;
+//
+//    @Value("${settings.file-types-label}")
+//    String fileTypesLabel;
 
     @Autowired
     private NotificationGateway notificationService;
 
     @Autowired
     private Environment environment;
+
+    @Autowired
+    private GeneralServiceGateway generalSettingsService;
 
     public ModelAndView returnViewsForNormalPages(Authentication authentication,
                                                   Model model,
@@ -76,11 +80,11 @@ public class ModelAndViewService {
         return new ModelAndView(viewName);
     }
 
-    public Model addFileSettingsAttributesToModel(Model model) {
-        model.addAttribute("maxFileSize", maxFileSize);
-        model.addAttribute("allowedFileTypes", allowedFileTypes);
-        model.addAttribute("fileSizeLabel", fileSizeLabel);
-        model.addAttribute("fileTypesLabel", fileTypesLabel);
+    public Model addFileSettingsAttributesToModel(Model model) throws IllegalAccessException {
+        model.addAttribute("maxFileSize", generalSettingsService.getMaximumFileSize());
+        model.addAttribute("allowedFileTypes", generalSettingsService.getAllowedFileTypes());
+        model.addAttribute("fileSizeLabel", generalSettingsService.getAllowedFileSizeLabel());
+        model.addAttribute("fileTypesLabel", generalSettingsService.getAllowedFileTypesLabel());
         return model;
     }
 

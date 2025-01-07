@@ -115,7 +115,7 @@ public class GrievanceController {
             @RequestParam(required = false) String tab, // Add tab as an optional parameter
             @RequestParam(required = false) Integer page, // Add page as an optional parameter
             @RequestParam(required = false) Integer size // Add size as an optional parameter
-    ) {
+    ) throws IllegalAccessException {
         if (authentication != null) {
             if(!accessControlService.hasPermissionToViewGrievanceDetails(authentication, id)) {
                 return new ModelAndView("redirect:/error-page");
@@ -189,7 +189,7 @@ public class GrievanceController {
             @RequestParam(required = false) String tab, // Add tab as an optional parameter
             @RequestParam(required = false) Integer page, // Add page as an optional parameter
             @RequestParam(required = false) Integer size // Add size as an optional parameter
-    ) {
+    ) throws IllegalAccessException {
         if (authentication != null) {
             if(!accessControlService.hasPermissionToViewGrievanceDetails(authentication, id)) {
                 return new ModelAndView("redirect:/error-page");
@@ -256,7 +256,7 @@ public class GrievanceController {
     }
 
     @RequestMapping(value = "/viewAppealGrievances.do", method = RequestMethod.GET, params = "id")
-    public ModelAndView getViewAppealGrievancesPage(Authentication authentication, Model model, HttpServletRequest request, @RequestParam Long id) {
+    public ModelAndView getViewAppealGrievancesPage(Authentication authentication, Model model, HttpServletRequest request, @RequestParam Long id) throws IllegalAccessException {
         if (authentication != null) {
             UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
             Grievance grievance = this.grievanceService.findGrievanceById(id);
@@ -323,7 +323,7 @@ public class GrievanceController {
     @RequestMapping(value = "/addPublicGrievances.do", method = RequestMethod.GET)
     public ModelAndView getAddGrievancesPage(Authentication authentication, Model model, HttpServletRequest request,
                                              @RequestParam(value = "serviceInfo", defaultValue = "-1") Optional<String> serviceInfo
-    ) throws IOException {
+    ) throws IOException, IllegalAccessException {
         model.addAttribute("grievanceDTO", new GrievanceRequestDTO());
         if (!serviceInfo.get().equals("-1")) {
             ServiceRelatedInfoRequestDTO serviceRelatedInfoRequestDTO = this.grievanceService.convertFromBase64encodedString(serviceInfo.get());
@@ -367,7 +367,7 @@ public class GrievanceController {
 
 
     @RequestMapping(value = "/addSelfMotivatedGrievances.do", method = RequestMethod.GET)
-    public ModelAndView getAddSelfMotivatedGrievancesPage(Authentication authentication, Model model, HttpServletRequest request) throws IOException {
+    public ModelAndView getAddSelfMotivatedGrievancesPage(Authentication authentication, Model model, HttpServletRequest request) throws IOException, IllegalAccessException {
         model.addAttribute("grievanceDTO", new GrievanceRequestDTO());
 
         if (authentication != null) {
@@ -401,7 +401,7 @@ public class GrievanceController {
     }
 
     @RequestMapping(value = "/addStaffGrievances.do", method = RequestMethod.GET)
-    public ModelAndView getAddStaffGrievancesPage(Authentication authentication, Model model, HttpServletRequest request) throws IOException {
+    public ModelAndView getAddStaffGrievancesPage(Authentication authentication, Model model, HttpServletRequest request) throws IOException, IllegalAccessException {
         model.addAttribute("grievanceDTO", new GrievanceRequestDTO());
         if (authentication != null) {
             UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
@@ -434,7 +434,7 @@ public class GrievanceController {
     }
 
     @RequestMapping(value = "/addOfficialGrievances.do", method = RequestMethod.GET)
-    public ModelAndView getAddOfficialGrievancesPage(Authentication authentication, Model model, HttpServletRequest request) throws IOException {
+    public ModelAndView getAddOfficialGrievancesPage(Authentication authentication, Model model, HttpServletRequest request) throws IOException, IllegalAccessException {
         model.addAttribute("grievanceDTO", new GrievanceRequestDTO());
         if (authentication != null) {
             UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
@@ -468,7 +468,7 @@ public class GrievanceController {
     }
 
     @RequestMapping(value = "/anonymousAddGrievance.do", method = RequestMethod.GET)
-    public ModelAndView getAnonymousAddGrievancePage(HttpServletRequest request, Authentication authentication, Model model) {
+    public ModelAndView getAnonymousAddGrievancePage(HttpServletRequest request, Authentication authentication, Model model) throws IllegalAccessException {
 
         model.addAttribute("anonymousForOthers", true);
 
@@ -497,7 +497,7 @@ public class GrievanceController {
 
 
     @RequestMapping(value = "/complainWithoutLogin.do", method = RequestMethod.GET)
-    public ModelAndView complainWithoutLoginPage(HttpServletRequest request, Authentication authentication, Model model) {
+    public ModelAndView complainWithoutLoginPage(HttpServletRequest request, Authentication authentication, Model model) throws IllegalAccessException {
         String sn = request.getParameter("sn");
         model.addAttribute("grievanceDTO", new GrievanceRequestDTO());
         List<ServicePair> servicePairs = citizenCharterService.getDefaultAllowedServiceTypes(request);
@@ -523,7 +523,7 @@ public class GrievanceController {
 
     }
     @RequestMapping(value = "/complainForOthers.do", method = RequestMethod.GET)
-    public ModelAndView complainForOthersPage(HttpServletRequest request, Authentication authentication, Model model) {
+    public ModelAndView complainForOthersPage(HttpServletRequest request, Authentication authentication, Model model) throws IllegalAccessException {
         model.addAttribute("grievanceDTO", new GrievanceRequestDTO());
         List<ServicePair> servicePairs = citizenCharterService.getDefaultAllowedServiceTypes(request);
         model = modelViewService.addFileSettingsAttributesToModel(model);
@@ -556,7 +556,7 @@ public class GrievanceController {
     }
 
     @RequestMapping(value = "addOfflineGrievance.do", method = RequestMethod.GET)
-    public ModelAndView getOfflineGrievanceSubmissionPage(Authentication authentication, Model model, HttpServletRequest request){
+    public ModelAndView getOfflineGrievanceSubmissionPage(Authentication authentication, Model model, HttpServletRequest request) throws IllegalAccessException {
         if (authentication != null) {
             model.addAttribute("grievanceDTO", new GrievanceRequestDTO());
             List<ServicePair> servicePairs = citizenCharterService.getDefaultAllowedServiceTypes(request);
@@ -591,7 +591,7 @@ public class GrievanceController {
     }
 
     @RequestMapping(value = "/addPublicGrievancesByGRO.do", method = RequestMethod.GET)
-    public ModelAndView addPublicGrievanceByGRO(Authentication authentication, Model model, HttpServletRequest request, @RequestParam("phone") String phoneNumber){
+    public ModelAndView addPublicGrievanceByGRO(Authentication authentication, Model model, HttpServletRequest request, @RequestParam("phone") String phoneNumber) throws IllegalAccessException {
         if (authentication != null) {
             UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
             if(!userInformation.getUserType().equals(UserType.OISF_USER) ) {
@@ -625,7 +625,7 @@ public class GrievanceController {
     }
 
     @RequestMapping(value = "/addAnonymousGrievanceGRO.do", method = RequestMethod.GET)
-    public ModelAndView getAddAnonymousGrievanceGROPage(HttpServletRequest request, Authentication authentication, Model model) {
+    public ModelAndView getAddAnonymousGrievanceGROPage(HttpServletRequest request, Authentication authentication, Model model) throws IllegalAccessException {
 
         model.addAttribute("anonymousForOthers", true);
 
