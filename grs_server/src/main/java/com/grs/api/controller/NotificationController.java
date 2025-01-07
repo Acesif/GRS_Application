@@ -23,27 +23,11 @@ import javax.servlet.http.HttpServletRequest;
 public class NotificationController {
     @Autowired
     private NotificationService notificationService;
-    @Autowired
-    private ModelViewService modelViewService;
-
-    @RequestMapping(value = "/notifications.do", method = RequestMethod.GET)
-    public ModelAndView getUsersNotifications(Authentication authentication, Model model, HttpServletRequest request){
-        if (authentication != null) {
-            return modelViewService.addNecessaryAttributesAndReturnViewPage(model,
-                    authentication,
-                    request,
-                    "notification",
-                    "viewNotifications",
-                    "admin");
-        }
-        return new ModelAndView("redirect:/error-page");
-    }
 
     @RequestMapping(value = "/api/notification", method = RequestMethod.GET)
     public Page<NotificationDTO> getAllNationalitiesAlongWithCountry(Authentication authentication, @PageableDefault(value = Integer.MAX_VALUE) Pageable pageable) {
         UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
-        Page<NotificationDTO> notificationDTOS = this.notificationService.getAllNotificationOfAnUser(userInformation, pageable);
-        return notificationDTOS;
+        return this.notificationService.getAllNotificationOfAnUser(userInformation, pageable);
     }
 
     @RequestMapping(value = "/api/findByOfficeIdAndEmployeeRecordIdAndOfficeUnitOrganogramIdOrderByIdDesc",method = RequestMethod.POST)

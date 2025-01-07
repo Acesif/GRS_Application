@@ -25,9 +25,10 @@ import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by Acer on 25-Oct-17.
+/*
+ *  Has old code
  */
+
 @RestController
 public class GrievanceForwardingController {
     @Autowired
@@ -82,9 +83,19 @@ public class GrievanceForwardingController {
 
     @RequestMapping(value = "/api/grievance/forward/opinion", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public GenericResponse sendForOpinion(Authentication authentication, @Valid @RequestBody OpinionRequestDTO grievanceOpinionRequestDTO) {
+        /* Old Logic
+
         if (!(grievanceOpinionRequestDTO.getPostNode() != null
                 && !grievanceOpinionRequestDTO.getPostNode().isEmpty()
                 && grievanceOpinionRequestDTO.getPostNode().size() <= 1
+                && grievanceOpinionRequestDTO.getPostNode().get(0) != null)) {
+            return new GenericResponse(false, "অনুগ্রহ করে মতামতের জন্য অন্ততপক্ষে যে কোন একজনকে নির্বাচন করুন");
+        }
+
+        */
+
+        if (!(grievanceOpinionRequestDTO.getPostNode() != null
+                && grievanceOpinionRequestDTO.getPostNode().size() == 1
                 && grievanceOpinionRequestDTO.getPostNode().get(0) != null)) {
             return new GenericResponse(false, "অনুগ্রহ করে মতামতের জন্য অন্ততপক্ষে যে কোন একজনকে নির্বাচন করুন");
         }
@@ -217,7 +228,7 @@ public class GrievanceForwardingController {
                 "/apps";
         RestTemplate restTemplate = new RestTemplate();
 
-        ResponseEntity responseEntity = restTemplate.getForEntity(url,Object.class);
+        ResponseEntity<Object> responseEntity = restTemplate.getForEntity(url,Object.class);
         return responseEntity.getBody();
     }
 

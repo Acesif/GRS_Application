@@ -1,49 +1,37 @@
 package com.grs.api.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.grs.api.config.security.TokenAuthenticationServiceUtil;
 import com.grs.api.model.UserInformation;
 import com.grs.api.model.UserType;
 import com.grs.api.model.request.BlacklistRequestBodyDTO;
 import com.grs.api.model.request.ComplainantDTO;
-import com.grs.api.model.request.GrievanceRequestDTO;
 import com.grs.api.model.request.PasswordChangeDTO;
-import com.grs.api.model.response.BaseObjectDTO;
 import com.grs.api.model.response.ComplainantResponseDTO;
 import com.grs.api.model.response.GenericResponse;
 import com.grs.api.model.response.IdPhoneMessageDTO;
 import com.grs.api.model.response.grievance.ComplainantInfoBlacklistReqDTO;
 import com.grs.api.model.response.grievance.ComplainantInfoDTO;
+
 import com.grs.core.domain.ServicePair;
 import com.grs.core.domain.grs.Blacklist;
+
 import com.grs.core.domain.grs.Complainant;
 import com.grs.core.domain.grs.SuperAdmin;
 import com.grs.core.service.*;
-import com.grs.utils.Constant;
 import com.grs.utils.CookieUtil;
 import com.grs.utils.StringUtil;
 import com.grs.utils.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 
-/**
- * Created by Acer on 9/19/2017.
- */
 @Slf4j
 @RestController
 public class RegistrationController {
@@ -230,29 +218,48 @@ public class RegistrationController {
 
     @RequestMapping(value = "/api/complainants/blacklist/{complainantId}/office/{officeId}", method = RequestMethod.PUT)
     public GenericResponse doBlacklistByComplainantId(Authentication authentication, @PathVariable("complainantId") Long complainantId, @PathVariable("officeId") Long officeId) {
-        GenericResponse genericResponse = null;
+//        GenericResponse genericResponse = null;
+//        try {
+//            UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
+//            boolean done = this.complainantService.doBlacklistByComplainantId(complainantId, officeId);
+//            if (done) {
+//                genericResponse = GenericResponse.builder()
+//                        .message(this.messageService.getMessage("user.added.to.blacklist"))
+//                        .success(true)
+//                        .build();
+//            } else {
+//                genericResponse = GenericResponse.builder()
+//                        .message(this.messageService.getMessage("user.already.blacklisted"))
+//                        .success(false)
+//                        .build();
+//            }
+//        } catch (Exception ex) {
+//            log.info(ex.getMessage());
+//            genericResponse = GenericResponse.builder()
+//                    .message(this.messageService.getMessage("user.blacklisted.failed"))
+//                    .success(false)
+//                    .build();
+//        } finally {
+//            return genericResponse;
+//        }
         try {
-            UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
-            boolean done = this.complainantService.doBlacklistByComplainantId(complainantId, officeId);
-            if (done) {
-                genericResponse = GenericResponse.builder()
-                        .message(this.messageService.getMessage("user.added.to.blacklist"))
-                        .success(true)
-                        .build();
-            } else {
-                genericResponse = GenericResponse.builder()
-                        .message(this.messageService.getMessage("user.already.blacklisted"))
-                        .success(false)
-                        .build();
-            }
+//            UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
+            boolean isBlacklisted = complainantService.doBlacklistByComplainantId(complainantId, officeId);
+
+            String message = isBlacklisted
+                    ? messageService.getMessage("user.added.to.blacklist")
+                    : messageService.getMessage("user.already.blacklisted");
+
+            return GenericResponse.builder()
+                    .message(message)
+                    .success(isBlacklisted)
+                    .build();
         } catch (Exception ex) {
-            log.info(ex.getMessage());
-            genericResponse = GenericResponse.builder()
-                    .message(this.messageService.getMessage("user.blacklisted.failed"))
+            log.error("Error blacklisting complainant: {}", ex.getMessage(), ex);
+            return GenericResponse.builder()
+                    .message(messageService.getMessage("user.blacklisted.failed"))
                     .success(false)
                     .build();
-        } finally {
-            return genericResponse;
         }
     }
 
@@ -275,13 +282,12 @@ public class RegistrationController {
             }
         } catch (Exception ex) {
             log.info(ex.getMessage());
-            genericResponse = GenericResponse.builder()
+            return GenericResponse.builder()
                     .message(this.messageService.getMessage("user.blacklisted.failed"))
                     .success(false)
                     .build();
-        } finally {
-            return genericResponse;
         }
+        return genericResponse;
     }
 
     @RequestMapping(value = "/api/complainants/blacklist/request/{complainantId}", method = RequestMethod.PUT)

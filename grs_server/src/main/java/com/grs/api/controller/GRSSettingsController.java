@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/**
- * Created by Aftab on 2/20/2018.
- */
+/*
+*  Has old code
+*/
+
 @Slf4j
 @RestController
 public class GRSSettingsController {
+
     @Autowired
     GRSSettingsService grsSettingsService;
 
@@ -32,20 +34,23 @@ public class GRSSettingsController {
 
     @RequestMapping(value = "/api/origin-citizen-charter/upload", method = RequestMethod.POST)
     public GenericResponse uploadCitizenCharter(@RequestBody GenericCitizenCharterUploaderRequestDTO citizenCharterUploaderRequestDTO) {
-        GenericResponse genericResponse = null;
+        GenericResponse genericResponse;
         String message = "";
-        try{
+        try {
             genericResponse = this.grsSettingsService.uploadCitizenCharter(citizenCharterUploaderRequestDTO);
-        }catch (Exception ex) {
+        } catch (Exception ex) {
 
             log.info(ex.getMessage());
             genericResponse = GenericResponse.builder()
                     .success(false)
                     .message("প্রক্রিয়াকরণ ব্যাহত হওয়ায় সেবা প্রদান প্রতিশ্রুতি আপলোড বিঘ্নিত হয়েছে")
                     .build();
-            throw ex;
-        }finally {
+//            throw ex;
             return genericResponse;
         }
+//        finally {
+//            return genericResponse;
+//        }
+        return genericResponse;
     }
 }

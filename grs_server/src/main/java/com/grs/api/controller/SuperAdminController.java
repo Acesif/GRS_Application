@@ -22,9 +22,6 @@ import java.util.WeakHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by HP on 1/30/2018.
- */
 @RestController
 @Slf4j
 public class SuperAdminController {

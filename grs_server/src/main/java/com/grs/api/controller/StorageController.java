@@ -18,10 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
 
-/**
- * Created by Acer on 10/2/2017.
- */
-
 @Slf4j
 @RestController
 public class StorageController {

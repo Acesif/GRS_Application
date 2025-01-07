@@ -33,8 +33,6 @@ import java.util.stream.Collectors;
 public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
-    @Autowired
-    private UserService userService;
 
     @RequestMapping(value = "/api/employee/as/complainant/{employeeRecordId}", method = RequestMethod.GET)
     public ComplainantResponseDTO getPersonalInfoOfEmployeeIntoComplainantResponseDTO(@PathVariable("employeeRecordId") Long employeeRecordId) {

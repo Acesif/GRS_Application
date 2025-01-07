@@ -30,7 +30,7 @@ public class ObjectFromAPIService {
         authToken = "";
     }
 
-    public Object getObject(String url, Class objectClass, MultiValueMap<String, String> body) {
+    public Object getObject(String url, Class<?> objectClass, MultiValueMap<String, String> body) {
         init();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);

@@ -20,10 +20,12 @@ public class MyGovConnectorController {
             @RequestBody ComplainantDTO complainantDTO) throws Exception {
         return myGovConnectorService.createUser(complainantDTO);
     }
+
     @RequestMapping(value = "/getMyGovToken", method = RequestMethod.POST)
     public MyGovTokenResponse getMyGovToken(@RequestParam String code) {
         return myGovConnectorService.getMyGovToken(code);
     }
+
     @RequestMapping(value = "/getMyGovLoginUser", method = RequestMethod.POST)
     public MyGovUser getMyGovLoginUser(@RequestParam String accessToken) {
         return myGovConnectorService.getMyGovLoginUser(accessToken);

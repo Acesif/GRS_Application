@@ -42,9 +42,6 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 
-/**
- * Created by Tanvir on 8/30/2017.
- */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
