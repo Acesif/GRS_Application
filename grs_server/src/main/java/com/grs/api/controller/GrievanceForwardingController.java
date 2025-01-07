@@ -262,22 +262,22 @@ public class GrievanceForwardingController {
 
     @GetMapping("/api/grievanceforwarding/getLastForwadingForGivenGrievance/{grievanceId}")
     public GrievanceForwarding getLastForwadingForGivenGrievance(@PathVariable Long grievanceId){
-
+        return null;
     }
 
     @GetMapping("/api/grievanceforwarding/findByGrievanceAndIsCurrent/{grievanceId}")
     public List<GrievanceForwarding> findByGrievanceAndIsCurrent(@PathVariable Long grievanceId){
-
+        return null;
     }
 
     @GetMapping("/api/grievanceforwarding/getAllComplaintMovementByGrievance/{grievanceId}")
     public List<GrievanceForwarding> getAllComplaintMovementByGrievance(@PathVariable Long grievanceId) {
-
+        return null;
     }
 
     @GetMapping("/api/grievanceforwarding/getLastClosedOrRejectedForwarding/{grievanceId}")
     public GrievanceForwarding getLastClosedOrRejectedForwarding(@PathVariable Long grievanceId) {
-
+        return null;
     }
 
 
@@ -288,14 +288,14 @@ public class GrievanceForwardingController {
             @PathVariable Long officeOrganogramId,
             @PathVariable String action
     ){
-
+        return null;
     }
 
     @GetMapping("/api/grievanceforwarding/findByGrievanceAndActionLikeOrderByIdDesc/{grievanceId}/{action}")
     public List<GrievanceForwarding> findByGrievanceAndActionLikeOrderByIdDesc(
             @PathVariable Long grievanceId,
             @PathVariable String action){
-
+        return null;
     }
 
     @GetMapping("/api/grievanceforwarding/findByGrievanceAndActionLikeAndCurrentStatusLike/{grievanceId}/{action}/{status}")
@@ -303,7 +303,7 @@ public class GrievanceForwardingController {
             @PathVariable Long grievanceId,
             @PathVariable String action,
             @PathVariable  String status){
-
+        return null;
     }
 
     @GetMapping("/api/grievanceforwarding/findByGrievanceAndActionLikeAndCurrentStatusNotLike/{grievanceId}/{action}/{status}")
@@ -311,7 +311,7 @@ public class GrievanceForwardingController {
             @PathVariable Long grievanceId,
             @PathVariable String action,
             @PathVariable  String status){
-
+        return null;
     }
 
 
@@ -324,7 +324,7 @@ public class GrievanceForwardingController {
             @RequestParam Date start,
             @RequestParam Date finish
     ){
-
+        return null;
     }
 
     @PostMapping("/api/grievanceforwarding/getAllRelatedComplaintMovements")
@@ -334,7 +334,7 @@ public class GrievanceForwardingController {
             @RequestParam List<Long> officeUnitOrganogramId,
             @RequestParam String action
     ){
-
+        return null;
     }
 
     @GetMapping("/api/grievanceforwarding/getLastActiveGrievanceForwardingOfCurrentUser/{grievanceId}/{userOfficeId}/{userOrganogramId}")
@@ -342,14 +342,14 @@ public class GrievanceForwardingController {
             @PathVariable Long grievanceId,
             @PathVariable Long userOfficeId,
             @PathVariable Long userOrganogramId){
-
+        return null;
     }
 
     @PostMapping("/api/grievanceforwarding/saveGrievanceForwardingHistory")
     public GrievanceForwarding saveGrievanceForwardingHistory(
             @RequestBody GrievanceForwarding grievanceForwarding){
 
-
+        return null;
     }
 
 }

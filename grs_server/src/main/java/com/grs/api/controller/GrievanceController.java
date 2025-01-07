@@ -517,7 +517,7 @@ public class GrievanceController {
     public SafetyNetGrievanceSummaryListDto getSafetyNetGrievanceSummary
             (@RequestBody SafetyNetGrievanceSummaryRequest request) {
 
-
+        return null;
     }
 
 

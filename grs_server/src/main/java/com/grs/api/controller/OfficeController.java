@@ -678,6 +678,6 @@ public class OfficeController {
 
     @RequestMapping(value = "/api/office/getOfficeByOfficeId/{officeId}", method = RequestMethod.GET)
     public Office getOfficeByOfficeId(Long officeId) {
-
+        return null;
     }
 }
