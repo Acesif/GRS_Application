@@ -16,6 +16,7 @@ import com.grs.api.model.response.organogram.TreeNodeDTO;
 import com.grs.api.model.response.organogram.TreeNodeOfficerDTO;
 import com.grs.api.model.response.roles.RoleContainerDTO;
 import com.grs.api.model.response.roles.SingleRoleDTO;
+import com.grs.core.dao.OfficeDAO;
 import com.grs.core.dao.SafetyNetDAO;
 import com.grs.core.domain.ServiceType;
 import com.grs.core.domain.grs.*;
@@ -57,6 +58,7 @@ public class OfficeController {
     private final CacheService cacheService;
     private final ObjectMapper objectMapper;
     private final SafetyNetProgramService safetyNetProgramService;
+    private final OfficeDAO officeDAO;
 
     @RequestMapping(value = "/api/office-origin-unit-organograms/{officeOriginId}", method = RequestMethod.GET)
     public List<OfficeOriginUnitOrganogramDTO> getOfficeOriginUnitOrganogramsByOfficeOriginId(@PathVariable("officeOriginId") Long officeOriginId) {
@@ -678,6 +680,6 @@ public class OfficeController {
 
     @RequestMapping(value = "/api/office/getOfficeByOfficeId/{officeId}", method = RequestMethod.GET)
     public Office getOfficeByOfficeId(Long officeId) {
-
+        return officeDAO.findOne(officeId);
     }
 }
