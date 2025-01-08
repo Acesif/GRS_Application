@@ -80,7 +80,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public CustomAuthenticationDetailSource authenticationDetailSource() {
-        System.out.println("Configuring Spring Security : Initializaing user details service...");
         return new CustomAuthenticationDetailSource();
     }
 }

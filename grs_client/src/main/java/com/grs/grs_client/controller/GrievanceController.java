@@ -196,7 +196,6 @@ public class GrievanceController {
             }
             UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
             Grievance grievance = this.grievanceService.findGrievanceById(id);
-//            System.out.println("Grievance : " + grievance);
             Boolean isGrsUser = Utility.isUserAnGRSUser(userInformation);
             Boolean isOthersComplainant = Utility.isUserAnOthersComplainant(userInformation);
             Boolean isGROUser = Utility.isUserAnGROUser(userInformation);
