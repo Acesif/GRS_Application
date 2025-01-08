@@ -28,6 +28,10 @@ spring:
           time_zone: Asia/Dhaka
         format_sql: false
     show-sql: false
+  http:
+    multipart:
+      max-file-size: 5000MB
+      max-request-size: 5000MB
     
 service:
   gov:

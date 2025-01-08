@@ -679,7 +679,7 @@ public class OfficeController {
     }
 
     @RequestMapping(value = "/api/office/getOfficeByOfficeId/{officeId}", method = RequestMethod.GET)
-    public Office getOfficeByOfficeId(Long officeId) {
+    public Office getOfficeByOfficeId(@PathVariable Long officeId) {
 
         return officeDAO.findOne(officeId);
 

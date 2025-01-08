@@ -358,14 +358,14 @@ public class GrievanceForwardingController {
 
     @PostMapping("/api/grievanceforwarding/getAllRelatedComplaintMovements")
     public List<GrievanceForwarding> getAllRelatedComplaintMovements(
-            @RequestParam Long grievanceId,
-            @RequestParam Long officeId,
-            @RequestParam List<Long> officeUnitOrganogramId,
-            @RequestParam String action
-    ){
-
-        return grievanceForwardingDAO.getAllRelatedComplaintMovements(grievanceId, officeId, officeUnitOrganogramId, action);
-
+            @RequestParam("grievanceId") Long grievanceId,
+            @RequestParam("officeId") Long officeId,
+            @RequestParam("officeUnitOrganogramId") List<Long> officeUnitOrganogramId,
+            @RequestParam("action") String action
+    ) {
+        return grievanceForwardingDAO.getAllRelatedComplaintMovements(
+                grievanceId, officeId, officeUnitOrganogramId, action
+        );
     }
 
     @GetMapping("/api/grievanceforwarding/getLastActiveGrievanceForwardingOfCurrentUser/{grievanceId}/{officeId}/{officeUnitOrganogramId}")

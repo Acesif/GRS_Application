@@ -13,11 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.net.URLEncoder;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -266,26 +267,68 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
         return response.getBody();
     }
 
-    public List<GrievanceForwarding> getAllRelatedComplaintMovements(
-            Long grievanceId, Long officeId, List<Long> officeUnitOrganogramId, String action
-    ){
-        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievanceforwarding/getAllRelatedComplaintMovements";
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Authorization", "Bearer " + getToken());
-        url = UriComponentsBuilder.fromHttpUrl(url)
-                .queryParam("grievanceId", grievanceId)
-                .queryParam("officeId", officeId)
-                .queryParam("action", action)
-                .queryParam("officeUnitOrganogramId", officeUnitOrganogramId)
-                .toUriString();
+//    public List<GrievanceForwarding> getAllRelatedComplaintMovements(
+//            Long grievanceId, Long officeId, List<Long> officeUnitOrganogramId, String action
+//    ){
+//        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievanceforwarding/getAllRelatedComplaintMovements";
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+//        headers.add("Authorization", "Bearer " + getToken());
+//        url = UriComponentsBuilder.fromHttpUrl(url)
+//                .queryParam("grievanceId", grievanceId)
+//                .queryParam("officeId", officeId)
+//                .queryParam("action", action)
+//                .queryParam("officeUnitOrganogramId", officeUnitOrganogramId)
+//                .toUriString();
+//
+//        HttpEntity<String> entity = new HttpEntity<>(headers);
+//        ResponseEntity<List<GrievanceForwarding>> response = restTemplate.exchange(url,
+//                HttpMethod.POST, entity, new ParameterizedTypeReference<List<GrievanceForwarding>>() {
+//                });
+//        return response.getBody();
+//    }
 
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        ResponseEntity<List<GrievanceForwarding>> response = restTemplate.exchange(url,
-                HttpMethod.GET, entity, new ParameterizedTypeReference<List<GrievanceForwarding>>() {
-                });
+    public List<GrievanceForwarding> getAllRelatedComplaintMovements(
+            Long grievanceId,
+            Long officeId,
+            List<Long> officeUnitOrganogramId,
+            String action
+    ) {
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievanceforwarding/getAllRelatedComplaintMovements";
+
+        // Prepare headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + getToken());
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        // Prepare form data
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("grievanceId", grievanceId.toString());
+        formData.add("officeId", officeId.toString());
+
+        // For the list, add each value
+        if (officeUnitOrganogramId != null) {
+            for (Long orgId : officeUnitOrganogramId) {
+                formData.add("officeUnitOrganogramId", orgId.toString());
+            }
+        }
+
+        formData.add("action", action);
+
+        // Wrap into an HttpEntity
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(formData, headers);
+
+        // Execute POST with form data
+        ResponseEntity<List<GrievanceForwarding>> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                entity,
+                new ParameterizedTypeReference<List<GrievanceForwarding>>() {}
+        );
+
         return response.getBody();
     }
+
 
     public GrievanceForwarding getLastActiveGrievanceForwardingOfCurrentUser(Long grievanceId, Long userOfficeId, Long userOrganogramId){
         String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievanceforwarding/getLastActiveGrievanceForwardingOfCurrentUser/" + grievanceId + "/" + userOfficeId + "/" + userOrganogramId;

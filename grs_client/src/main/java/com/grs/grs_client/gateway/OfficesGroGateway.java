@@ -27,7 +27,7 @@ public class OfficesGroGateway  extends BaseRestTemplate{
     }
 
     public OfficesGRO findOfficesGroByOfficeId(Long officeId) {
-        String url = getUrl() + "/api/officegro/findOfficesGroByOfficeId/"+officeId;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/officegro/findOfficesGroByOfficeId/"+officeId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("Authorization", "Bearer " + getToken());

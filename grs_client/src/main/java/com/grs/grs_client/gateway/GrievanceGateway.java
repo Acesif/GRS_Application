@@ -393,7 +393,7 @@ public class GrievanceGateway extends BaseRestTemplate {
     }
 
     public Boolean isComplainantBlackListedByGrievanceId(Long grievanceId) {
-        String url = getUrl() + "/api/blacklist/findBlacklistByGrievanceId/" + grievanceId;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH +"/api/blacklist/findBlacklistByGrievanceId/" + grievanceId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<>(headers);
