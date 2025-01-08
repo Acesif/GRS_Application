@@ -140,6 +140,9 @@ public class ApiForwardingFilter implements Filter {
         return restTemplate.exchange(serverUrl, HttpMethod.GET, entity, byte[].class);
     }
 
+
+
+
     public ResponseEntity<byte[]> forwardPostRequest(String serverUrl, HttpServletRequest httpRequest) throws IOException, ServletException {
         HttpHeaders headers = new HttpHeaders();
         String contentType = httpRequest.getContentType();
