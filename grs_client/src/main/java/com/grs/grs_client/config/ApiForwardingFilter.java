@@ -114,21 +114,52 @@ public class ApiForwardingFilter implements Filter {
         return userInformation.getToken();
     }
 
+//    private ResponseEntity<byte[]> forwardGetRequest(String serverUrl, HttpServletRequest httpRequest) {
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+//
+//        String cookieHeader = httpRequest.getHeader("Cookie");
+//
+//        if (extractAuthorizationFromCookie(cookieHeader)) {
+//            headers.add( "Authorization", "Bearer " + getToken());
+//        }
+//
+//        // Check if the incoming request contains an Authorization header
+//        String incomingAuthHeader = httpRequest.getHeader("Authorization");
+//        if (incomingAuthHeader != null && !incomingAuthHeader.isEmpty()) {
+//            headers.add("Authorization", incomingAuthHeader);
+//        }
+//
+//        // Append query parameters if present
+//        String queryString = httpRequest.getQueryString();
+//        if (queryString != null) {
+//            serverUrl = serverUrl + "?" + queryString;
+//        }
+//
+//        HttpEntity<String> entity = new HttpEntity<>(headers);
+//        return restTemplate.exchange(serverUrl, HttpMethod.GET, entity, byte[].class);
+//    }
+
     private ResponseEntity<byte[]> forwardGetRequest(String serverUrl, HttpServletRequest httpRequest) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
+        // Include the incoming Cookie header if present
         String cookieHeader = httpRequest.getHeader("Cookie");
-
-        if (extractAuthorizationFromCookie(cookieHeader)) {
-            headers.add( "Authorization", "Bearer " + getToken());
+        if (cookieHeader != null && !cookieHeader.isEmpty()) {
+            headers.add("Cookie", cookieHeader);
         }
 
-        // Check if the incoming request contains an Authorization header
-        String incomingAuthHeader = httpRequest.getHeader("Authorization");
-        if (incomingAuthHeader != null && !incomingAuthHeader.isEmpty()) {
-            headers.add("Authorization", incomingAuthHeader);
+        // Include Authorization if extracted from the cookie
+        if (cookieHeader != null && extractAuthorizationFromCookie(cookieHeader)) {
+            headers.add("Authorization", "Bearer " + getToken());
         }
+
+//        // Include the incoming Authorization header if present
+//        String incomingAuthHeader = httpRequest.getHeader("Authorization");
+//        if (incomingAuthHeader != null && !incomingAuthHeader.isEmpty()) {
+//            headers.add("Authorization", incomingAuthHeader);
+//        }
 
         // Append query parameters if present
         String queryString = httpRequest.getQueryString();
@@ -136,6 +167,7 @@ public class ApiForwardingFilter implements Filter {
             serverUrl = serverUrl + "?" + queryString;
         }
 
+        // Forward the request
         HttpEntity<String> entity = new HttpEntity<>(headers);
         return restTemplate.exchange(serverUrl, HttpMethod.GET, entity, byte[].class);
     }
