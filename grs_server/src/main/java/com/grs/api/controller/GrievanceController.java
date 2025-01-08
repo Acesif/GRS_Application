@@ -513,7 +513,9 @@ public class GrievanceController {
     @RequestMapping(value = "/api/grievance/getSafetyNetGrievanceSummary", method = RequestMethod.POST)
     public SafetyNetGrievanceSummaryListDto getSafetyNetGrievanceSummary
             (@RequestBody SafetyNetGrievanceSummaryRequest request) {
+
         return grievanceService.getSafetyNetGrievanceSummary(request);
+
     }
 
     @RequestMapping(value = "/api/blacklist/findBlacklistByGrievanceId/{grievanceId}", method = RequestMethod.GET)
