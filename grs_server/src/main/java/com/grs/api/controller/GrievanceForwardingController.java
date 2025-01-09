@@ -371,7 +371,6 @@ public class GrievanceForwardingController {
     @GetMapping("/api/grievanceforwarding/getLastActiveGrievanceForwardingOfCurrentUser/{grievanceId}/{officeId}/{officeUnitOrganogramId}")
     public GrievanceForwarding getLastActiveGrievanceForwardingOfCurrentUser(
             @PathVariable Long grievanceId,
-
             @PathVariable Long officeId,
             @PathVariable Long officeUnitOrganogramId){
 
@@ -386,4 +385,24 @@ public class GrievanceForwardingController {
         return grievanceForwardingDAO.save(grievanceForwarding);
     }
 
+    @GetMapping("/api/getComplaintRetakeFlag/{id}")
+    public boolean getComplaintRetakeFlag(@PathVariable Long id, Authentication authentication){
+        return grievanceForwardingService.getComplaintRetakeFlag(id, authentication);
+    }
+
+    @PostMapping("/api/updateForwardSeenStatus/{id}")
+    public void updateForwardSeenStatus(@PathVariable Long id, @RequestBody UserInformation userInformation){
+        grievanceForwardingService.updateForwardSeenStatus(userInformation, id);
+    }
+
+    @PostMapping("/api/getAllUserRelatedForwardings/{id}")
+    public List<GrievanceForwarding> getAllUserRelatedForwardings(@PathVariable Long id, @RequestBody UserInformation userInformation){
+        return grievanceForwardingService.getAllUserRelatedForwardings(
+                grievanceService.findGrievanceById(id), userInformation
+        );
+    }
+    @PostMapping("/api/getCountOfComplaintMovementAttachedFiles/{id}")
+    public Integer getCountOfComplaintMovementAttachedFiles(@PathVariable Long id, @RequestBody UserInformation userInformation){
+        return grievanceForwardingService.getCountOfComplaintMovementAttachedFiles(userInformation, id);
+    }
 }

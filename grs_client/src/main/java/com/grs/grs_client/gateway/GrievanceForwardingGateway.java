@@ -1,7 +1,9 @@
 package com.grs.grs_client.gateway;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.grs.grs_client.enums.GrievanceCurrentStatus;
 import com.grs.grs_client.enums.OISFUserType;
 import com.grs.grs_client.enums.RoleType;
@@ -12,11 +14,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -31,60 +35,55 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
 
     String GRS_CORE_CONTEXT_PATH = "/grs_server";
 
-    public Boolean getComplaintRetakeFlag(Grievance grievance, UserInformation userInformation) {
-        OfficesGRO gro = this.officesGroService.findOfficesGroByOfficeId(grievance.getOfficeId());
-        boolean flag = false;
-        if(grievance.getGrievanceCurrentStatus().toString().contains("CLOSED") || grievance.getGrievanceCurrentStatus().toString().contains("REJECTED")
-                || grievance.getGrievanceCurrentStatus().toString().contains("INV") || grievance.getGrievanceCurrentStatus().toString().contains("REVIEW")
-                || grievance.getGrievanceCurrentStatus().toString().contains("CELL") ){
-            return false;
+    public Boolean getComplaintRetakeFlag(Long grievanceId) {
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH +  "/api/getComplaintRetakeFlag/" + grievanceId;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "Bearer " + getToken());
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<Boolean> response = restTemplate.exchange(url,
+                HttpMethod.GET, entity, new ParameterizedTypeReference<Boolean>() {
+                });
+        return response.getBody();
+    }
+
+    public void updateForwardSeenStatus(UserInformation userInformation, Long id){
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH +  "/api/updateForwardSeenStatus/" + id;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "Bearer " + getToken());
+        ObjectMapper objectMapper = new ObjectMapper();
+        String body = "";
+        try {
+            body = objectMapper.writeValueAsString(userInformation);
+        }catch (Exception ex){
+            log.error("",ex);
         }
-        if(gro.getGroOfficeId().equals(userInformation.getOfficeInformation().getOfficeId())
-                && gro.getGroOfficeUnitOrganogramId().equals(userInformation.getOfficeInformation().getOfficeUnitOrganogramId())
-                && grievance.getCurrentAppealOfficeId() == null){
-            List<GrievanceForwarding> grievanceForwardings = this.findByGrievanceAndIsCurrent(grievance.getId());
-            for (GrievanceForwarding grievanceForwarding : grievanceForwardings) {
-                if (grievanceForwarding.getFromOfficeId().equals(gro.getGroOfficeId())
-                        && grievanceForwarding.getFromOfficeUnitOrganogramId().equals(gro.getGroOfficeUnitOrganogramId())
-                        && grievanceForwarding.getDeadlineDate() != null
-                        && grievanceForwarding.getDeadlineDate().before(new Date())
-                        && !grievanceForwarding.getIsCC()) {
-                    flag = true;
-                    break;
-                } else if (!grievanceForwarding.getIsSeen() && grievanceForwarding.getIsCurrent()
-                        && grievanceForwarding.getFromOfficeId().equals(gro.getGroOfficeId())
-                        && grievanceForwarding.getFromOfficeUnitOrganogramId().equals(gro.getGroOfficeUnitOrganogramId())
-                        && !grievanceForwarding.getIsCC()
-                        && !grievance.getGrievanceCurrentStatus().equals(GrievanceCurrentStatus.NEW)) {
-                    flag = true;
-                    break;
-                }
-            }
-        } else if(grievance.getCurrentAppealOfficeId() != null){
-            if(grievance.getCurrentAppealOfficeId().equals(userInformation.getOfficeInformation().getOfficeId())
-                    && grievance.getCurrentAppealOfficerOfficeUnitOrganogramId().equals(userInformation.getOfficeInformation().getOfficeUnitOrganogramId())
-            ){
-                List<GrievanceForwarding> grievanceForwardings = this.findByGrievanceAndIsCurrent(grievance.getId());
-                for (GrievanceForwarding grievanceForwarding : grievanceForwardings) {
-                    if (grievanceForwarding.getFromOfficeId().equals(userInformation.getOfficeInformation().getOfficeId())
-                            && grievanceForwarding.getFromOfficeUnitOrganogramId().equals(userInformation.getOfficeInformation().getOfficeUnitOrganogramId())
-                            && grievanceForwarding.getDeadlineDate() != null
-                            && grievanceForwarding.getDeadlineDate().before(new Date())) {
-                        flag = true;
-                        break;
-                    }
-                }
-            }
-        } else if(grievance.getGrievanceCurrentStatus().name().contains("FORWARDED")){
-            GrievanceForwarding grievanceForwarding = this.getLastForwadingForGivenGrievance(grievance.getId());
-            if(!grievanceForwarding.getIsSeen() && grievanceForwarding.getIsCurrent() &&
-                    grievanceForwarding.getAction().contains("FORWARD") &&
-                    grievanceForwarding.getFromOfficeUnitOrganogramId().equals(userInformation.getOfficeInformation().getOfficeUnitOrganogramId()) &&
-                    grievanceForwarding.getFromOfficeId().equals(userInformation.getOfficeInformation().getOfficeId())){
-                flag = true;
-            }
+        HttpEntity<String> entity = new HttpEntity<>(body, headers);
+
+        restTemplate.exchange(url,
+                HttpMethod.POST, entity, Void.class);
+    }
+
+    public List<GrievanceForwarding> getAllUserRelatedForwardings(Grievance grievance, UserInformation userInformation){
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH +  "/api/getAllUserRelatedForwardings/" + grievance.getId();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "Bearer " + getToken());
+        ObjectMapper objectMapper = new ObjectMapper();
+        String body = "";
+        try {
+            body = objectMapper.writeValueAsString(userInformation);
+        }catch (Exception ex){
+            log.error("",ex);
         }
-        return flag;
+        HttpEntity<String> entity = new HttpEntity<>(body, headers);
+
+        ResponseEntity<List<GrievanceForwarding>> response = restTemplate.exchange(url,
+                HttpMethod.POST, entity, new ParameterizedTypeReference<List<GrievanceForwarding>>() {});
+
+        return response.getBody();
     }
 
     public GrievanceForwarding getLastForwadingForGivenGrievance(Long grievanceId){
@@ -187,22 +186,24 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
     }
 
     public int getCountOfComplaintMovementAttachedFiles(UserInformation userInformation, Grievance grievance){
-        List<GrievanceForwarding> grievanceForwardings;
-        List<FileDerivedDTO> files = new ArrayList<>();
-        if(userInformation.getUserType().equals(UserType.COMPLAINANT)){
-            grievanceForwardings = this.findByGrievanceIdAndAssignedRole(grievance.getId(), RoleType.COMPLAINANT.name());
-        } else {
-            grievanceForwardings = this.getAllUserRelatedForwardings(grievance, userInformation);
+        Long grievanceId = grievance.getId();
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH +  "/api/getCountOfComplaintMovementAttachedFiles/" + grievanceId;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "Bearer " + getToken());
+        ObjectMapper objectMapper = new ObjectMapper();
+        String body = "";
+        try {
+            body = objectMapper.writeValueAsString(userInformation);
+        } catch (Exception ex){
+            log.error("",ex);
         }
-        grievanceForwardings.forEach(
-                grievanceForwarding -> {
-                    List<FileDerivedDTO> fileDerivedDTOS = getFiles(grievanceForwarding);
-                    if(fileDerivedDTOS != null){
-                        files.addAll(fileDerivedDTOS);
-                    }
-                }
-        );
-        return files.size();
+        HttpEntity<String> entity = new HttpEntity<>(body, headers);
+
+        ResponseEntity<Integer> response = restTemplate.exchange(url,
+                HttpMethod.POST, entity, new ParameterizedTypeReference<Integer>() {});
+
+        return response.getBody();
     }
 
     public List<GrievanceForwarding> findByGrievanceAndActionLikeOrderByIdDesc(Long grievanceId, String action){
@@ -266,27 +267,6 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
                 });
         return response.getBody();
     }
-
-//    public List<GrievanceForwarding> getAllRelatedComplaintMovements(
-//            Long grievanceId, Long officeId, List<Long> officeUnitOrganogramId, String action
-//    ){
-//        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/grievanceforwarding/getAllRelatedComplaintMovements";
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        headers.add("Authorization", "Bearer " + getToken());
-//        url = UriComponentsBuilder.fromHttpUrl(url)
-//                .queryParam("grievanceId", grievanceId)
-//                .queryParam("officeId", officeId)
-//                .queryParam("action", action)
-//                .queryParam("officeUnitOrganogramId", officeUnitOrganogramId)
-//                .toUriString();
-//
-//        HttpEntity<String> entity = new HttpEntity<>(headers);
-//        ResponseEntity<List<GrievanceForwarding>> response = restTemplate.exchange(url,
-//                HttpMethod.POST, entity, new ParameterizedTypeReference<List<GrievanceForwarding>>() {
-//                });
-//        return response.getBody();
-//    }
 
     public List<GrievanceForwarding> getAllRelatedComplaintMovements(
             Long grievanceId,
@@ -382,56 +362,6 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
         return response.getBody();
     }
 
-    public List<GrievanceForwarding> getAllUserRelatedForwardings(Grievance grievance, UserInformation userInformation){
-        if (userInformation.getOfficeInformation() == null) {
-            return new ArrayList<>();
-        }
-        List<GrievanceForwarding> grievanceForwardings;
-        Long officeId = userInformation.getOfficeInformation().getOfficeId();
-        Long officeUnitOrganogramId = userInformation.getOfficeInformation().getOfficeUnitOrganogramId();
-        GrievanceForwarding committeeEntry = this.getByActionAndToOfficeIdAndToOfficeUnitOrganogramIdAndGrievance(grievance.getId(), officeId, officeUnitOrganogramId, "INVESTIGATION");
-        if (committeeEntry != null && (committeeEntry.getIsCommitteeMember() || committeeEntry.getIsCommitteeHead())) {
-            List<GrievanceForwarding> committeeForwardings = this.findByGrievanceAndActionLikeOrderByIdDesc(grievance.getId(), "%INVESTIGATION%");
-            List<Long> committeeOrganograms = getCurrentInvestigationCommitteeMembersOrganograms(committeeForwardings, committeeEntry.getCurrentStatus());
-            GrievanceForwarding reportEntry = committeeEntry.getCurrentStatus().toString().contains("APPEAL") ?
-                    this.findByGrievanceAndActionLikeAndCurrentStatusLike(grievance.getId(), "%REPORT%", "%APPEAL%")
-                    : this.findByGrievanceAndActionLikeAndCurrentStatusNotLike(grievance.getId(), "%REPORT%", "%APPEAL%");
-            grievanceForwardings = this.getAllRelatedComplaintMovementsBetweenDates(
-                    grievance.getId(), userInformation.getOfficeInformation().getOfficeId(),
-                    new ArrayList<Long>() {{
-                        addAll(committeeOrganograms);
-                    }},
-                    "",
-                    committeeEntry.getCreatedAt(),
-                    reportEntry == null ? new Date() : reportEntry.getCreatedAt()
-            );
-            grievanceForwardings.addAll(this.getAllRelatedComplaintMovements(
-                    grievance.getId(), officeId, new ArrayList<Long>() {{
-                        add(officeUnitOrganogramId);
-                    }}, ""
-            ));
-        } else if (userInformation.getOisfUserType().equals(OISFUserType.HEAD_OF_OFFICE)) {
-            OfficesGRO officesGRO = this.officesGroService.findOfficesGroByOfficeId(userInformation.getOfficeInformation().getOfficeId());
-            List<Long> orgUnitList = new ArrayList<>();
-            if (officesGRO.getGroOfficeUnitOrganogramId() != null) {
-                orgUnitList.add(officesGRO.getGroOfficeUnitOrganogramId());
-            }
-            if (userInformation.getOfficeInformation() != null && userInformation.getOfficeInformation().getOfficeUnitOrganogramId() != null) {
-                orgUnitList.add(userInformation.getOfficeInformation().getOfficeUnitOrganogramId());
-            }
-            grievanceForwardings = this.getAllRelatedComplaintMovements(grievance.getId(),
-                    officesGRO.getOfficeId(),orgUnitList,
-                    "");
-        } else {
-            grievanceForwardings = this.getAllRelatedComplaintMovements(
-                    grievance.getId(), officeId, new ArrayList<Long>() {{
-                        add(officeUnitOrganogramId);
-                    }}, ""
-            );
-        }
-        return grievanceForwardings.stream().distinct().collect(Collectors.toList());
-    }
-
     public List<FileDerivedDTO> getFiles(GrievanceForwarding grievanceForwarding) {
         List<MovementAttachedFile> attachedFiles = grievanceForwarding.getAttachedFiles();
         List<FileDerivedDTO> files = null;
@@ -466,35 +396,4 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
         }
         return organogramIds;
     }
-
-    public void updateForwardSeenStatus(UserInformation userInformation, Grievance grievance) {
-        if (userInformation.getUserType().equals(UserType.COMPLAINANT)) {
-            return;
-        }
-        if (grievance.getGrievanceCurrentStatus().toString().contains("REJECTED") ||
-                grievance.getGrievanceCurrentStatus().toString().contains("CLOSED")) {
-            return;
-        }
-
-        Long userOfficeId = userInformation.getOfficeInformation().getOfficeId();
-        Long userOrganogramId = userInformation.getOfficeInformation().getOfficeUnitOrganogramId();
-
-        GrievanceForwarding grievanceForwarding = this.getLastActiveGrievanceForwardingOfCurrentUser(grievance.getId(), userOfficeId, userOrganogramId);
-        if (grievanceForwarding == null) {
-            return;
-        }
-        if (grievanceForwarding.getIsSeen()) {
-            return;
-        }
-        Long toOfficeId = grievanceForwarding.getToOfficeId();
-        Long toOrganogramId = grievanceForwarding.getToOfficeUnitOrganogramId();
-
-        if (toOfficeId.equals(userOfficeId) && toOrganogramId.equals(userOrganogramId)) {
-            if (!grievanceForwarding.getIsSeen()) {
-                grievanceForwarding.setIsSeen(true);
-                this.updateGrievanceForwarding(grievanceForwarding);
-            }
-        }
-    }
-
 }

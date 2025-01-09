@@ -420,13 +420,15 @@
 
             $.ajax({
                 type: 'GET',
-                url: '/ssologout',
+                url: '/logout',
                 contentType: 'application/json; charset=utf-8',
                 success: function (response) {
-                    window.location.href =[[${@environment.getProperty('nothi.logoutUrl')}]];
+                    // window.location.href =[[${@environment.getProperty('nothi.logoutUrl')}]];
+                    window.location.href = "/";
                 },
                 failed: function (error) {
-                    window.location.href = [[${@environment.getProperty('nothi.logoutUrl')}]];
+                    // window.location.href = [[${@environment.getProperty('nothi.logoutUrl')}]];
+                    window.location.href = "/error";
                 }
             });
 

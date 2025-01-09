@@ -140,7 +140,7 @@ public class GrievanceController {
             }
             if(!isGrsUser) {
                 isComplainantBlacklisted = grievanceService.isComplainantBlackListedByGrievanceId(grievance.getId());
-                canRetakeComplaint = grievanceForwardingService.getComplaintRetakeFlag(grievance, userInformation);
+                canRetakeComplaint = grievanceForwardingService.getComplaintRetakeFlag(grievance.getId());
             }
             List<FeedbackResponseDTO> feedbacks = this.grievanceService.getFeedbacks(grievance);
             model = modelViewService.addFileSettingsAttributesToModel(model);
@@ -162,7 +162,7 @@ public class GrievanceController {
             model.addAttribute("grievanceForwardingFileCount", this.grievanceForwardingService.getCountOfComplaintMovementAttachedFiles(userInformation, grievance));
             Boolean reviveFlag = this.grievanceService.isComplaintRevivable(grievance, userInformation);
             model.addAttribute("reviveFlag", reviveFlag);
-            this.grievanceForwardingService.updateForwardSeenStatus(Utility.extractUserInformationFromAuthentication(authentication), grievance);
+            this.grievanceForwardingService.updateForwardSeenStatus(Utility.extractUserInformationFromAuthentication(authentication), grievance.getId());
             model.addAttribute("searchableOffices", officeService.getGrsEnabledOfficeSearchingData());
 
             // Add tab, page, and size parameters to the model so they can be passed back
@@ -186,9 +186,9 @@ public class GrievanceController {
             Model model,
             HttpServletRequest request,
             @RequestParam Long id,
-            @RequestParam(required = false) String tab, // Add tab as an optional parameter
-            @RequestParam(required = false) Integer page, // Add page as an optional parameter
-            @RequestParam(required = false) Integer size // Add size as an optional parameter
+            @RequestParam(required = false) String tab,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size
     ) throws IllegalAccessException {
         if (authentication != null) {
             if(!accessControlService.hasPermissionToViewGrievanceDetails(authentication, id)) {
@@ -214,7 +214,7 @@ public class GrievanceController {
             }
             if(!isGrsUser) {
                 isComplainantBlacklisted = grievanceService.isComplainantBlackListedByGrievanceId(grievance.getId());
-                canRetakeComplaint = grievanceForwardingService.getComplaintRetakeFlag(grievance, userInformation);
+                canRetakeComplaint = grievanceForwardingService.getComplaintRetakeFlag(grievance.getId());
             }
             List<FeedbackResponseDTO> feedbacks = this.grievanceService.getFeedbacks(grievance);
             model = modelViewService.addFileSettingsAttributesToModel(model);
@@ -236,10 +236,8 @@ public class GrievanceController {
             model.addAttribute("grievanceForwardingFileCount", this.grievanceForwardingService.getCountOfComplaintMovementAttachedFiles(userInformation, grievance));
             Boolean reviveFlag = this.grievanceService.isComplaintRevivable(grievance, userInformation);
             model.addAttribute("reviveFlag", reviveFlag);
-            this.grievanceForwardingService.updateForwardSeenStatus(userInformation, grievance);
+            this.grievanceForwardingService.updateForwardSeenStatus(userInformation, grievance.getId());
             model.addAttribute("searchableOffices", officeService.getGrsEnabledOfficeSearchingData());
-
-            // Add tab, page, and size parameters to the model so they can be passed back
             model.addAttribute("currentTab", tab);
             model.addAttribute("currentPage", page);
             model.addAttribute("pageSize", size);
@@ -284,7 +282,7 @@ public class GrievanceController {
             }
             if(!isGrsUser) {
                 isComplainantBlacklisted = grievanceService.isComplainantBlackListedByGrievanceId(grievance.getId());
-                canRetakeComplaint = grievanceForwardingService.getComplaintRetakeFlag(grievance, userInformation);
+                canRetakeComplaint = grievanceForwardingService.getComplaintRetakeFlag(grievance.getId());
             }
             model = modelViewService.addFileSettingsAttributesToModel(model);
             model.addAttribute("grsUser", isGrsUser);
@@ -305,10 +303,10 @@ public class GrievanceController {
             model.addAttribute("grievanceForwardingFileCount", this.grievanceForwardingService.getCountOfComplaintMovementAttachedFiles(userInformation, grievance));
             Boolean reviveFlag = this.grievanceService.isComplaintRevivable(grievance, userInformation);
             model.addAttribute("reviveFlag", reviveFlag);
-            this.grievanceForwardingService.updateForwardSeenStatus(userInformation, grievance);
+            this.grievanceForwardingService.updateForwardSeenStatus(userInformation, grievance.getId());
             model.addAttribute("searchableOffices", officeService.getGrsEnabledOfficeSearchingData());
 
-            this.grievanceForwardingService.updateForwardSeenStatus(userInformation, grievance);
+            this.grievanceForwardingService.updateForwardSeenStatus(userInformation, grievance.getId());
             return modelViewService.addNecessaryAttributesAndReturnViewPage(model,
                     authentication,
                     request,

@@ -388,8 +388,7 @@ public class GrievanceForwardingService {
         return files;
     }
 
-    public int getCountOfComplaintMovementAttachedFiles(Authentication authentication, Long grievanceId){
-        UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
+    public Integer getCountOfComplaintMovementAttachedFiles(UserInformation userInformation, Long grievanceId){
         List<GrievanceForwarding> grievanceForwardings;
         List<FileDerivedDTO> files = new ArrayList<>();
         if(userInformation.getUserType().equals(UserType.COMPLAINANT)){
