@@ -1,6 +1,5 @@
 package com.grs.core.service;
 
-import com.google.gson.Gson;
 import com.grs.api.model.UserInformation;
 import com.grs.api.model.UserType;
 import com.grs.api.model.request.BlacklistRequestBodyDTO;
@@ -12,9 +11,9 @@ import com.grs.api.model.response.grievance.ComplainantInfoBlacklistReqDTO;
 import com.grs.api.model.response.grievance.ComplainantInfoDTO;
 import com.grs.api.model.response.grievance.GrievanceDTO;
 import com.grs.api.model.response.grievance.GrievanceShortDTO;
-import com.grs.api.myGov.MyGovUser;
 import com.grs.core.dao.BlacklistDAO;
 import com.grs.core.dao.ComplainantDAO;
+import com.grs.core.dao.GeoDAO;
 import com.grs.core.domain.AddressTypeValue;
 import com.grs.core.domain.grs.Blacklist;
 import com.grs.core.domain.grs.Complainant;
@@ -59,6 +58,8 @@ public class ComplainantService {
     private GrievanceService grievanceService;
     @Autowired
     private MyGovConnectorService myGovConnectorService;
+    @Autowired
+    private GeoDAO geoDAO;
 
     public Complainant findComplainantByPhoneNumber(String phoneNumber) {
         return this.complainantDAO.findByPhoneNumber(phoneNumber);
@@ -208,7 +209,7 @@ public class ComplainantService {
                 .education(complainant.getEducation())
                 .gender(complainant.getGender())
                 .name(complainant.getName())
-                .nationality(complainant.getCountryInfo().getNationalityBng())
+                .nationality(geoDAO.getNationalityById(complainant.getNationalityId()).getNationalityBng())
                 .email(complainant.getEmail())
                 .nidOrBcn(complainant.getIdentificationValue())
                 /*.permanentAddressDistrictId(complainant.getPermanentAddressDistrictId())

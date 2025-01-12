@@ -56,24 +56,7 @@ public class RegistrationController {
     @Autowired
     private OfficeService officeService;
 
-    @RequestMapping(value = "/register.do", method = RequestMethod.GET)
-    public ModelAndView registrationPage(HttpServletRequest request, Authentication authentication, Model model) {
-        return modelViewService.returnViewsForNormalPages(authentication, model, request, "grsRegistrationForm");
-    }
-
-    @RequestMapping(value = "/mobileRegistration.do", method = RequestMethod.GET)
-    public ModelAndView mobileRegistrationPage(HttpServletRequest request, Authentication authentication, Model model){
-        String languageCode = CookieUtil.getValue(request, "lang");
-        model.addAttribute("lang", languageCode);
-        model.addAttribute("isLoggedIn", false);
-        model.addAttribute("isGrsUser", false);
-        model.addAttribute("isOthersComplainant", false);
-        model.addAttribute("isOisfUser", false);
-        model.addAttribute("isMobileLogin", true);
-        return new ModelAndView( "grsRegistrationForm");
-    }
-
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/register", method = RequestMethod.POST)
     public GenericResponse registerUser(@RequestBody ComplainantDTO complainantDTO) {
         Complainant complainant = this.complainantService.insertComplainant(complainantDTO);
         return GenericResponse
@@ -84,7 +67,7 @@ public class RegistrationController {
                 .build();
     }
 
-    @RequestMapping(value = "/register/gro", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/register/gro", method = RequestMethod.POST)
     public IdPhoneMessageDTO registerUserByGRO(@RequestBody ComplainantDTO complainantDTO) {
         Complainant complainant = this.complainantService.insertComplainant(complainantDTO);
         return IdPhoneMessageDTO
@@ -192,7 +175,7 @@ public class RegistrationController {
                 .build();
     }
 
-    @RequestMapping(value = "/api/citizen/reset/pincode/{phoneNumber}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/api/citizen/reset/pincode/{phoneNumber}", method = RequestMethod.GET)
     public GenericResponse resetCitizenPinCode(@PathVariable("phoneNumber") String  phoneNumber) {
         Complainant complainant = this.complainantService.findComplainantByPhoneNumber(phoneNumber);
         if (complainant == null) {

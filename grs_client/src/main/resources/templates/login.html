@@ -224,9 +224,20 @@
 <!-- BEGIN THEME LAYOUT SCRIPTS -->
 <!-- END THEME LAYOUT SCRIPTS -->
 <script>
-        function ajaxPut(url, accept, send, postData, onSuccess) {
+        // function ajaxPut(url, accept, send, postData, onSuccess) {
+        //     $.ajax({
+        //         type: "PUT",
+        //         url: url,
+        //         dataType: accept,
+        //         contentType: send,
+        //         data: postData,
+        //         success: onSuccess
+        //     });
+        // }
+
+        function ajaxGet(url, accept, send, postData, onSuccess) {
             $.ajax({
-                type: "PUT",
+                type: "GET",
                 url: url,
                 dataType: accept,
                 contentType: send,
@@ -251,10 +262,17 @@
             $("#ajaxProcessingModal").modal('hide');
         }
 
+        // function resetCitizenPinCode() {
+        //     showLoading();
+        //     var phoneNumber = $("input[name='mobileNumber']").val();
+        //     ajaxPut("/api/citizen/reset/pincode/" + phoneNumber, "json", "text/plain", "", showMessageHandler);
+        // }
+
         function resetCitizenPinCode() {
             showLoading();
             var phoneNumber = $("input[name='mobileNumber']").val();
-            ajaxPut("/api/citizen/reset/pincode/" + phoneNumber, "json", "text/plain", "", showMessageHandler);
+            var url = "/api/citizen/reset/pincode/" + encodeURIComponent(phoneNumber);
+            ajaxGet(url, "json", "text/plain", "", showMessageHandler);
         }
 
         function showMessageHandler(result) {

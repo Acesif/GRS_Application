@@ -409,7 +409,7 @@
                 showLoading();
                 var user = getComplainantDTO();
 
-                ajaxPost("/register/gro", "json", "application/json", user, onRegistrationByGROSuccess);
+                ajaxPost("/api/register/gro", "json", "application/json", user, onRegistrationByGROSuccess);
             });
         }
 
@@ -427,7 +427,7 @@
                 window.onbeforeunload = null;
                 showLoading();
                 var user = getComplainantDTO();
-                ajaxPost("/register", "json", "application/json", user, onRegistrationSuccess);
+                ajaxPost("/api/register", "json", "application/json", user, onRegistrationSuccess);
             });
         }
 

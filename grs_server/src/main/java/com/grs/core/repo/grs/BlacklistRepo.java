@@ -1,7 +1,6 @@
 package com.grs.core.repo.grs;
 
 import com.grs.core.domain.grs.Blacklist;
-import com.grs.core.domain.grs.Complainant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

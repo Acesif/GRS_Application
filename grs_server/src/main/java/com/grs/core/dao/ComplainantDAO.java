@@ -1,21 +1,17 @@
 package com.grs.core.dao;
 
 
-import com.grs.api.model.UserInformation;
-import com.grs.api.model.request.BlacklistRequestBodyDTO;
+import com.grs.api.gateway.ComplainantGateway;
 import com.grs.api.model.request.ComplainantDTO;
 import com.grs.core.domain.*;
 import com.grs.core.domain.grs.Complainant;
 import com.grs.core.domain.grs.CountryInfo;
 import com.grs.core.domain.Gender;
-import com.grs.core.repo.grs.ComplainantRepo;
 import com.grs.utils.BanglaConverter;
 import com.grs.utils.DateTimeConverter;
 import com.grs.utils.StringUtil;
 import org.reflections.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +21,7 @@ import java.util.List;
 @Service
 public class ComplainantDAO {
     @Autowired
-    private ComplainantRepo complainantRepo;
+    private ComplainantGateway complainantRepo;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
@@ -65,7 +61,7 @@ public class ComplainantDAO {
                 .name(complainantDTO.getName())
                 .email(complainantDTO.getEmail())
                 .permanentAddressCountryId(complainantDTO.getPermanentAddressCountryId() == null ? null : Long.valueOf(complainantDTO.getPermanentAddressCountryId()))
-                .countryInfo(countryInfo)
+                .nationalityId(countryInfo.getId())
                 .education(complainantDTO.getEducation())
                 .identificationType(IdentificationType.valueOf(complainantDTO.getIdentificationType()))
                 .identificationValue(complainantDTO.getIdentificationValue())
@@ -86,9 +82,9 @@ public class ComplainantDAO {
 
     public ComplainantDTO convertToComplainantDTO(Complainant complainant) {
         String birthDate = complainant.getBirthDate() == null ? "" : DateTimeConverter.convertDateToStringForTimeline(complainant.getBirthDate());
-        String nationality = complainant.getCountryInfo() == null ? "15" : complainant.getCountryInfo().getId().toString();
+        String nationality = complainant.getNationalityId() == null ? "15" : complainant.getNationalityId().toString();
 
-        ComplainantDTO complainantDTO = ComplainantDTO.builder()
+        return ComplainantDTO.builder()
                 .name(complainant.getName())
                 .email(complainant.getEmail())
                 .nationality(nationality)
@@ -106,13 +102,11 @@ public class ComplainantDAO {
                 .foreignPermanentAddressLine2(complainant.getForeignPermanentAddressLine2())
                 .birthDate(birthDate)
                 .build();
-
-        return complainantDTO;
     }
 
     public Complainant save(Complainant complainant) {
-        CountryInfo countryInfo = complainant.getCountryInfo() == null ? this.geoDAO.getNationalityById(Long.valueOf(15)) : complainant.getCountryInfo();
-        complainant.setCountryInfo(countryInfo);
+        CountryInfo countryInfo = complainant.getNationalityId() == null ? this.geoDAO.getNationalityById(15L) : geoDAO.getNationalityById(complainant.getNationalityId());
+        complainant.setNationalityId(countryInfo.getId());
         return this.complainantRepo.save(complainant);
     }
 
@@ -123,7 +117,7 @@ public class ComplainantDAO {
         newComplainant.setIdentificationValue(complainant.getIdentificationValue());
         newComplainant.setIdentificationType(complainant.getIdentificationType());
         newComplainant.setGender(complainant.getGender());
-        newComplainant.setCountryInfo(complainant.getCountryInfo());
+        newComplainant.setNationalityId(complainant.getNationalityId());
         newComplainant.setOccupation(complainant.getOccupation());
         newComplainant.setEducation(complainant.getEducation());
 
@@ -149,7 +143,7 @@ public class ComplainantDAO {
         if (complainant.getIdentificationValue() != null && !complainant.getIdentificationValue().isEmpty()) existingComplainant.setIdentificationValue(complainant.getIdentificationValue());
         if (complainant.getIdentificationType() != null) existingComplainant.setIdentificationType(complainant.getIdentificationType());
         if (complainant.getGender() != null) existingComplainant.setGender(complainant.getGender());
-        if (complainant.getCountryInfo() != null) existingComplainant.setCountryInfo(complainant.getCountryInfo());
+        if (complainant.getNationalityId() != null) existingComplainant.setNationalityId(complainant.getNationalityId());
         if (complainant.getOccupation() != null && !complainant.getOccupation().isEmpty()) existingComplainant.setOccupation(complainant.getOccupation());
         if (complainant.getEducation() != null && !complainant.getEducation().isEmpty()) existingComplainant.setEducation(complainant.getEducation());
         if (complainant.getPermanentAddressStreet() != null && !complainant.getPermanentAddressStreet().isEmpty()) existingComplainant.setPermanentAddressStreet(complainant.getPermanentAddressStreet());
