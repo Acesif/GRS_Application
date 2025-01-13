@@ -7,7 +7,6 @@ import com.grs.api.model.response.file.ExistingFileDerivedDTO;
 import com.grs.api.model.response.file.FileDerivedDTO;
 
 import com.grs.api.model.response.grievance.*;
-import com.grs.core.config.CaptchaSettings;
 
 import com.grs.api.model.response.grievance.ComplainantInfoDTO;
 import com.grs.api.model.response.grievance.GrievanceDTO;
@@ -511,7 +510,7 @@ public class GrievanceController {
     }
 
     @RequestMapping(value = "/api/grievance/getSafetyNetGrievanceSummary", method = RequestMethod.POST)
-    public SafetyNetGrievanceSummaryListDto getSafetyNetGrievanceSummary
+    public SafetyNetGrievanceSummaryListDTO getSafetyNetGrievanceSummary
             (@RequestBody SafetyNetGrievanceSummaryRequest request) {
 
         return grievanceService.getSafetyNetGrievanceSummary(request);

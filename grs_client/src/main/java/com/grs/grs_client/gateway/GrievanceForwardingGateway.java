@@ -86,7 +86,7 @@ public class GrievanceForwardingGateway extends BaseRestTemplate {
         return response.getBody();
     }
 
-    public GrievanceForwarding getLastForwadingForGivenGrievance(Long grievanceId){
+    public GrievanceForwarding getLastForwardingForGivenGrievance(Long grievanceId){
         String url = getUrl() + GRS_CORE_CONTEXT_PATH +  "/api/grievanceforwarding/getLastForwadingForGivenGrievance/" + grievanceId;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

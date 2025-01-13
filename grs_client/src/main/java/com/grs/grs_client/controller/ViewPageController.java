@@ -18,11 +18,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.codec.binary.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -142,7 +140,7 @@ public class ViewPageController {
                 String redirectURL = idpUrl + Utility.toBase64(appBaseUrl);
                 return new ModelAndView("redirect:" + redirectURL);
             } catch (Exception e) {
-                e.printStackTrace();
+                e.fillInStackTrace();
             }
         }
 
@@ -173,7 +171,6 @@ public class ViewPageController {
             formTitleDTO = SubMenuDTO.builder().nameEnglish("Complainant Login").nameBangla("অভিযোগকারী লগইন").link("javascript:;").build();
         }
         String languageCode = CookieUtil.getValue(request, "lang");
-        System.out.println(languageCode);
         model.addAttribute("lang", languageCode);
         model.addAttribute("usernameFieldText", subMenuUsernameDTO);
         model.addAttribute("passwordFieldText", subMenuPasswordDTO);
@@ -284,7 +281,7 @@ public class ViewPageController {
                 OfficeInformation officeInformation = userInformation.getOfficeInformation();
                 Long officeId = officeInformation.getOfficeId();
                 String officeName = messageService.isCurrentLanguageInEnglish() ? officeInformation.getOfficeNameEnglish() : officeInformation.getOfficeNameBangla();
-                Boolean isDrilledDown = false;
+                boolean isDrilledDown = false;
                 if (StringUtil.isValidString(requestParams)) {
                     String decodedParams = StringUtils.newStringUtf8(Base64.decodeBase64(requestParams.substring(20)));
                     Long childOfficeId = Long.parseLong(decodedParams);
@@ -398,7 +395,7 @@ public class ViewPageController {
             String requestParams = request.getParameter("params");
             Long officeId = officeInformation.getOfficeId();
             String officeName = messageService.isCurrentLanguageInEnglish() ? officeInformation.getOfficeNameEnglish() : officeInformation.getOfficeNameBangla();
-            Boolean isDrilledDown = false;
+            boolean isDrilledDown = false;
             if (StringUtil.isValidString(requestParams)) {
                 String decodedParams = StringUtils.newStringUtf8(Base64.decodeBase64(requestParams.substring(20)));
                 Long childOfficeId = Long.parseLong(decodedParams);
@@ -482,21 +479,25 @@ public class ViewPageController {
                                                        @RequestParam("id") Long id) {
         id = (id != null) ? id : 0L;
         if (authentication != null) {
-            WeakHashMap<String, ServiceType> serviceTypes = new WeakHashMap() {{
-                put("citizen", ServiceType.NAGORIK);
-                put("official", ServiceType.DAPTORIK);
-                put("internal", ServiceType.STAFF);
-            }};
+            WeakHashMap<String, ServiceType> serviceTypes = new WeakHashMap<>();
+            serviceTypes.put("citizen", ServiceType.NAGORIK);
+            serviceTypes.put("official", ServiceType.DAPTORIK);
+            serviceTypes.put("internal", ServiceType.STAFF);
 
             ServiceOrigin serviceOriginDTO = officeService.getServiceOriginDTObyId(id);
             List<OfficeOriginUnitDTO> officeOriginUnitList = officeService.getOfficeOriginUnitDTOListByOfficeOriginId(officeOriginId);
             Long officeOriginUnitOrganogramId = serviceOriginDTO.getOfficeOriginUnitOrganogramId();
             if (officeOriginUnitOrganogramId != null && officeOriginUnitOrganogramId > 0) {
                 List<OfficeOriginUnitOrganogramDTO> officeOriginUnitOrganogramList = officeService.getOfficeOriginUnitOrganogramDTOListByOfficeOriginUnitId(serviceOriginDTO.getOfficeOriginUnitId());
-                if(officeOriginUnitOrganogramList != null && officeOriginUnitOrganogramList.size() >0) {
-                    for (int i = 0 ;i<officeOriginUnitOrganogramList.size() ;i++) {
-                        if(officeOriginUnitOrganogramList.get(i).getNameBangla() == null || officeOriginUnitOrganogramList.get(i).getNameBangla().length() ==0) {
-                            officeOriginUnitOrganogramList.get(i).setNameBangla(officeOriginUnitOrganogramList.get(i).getNameEnglish());
+                if(officeOriginUnitOrganogramList != null && !officeOriginUnitOrganogramList.isEmpty()) {
+//                    for (int i = 0 ;i<officeOriginUnitOrganogramList.size() ;i++) {
+//                        if(officeOriginUnitOrganogramList.get(i).getNameBangla() == null || officeOriginUnitOrganogramList.get(i).getNameBangla().length() ==0) {
+//                            officeOriginUnitOrganogramList.get(i).setNameBangla(officeOriginUnitOrganogramList.get(i).getNameEnglish());
+//                        }
+//                    }
+                    for (OfficeOriginUnitOrganogramDTO officeOriginUnitOrganogramDTO : officeOriginUnitOrganogramList) {
+                        if (officeOriginUnitOrganogramDTO.getNameBangla() == null || officeOriginUnitOrganogramDTO.getNameBangla().isEmpty()) {
+                            officeOriginUnitOrganogramDTO.setNameBangla(officeOriginUnitOrganogramDTO.getNameEnglish());
                         }
                     }
                 }

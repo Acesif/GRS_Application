@@ -9,15 +9,12 @@ import com.grs.api.model.response.*;
 import com.grs.api.model.response.dashboard.NameValuePairDTO;
 import com.grs.api.model.response.file.FileDerivedDTO;
 import com.grs.api.model.response.grievance.*;
-import com.grs.api.myGov.MyGovComplaintResponseDTO;
 import com.grs.api.sso.GeneralInboxDataDTO;
-import com.grs.api.sso.SSOPropertyReader;
 import com.grs.core.dao.GeoDAO;
 import com.grs.core.dao.GrievanceDAO;
 import com.grs.core.dao.GrievanceForwardingDAO;
 import com.grs.core.domain.GrievanceCurrentStatus;
 import com.grs.core.domain.IdentificationType;
-import com.grs.core.domain.MediumOfSubmission;
 import com.grs.core.domain.ServiceType;
 import com.grs.core.domain.grs.*;
 import com.grs.core.domain.projapoti.*;
@@ -715,7 +712,7 @@ public class GrievanceService {
     }
 
     @Transactional("transactionManager")
-    public com.grs.api.model.response.grievance.SafetyNetGrievanceSummaryListDto getSafetyNetGrievanceSummary
+    public SafetyNetGrievanceSummaryListDTO getSafetyNetGrievanceSummary
             (SafetyNetGrievanceSummaryRequest request) {
         return grievanceDAO.getSafetyNetGrievanceSummary(request);
     }

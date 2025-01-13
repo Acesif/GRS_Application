@@ -11,12 +11,14 @@ import com.grs.core.domain.projapoti.EmployeeOffice;
 import com.grs.core.domain.projapoti.Office;
 import com.grs.core.domain.projapoti.OfficeOriginUnit;
 import com.grs.core.domain.projapoti.OfficeUnitOrganogram;
+import com.grs.utils.StringUtil;
 import com.grs.utils.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,7 +49,7 @@ public class OfficeOrganogramService {
     }
 
     public List<TreeNodeDTO> getSubOfficesWithOrganograms(String id, Authentication authentication) {
-        String nodeId = id;
+        String nodeId = StringUtil.decodeToUtf8(id);
         String officeMinistryId;
         String officeId;
         List<TreeNodeDTO> listTreeNodeDTO = new ArrayList<>();
@@ -71,7 +73,7 @@ public class OfficeOrganogramService {
     }
 
     public List<TreeNodeDTO> getOrganogram(String id, Authentication authentication) {
-        String nodeId = id;
+        String nodeId = StringUtil.decodeToUtf8(id);
         String officeMinistryId;
         String officeId;
         List<TreeNodeDTO> listTreeNodeDTO = new ArrayList<>();
@@ -184,7 +186,7 @@ public class OfficeOrganogramService {
     }
 
     public List<TreeNodeDTO> getDescendentOffices(String id, Authentication authentication) {
-        String nodeId = id;
+        String nodeId = StringUtil.decodeToUtf8(id);
         String officeMinistryId;
         String parentOfficeId;
         List<TreeNodeDTO> listTreeNodeDTO = new ArrayList<>();
@@ -282,7 +284,7 @@ public class OfficeOrganogramService {
     }
 
     public List<TreeNodeDTO> getDescendentOfficesWithUnits(String id, Authentication authentication) {
-        String nodeId = id;
+        String nodeId = StringUtil.decodeToUtf8(id);
         String officeMinistryId;
         String parentOfficeId;
         List<TreeNodeDTO> listTreeNodeDTO = new ArrayList<>();
@@ -361,7 +363,7 @@ public class OfficeOrganogramService {
     }
 
     public List<TreeNodeOfficerDTO> getSOOrganogram(String id, Authentication authentication) {
-        String nodeId = id;
+        String nodeId = StringUtil.decodeToUtf8(id);
         String officeMinistryId;
         String officeId;
         List<TreeNodeOfficerDTO> listTreeNodeDTO = new ArrayList<>();
