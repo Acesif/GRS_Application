@@ -206,6 +206,7 @@ public class OfficesGateway extends BaseRestTemplate{
         String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/office/getDescendantOfficeSearchingData";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "Bearer " + getToken());
         HttpEntity<String> entity = new HttpEntity<>(headers);
         ResponseEntity<List<OfficeSearchDTO>> response = restTemplate.exchange(url,
                 HttpMethod.GET, entity, new ParameterizedTypeReference<List<OfficeSearchDTO>>() {
