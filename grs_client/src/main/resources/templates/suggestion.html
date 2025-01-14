@@ -240,7 +240,7 @@ function postSuggestion(data) {
         return;
     }
 
-    ajaxPost("/suggestion", "json", "application/json; charset=utf-8", suggestion, showMsgForSuggestionSubmission);
+    ajaxPost("/api/suggestion", "json", "application/json; charset=utf-8", suggestion, showMsgForSuggestionSubmission);
 }
 
 function showMsgForSuggestionSubmission(data) {

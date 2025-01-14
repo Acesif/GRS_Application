@@ -138,18 +138,18 @@ public class SSOLoginController {
         }
     }
 
-    @RequestMapping(value = "/ssologout", method = RequestMethod.GET)
-    public void ssologout(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            request.getSession().invalidate();
-            AppLogoutRequest appLogoutRequest = new AppLogoutRequest();
-            CookieUtil.clear(response, Constant.HEADER_STRING);
-            response.sendRedirect(appLogoutRequest.buildLogoutRequest());
-        } catch (Exception e) {
-            e.fillInStackTrace();
-            return;
-        }
-    }
+//    @RequestMapping(value = "/ssologout", method = RequestMethod.GET)
+//    public void ssologout(HttpServletRequest request, HttpServletResponse response) {
+//        try {
+//            request.getSession().invalidate();
+//            AppLogoutRequest appLogoutRequest = new AppLogoutRequest();
+//            CookieUtil.clear(response, Constant.HEADER_STRING);
+//            response.sendRedirect(appLogoutRequest.buildLogoutRequest());
+//        } catch (Exception e) {
+//            e.fillInStackTrace();
+//            return;
+//        }
+//    }
 
     @ResponseBody
     @RequestMapping(value = "/oisf/sso/user/apps", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
