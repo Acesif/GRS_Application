@@ -42,7 +42,8 @@ service:
         key: AEC759B2196510EBAE2FF3B768B06C03
 
 idp:
-  url: https://api-stage.doptor.gov.bd/login?referer=
+#  url: https://api-stage.doptor.gov.bd/login?referer=
+  url: https://n-doptor-accounts.nothi.gov.bd/login?referer=
 
 api:
   service:
