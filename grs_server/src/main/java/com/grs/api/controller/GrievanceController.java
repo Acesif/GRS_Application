@@ -139,7 +139,7 @@ public class GrievanceController {
         return dto;
     }
 
-    @RequestMapping(value = "/getSpProgrammeGroDetailList", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/getSpProgrammeGroDetailList", method = RequestMethod.GET)
     public List<SpProgramGroDto> getSpProgramGroDetailsList(@PageableDefault(value = Integer.MAX_VALUE) Pageable pageable) {
         return spProgrammeService.getSpProgramGroDetailsList();
     }

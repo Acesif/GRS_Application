@@ -167,7 +167,7 @@
         $("#ajaxProcessingModal").modal("show");
         $("#currentPage").val(page);
         $.ajax({
-            url: "/getSpProgrammeGroDetailList",
+            url: "/api/getSpProgrammeGroDetailList",
             type: "GET",
             data: {
                 "page": (page - 1),

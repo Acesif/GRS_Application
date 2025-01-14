@@ -32,7 +32,7 @@ public class SuggestionController {
     @Autowired
     private MessageService messageService;
 
-    @RequestMapping(value = "/suggestion", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/suggestion", method = RequestMethod.POST)
     public GenericResponse addSuggestionDetail(@RequestBody SuggestionRequestDTO suggestionRequestDTO, BindingResult bindingResult) {
         String message;
         boolean success = false;
