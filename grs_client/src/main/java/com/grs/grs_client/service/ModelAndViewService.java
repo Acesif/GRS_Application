@@ -47,6 +47,40 @@ public class ModelAndViewService {
     @Autowired
     private GeneralServiceGateway generalSettingsService;
 
+//    public ModelAndView returnViewsForNormalPages(Authentication authentication,
+//                                                  Model model,
+//                                                  HttpServletRequest request,
+//                                                  String viewName) {
+//        SubMenuDTO subMenuDTO;
+//        boolean isLoggedIn, isGrsUser, isOisfUser, isMobileLogin, isOthersComplainant, isMyGovLogin;
+//        String token = "";
+//            isLoggedIn = false;
+//            isGrsUser = false;
+//            isOthersComplainant = false;
+//            isOisfUser = false;
+//            isMobileLogin = false;
+//            isMyGovLogin = false;
+//            subMenuDTO = SubMenuDTO.builder()
+//                    .nameEnglish("Log In")
+//                    .nameBangla("লগইন")
+//                    .link("/login?a=0")
+//                    .build();
+//
+//        String languageCode = "en";
+//        model.addAttribute("lang", languageCode);
+//        model.addAttribute("menu", subMenuDTO);
+//        model.addAttribute("isLoggedIn", isLoggedIn);
+//        model.addAttribute("token", token);
+//        model.addAttribute("isGrsUser", isGrsUser);
+//        model.addAttribute("isOthersComplainant", isOthersComplainant);
+//        model.addAttribute("isOisfUser", isOisfUser);
+//        model.addAttribute("isMyGovLogin", isMyGovLogin);
+//        model.addAttribute("isMobileLogin", isMobileLogin);
+//        model.addAttribute("isProductionMode", false);
+//        return new ModelAndView(viewName);
+//    }
+
+
     public ModelAndView returnViewsForNormalPages(Authentication authentication,
                                                   Model model,
                                                   HttpServletRequest request,
@@ -54,22 +88,54 @@ public class ModelAndViewService {
         SubMenuDTO subMenuDTO;
         boolean isLoggedIn, isGrsUser, isOisfUser, isMobileLogin, isOthersComplainant, isMyGovLogin;
         String token = "";
-            isLoggedIn = false;
-            isGrsUser = false;
-            isOthersComplainant = false;
-            isOisfUser = false;
-            isMobileLogin = false;
-            isMyGovLogin = false;
+
+        UserInformation userInformation = null;
+        if (authentication != null) {
+            userInformation = Utility.extractUserInformationFromAuthentication(authentication);
+            subMenuDTO = SubMenuDTO.builder()
+                    .nameEnglish("Panel")
+                    .nameBangla("প্যানেল")
+                    .link("/dashboard.do")
+                    .build();
+
+            token = userInformation.getToken();
+            isLoggedIn = true;
+            isGrsUser = userInformation.getUserType().equals(UserType.COMPLAINANT);
+            isOthersComplainant = Utility.isUserAnOthersComplainant(userInformation);
+            isOisfUser = userInformation.getUserType().equals(UserType.OISF_USER);
+            isMobileLogin = userInformation.getIsMobileLogin();
+            isMyGovLogin = userInformation.getIsMyGovLogin() != null && userInformation.getIsMyGovLogin();
+        } else {
             subMenuDTO = SubMenuDTO.builder()
                     .nameEnglish("Log In")
                     .nameBangla("লগইন")
                     .link("/login?a=0")
                     .build();
 
+            token = "";
+            isLoggedIn = false;
+            isGrsUser = false;
+            isOthersComplainant = false;
+            isOisfUser = false;
+            isMobileLogin = false;
+            isMyGovLogin = false;
+        }
+
         String languageCode = "en";
         model.addAttribute("lang", languageCode);
         model.addAttribute("menu", subMenuDTO);
         model.addAttribute("isLoggedIn", isLoggedIn);
+
+        if (authentication != null) {
+            isGrsUser = Utility.isUserAnGRSUser(userInformation);
+            isOthersComplainant = Utility.isUserAnOthersComplainant(userInformation);
+            model.addAttribute("grsUser", isGrsUser);
+
+            if (!model.containsAttribute("superAdmin")) {
+                model.addAttribute("superAdmin", Utility.isUserASuperAdmin(userInformation));
+            }
+        }
+
         model.addAttribute("token", token);
         model.addAttribute("isGrsUser", isGrsUser);
         model.addAttribute("isOthersComplainant", isOthersComplainant);
