@@ -37,6 +37,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -530,7 +533,7 @@ public class OfficeController {
         return officeService.getChildCountByParentOfficeId(parentOfficeId);
     }
 
-    @RequestMapping(value = "/hasAccessToAoAndSubOfficesDashboardById/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/findOneById/{id}", method = RequestMethod.GET)
     public Office findOneById(@PathVariable Long id) {
         return officeService.findOne(id);
     }
@@ -561,7 +564,7 @@ public class OfficeController {
 
     }
 
-    @RequestMapping(value = "/getOffice/{officeId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/office/getOffice/{officeId}", method = RequestMethod.GET)
     public Office getOffice(@PathVariable Long officeId) {
         return officeService.getOffice(officeId);
     }

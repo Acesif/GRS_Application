@@ -37,9 +37,7 @@ public class ApiForwardingFilter implements Filter {
     private RestTemplate restTemplate;
 
     @Override
-    public void init(FilterConfig filterConfig) {
-        // No initialization required
-    }
+    public void init(FilterConfig filterConfig) {}
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -64,6 +62,8 @@ public class ApiForwardingFilter implements Filter {
                         responseEntity = forwardPostRequest(serverUrl, httpRequest);
                     } else if ("DELETE".equalsIgnoreCase(method)) {
                         responseEntity = forwardDeleteRequest(serverUrl, httpRequest);
+                    } else if ("PUT".equalsIgnoreCase(method)) {
+                        responseEntity = forwardPutRequest(serverUrl, httpRequest);
                     } else {
                         httpResponse.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
                         httpResponse.getWriter().write("Unsupported HTTP method: " + method);
@@ -73,14 +73,13 @@ public class ApiForwardingFilter implements Filter {
                     // Write response
                     httpResponse.setStatus(responseEntity.getStatusCodeValue());
                     responseEntity.getHeaders().forEach((key, values) -> {
-                        if (!"Transfer-Encoding".equalsIgnoreCase(key)) { // Exclude headers that might cause issues
+                        if (!"Transfer-Encoding".equalsIgnoreCase(key)) {
                             for (String value : values) {
                                 httpResponse.addHeader(key, value);
                             }
                         }
                     });
 
-                    // Write binary response directly to output stream
                     byte[] responseBody = responseEntity.getBody();
                     if (responseBody != null) {
                         httpResponse.getOutputStream().write(responseBody);
@@ -98,6 +97,48 @@ public class ApiForwardingFilter implements Filter {
         }
     }
 
+    private ResponseEntity<byte[]> forwardPutRequest(String serverUrl, HttpServletRequest httpRequest) throws IOException, ServletException {
+//        HttpHeaders headers = new HttpHeaders();
+//        String contentType = httpRequest.getContentType();
+//
+//        if (contentType != null) {
+//            headers.setContentType(MediaType.parseMediaType(contentType));
+//        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setContentType(new MediaType(headers.getContentType(), StandardCharsets.UTF_8)); // Add UTF-8
+
+        String contentType = httpRequest.getContentType();
+        if (contentType != null) {
+            // Override the MIME type while ensuring UTF-8
+            MediaType mediaType = MediaType.parseMediaType(contentType);
+            headers.setContentType(new MediaType(mediaType.getType(), mediaType.getSubtype(), StandardCharsets.UTF_8));
+        }
+
+        String cookieHeader = httpRequest.getHeader("Cookie");
+        if (cookieHeader != null && extractAuthorizationFromCookie(cookieHeader)) {
+            headers.add("Authorization", "Bearer " + getToken());
+        }
+
+        HttpEntity<?> entity;
+        if (contentType != null && MediaType.APPLICATION_JSON.isCompatibleWith(MediaType.parseMediaType(contentType))) {
+            String requestBody = extractRequestBody(httpRequest);
+            entity = new HttpEntity<>(requestBody, headers);
+        } else if (contentType != null && MediaType.APPLICATION_FORM_URLENCODED.isCompatibleWith(MediaType.parseMediaType(contentType))) {
+            Map<String, String> formData = extractFormData(httpRequest);
+            entity = new HttpEntity<>(formData, headers);
+        } else if (contentType != null && MediaType.MULTIPART_FORM_DATA.isCompatibleWith(MediaType.parseMediaType(contentType))) {
+            entity = buildMultipartEntity(httpRequest, headers);
+        } else {
+            String requestBody = extractRequestBody(httpRequest);
+            entity = new HttpEntity<>(requestBody, headers);
+        }
+
+        return restTemplate.exchange(serverUrl, HttpMethod.PUT, entity, byte[].class);
+    }
+
+
     private boolean extractAuthorizationFromCookie(String cookieHeader) {
         String[] cookies = cookieHeader.split("; ");
         for (String cookie : cookies) {
@@ -114,73 +155,45 @@ public class ApiForwardingFilter implements Filter {
         return userInformation.getToken();
     }
 
-//    private ResponseEntity<byte[]> forwardGetRequest(String serverUrl, HttpServletRequest httpRequest) {
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//
-//        String cookieHeader = httpRequest.getHeader("Cookie");
-//
-//        if (extractAuthorizationFromCookie(cookieHeader)) {
-//            headers.add( "Authorization", "Bearer " + getToken());
-//        }
-//
-//        // Check if the incoming request contains an Authorization header
-//        String incomingAuthHeader = httpRequest.getHeader("Authorization");
-//        if (incomingAuthHeader != null && !incomingAuthHeader.isEmpty()) {
-//            headers.add("Authorization", incomingAuthHeader);
-//        }
-//
-//        // Append query parameters if present
-//        String queryString = httpRequest.getQueryString();
-//        if (queryString != null) {
-//            serverUrl = serverUrl + "?" + queryString;
-//        }
-//
-//        HttpEntity<String> entity = new HttpEntity<>(headers);
-//        return restTemplate.exchange(serverUrl, HttpMethod.GET, entity, byte[].class);
-//    }
-
     private ResponseEntity<byte[]> forwardGetRequest(String serverUrl, HttpServletRequest httpRequest) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        // Include the incoming Cookie header if present
         String cookieHeader = httpRequest.getHeader("Cookie");
         if (cookieHeader != null && !cookieHeader.isEmpty()) {
             headers.add("Cookie", cookieHeader);
         }
 
-        // Include Authorization if extracted from the cookie
         if (cookieHeader != null && extractAuthorizationFromCookie(cookieHeader)) {
             headers.add("Authorization", "Bearer " + getToken());
         }
 
-//        // Include the incoming Authorization header if present
-//        String incomingAuthHeader = httpRequest.getHeader("Authorization");
-//        if (incomingAuthHeader != null && !incomingAuthHeader.isEmpty()) {
-//            headers.add("Authorization", incomingAuthHeader);
-//        }
-
-        // Append query parameters if present
         String queryString = httpRequest.getQueryString();
         if (queryString != null) {
             serverUrl = serverUrl + "?" + queryString;
         }
 
-        // Forward the request
         HttpEntity<String> entity = new HttpEntity<>(headers);
         return restTemplate.exchange(serverUrl, HttpMethod.GET, entity, byte[].class);
     }
 
-
-
-
     public ResponseEntity<byte[]> forwardPostRequest(String serverUrl, HttpServletRequest httpRequest) throws IOException, ServletException {
-        HttpHeaders headers = new HttpHeaders();
-        String contentType = httpRequest.getContentType();
+//        HttpHeaders headers = new HttpHeaders();
+//        String contentType = httpRequest.getContentType();
+//
+//        if (contentType != null) {
+//            headers.setContentType(MediaType.parseMediaType(contentType));
+//        }
 
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setContentType(new MediaType(headers.getContentType(), StandardCharsets.UTF_8));
+
+        String contentType = httpRequest.getContentType();
         if (contentType != null) {
-            headers.setContentType(MediaType.parseMediaType(contentType));
+            MediaType mediaType = MediaType.parseMediaType(contentType);
+            headers.setContentType(new MediaType(mediaType.getType(), mediaType.getSubtype(), StandardCharsets.UTF_8));
         }
 
         String cookieHeader = httpRequest.getHeader("Cookie");
@@ -256,7 +269,7 @@ public class ApiForwardingFilter implements Filter {
         return restTemplate.exchange(serverUrl, HttpMethod.DELETE, entity, byte[].class);
     }
 
-    private Map<String, String> extractFormData(HttpServletRequest request) throws IOException {
+    private Map<String, String> extractFormData(HttpServletRequest request) {
         Map<String, String> formData = new HashMap<>();
         Enumeration<String> parameterNames = request.getParameterNames();
 
@@ -280,13 +293,11 @@ public class ApiForwardingFilter implements Filter {
     private void logError(HttpServletResponse httpResponse, HttpStatus status, String message) throws IOException {
         httpResponse.setStatus(status.value());
         httpResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        httpResponse.setCharacterEncoding("UTF-8"); // Ensure UTF-8 for error messages
+        httpResponse.setCharacterEncoding("UTF-8");
         httpResponse.getWriter().write("{\"error\": \"" + message + "\"}");
     }
 
     @Override
-    public void destroy() {
-        // No cleanup required
-    }
+    public void destroy() {}
 }
 

@@ -3,6 +3,9 @@ package com.grs.utils;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.codec.binary.StringUtils;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+
 public class StringUtil {
     public static Boolean isValidString(String str) {
         return str != null && str.trim().length() > 0;
@@ -27,5 +30,18 @@ public class StringUtil {
             index = builder.indexOf(src, index);
         }
         return builder;
+    }
+
+    public static String decodeToUtf8(String id) {
+        try{
+            if (id.equals("%23")){
+                return URLDecoder.decode(id, String.valueOf(StandardCharsets.UTF_8));
+            } else {
+                return id;
+            }
+        } catch (Exception e){
+            e.fillInStackTrace();
+        }
+        return "";
     }
 }

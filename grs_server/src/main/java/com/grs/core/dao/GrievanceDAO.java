@@ -1,26 +1,20 @@
 package com.grs.core.dao;
 
-import com.grs.api.model.GRSUserType;
 import com.grs.api.model.UserInformation;
 import com.grs.api.model.UserType;
 import com.grs.api.model.request.FeedbackRequestDTO;
 import com.grs.api.model.request.GrievanceRequestDTO;
-import com.grs.api.model.response.GenericResponse;
 import com.grs.api.model.response.GrievanceAdminDTO;
-import com.grs.api.model.response.grievance.GrievanceDTO;
+import com.grs.api.model.response.grievance.SafetyNetGrievanceSummaryListDTO;
 import com.grs.core.domain.*;
 import com.grs.core.domain.grs.*;
 import com.grs.core.domain.projapoti.Office;
-import com.grs.core.model.ListViewType;
-import com.grs.core.repo.grs.BaseEntityManager;
 import com.grs.core.repo.grs.ComplainHistoryRepository;
-import com.grs.core.repo.grs.GrievanceForwardingRepo;
 import com.grs.core.repo.grs.GrievanceRepo;
 import com.grs.core.service.ComplainantService;
-import com.grs.core.service.GrievanceMigratorService;
 import com.grs.utils.*;
 import com.grs.api.model.request.SafetyNetGrievanceSummaryRequest;
-import javax.persistence.Query;
+
 import javax.persistence.EntityManager;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
@@ -39,10 +33,8 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -283,12 +275,12 @@ public class GrievanceDAO {
         }
     }
     */
-    public com.grs.api.model.response.grievance.SafetyNetGrievanceSummaryListDto getSafetyNetGrievanceSummary(SafetyNetGrievanceSummaryRequest request) {
+    public SafetyNetGrievanceSummaryListDTO getSafetyNetGrievanceSummary(SafetyNetGrievanceSummaryRequest request) {
 
         String sql = "";
 
         if (request.getFromDate() == null || request.getToDate() == null) {
-            return new com.grs.api.model.response.grievance.SafetyNetGrievanceSummaryListDto();
+            return new SafetyNetGrievanceSummaryListDTO();
         }
 
         if (request.getLanguageCode() != null && request.getLanguageCode().equalsIgnoreCase("en")) {
@@ -396,15 +388,15 @@ public class GrievanceDAO {
                 }
             }
 
-            com.grs.api.model.response.grievance.SafetyNetGrievanceSummaryListDto response =
-                    new com.grs.api.model.response.grievance.SafetyNetGrievanceSummaryListDto();
+            SafetyNetGrievanceSummaryListDTO response =
+                    new SafetyNetGrievanceSummaryListDTO();
             response.safetyNetGrievanceSummaryList = objectList;
             response.recordCount = objectList.size();
             return response;
 
         } catch (Exception ex) {
             System.out.println(ex.toString());
-            return new com.grs.api.model.response.grievance.SafetyNetGrievanceSummaryListDto();
+            return new SafetyNetGrievanceSummaryListDTO();
         }
     }
 

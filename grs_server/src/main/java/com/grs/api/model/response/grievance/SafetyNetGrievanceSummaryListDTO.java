@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SafetyNetGrievanceSummaryListDto {
+public class SafetyNetGrievanceSummaryListDTO {
     public List<com.grs.api.model.response.grievance.SafetyNetGrievanceSummaryDto> safetyNetGrievanceSummaryList;
     public Integer recordCount;
 }
