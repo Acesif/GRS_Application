@@ -73,14 +73,13 @@ public class ApiForwardingFilter implements Filter {
                     // Write response
                     httpResponse.setStatus(responseEntity.getStatusCodeValue());
                     responseEntity.getHeaders().forEach((key, values) -> {
-                        if (!"Transfer-Encoding".equalsIgnoreCase(key)) { // Exclude headers that might cause issues
+                        if (!"Transfer-Encoding".equalsIgnoreCase(key)) {
                             for (String value : values) {
                                 httpResponse.addHeader(key, value);
                             }
                         }
                     });
 
-                    // Write binary response directly to output stream
                     byte[] responseBody = responseEntity.getBody();
                     if (responseBody != null) {
                         httpResponse.getOutputStream().write(responseBody);
@@ -99,11 +98,22 @@ public class ApiForwardingFilter implements Filter {
     }
 
     private ResponseEntity<byte[]> forwardPutRequest(String serverUrl, HttpServletRequest httpRequest) throws IOException, ServletException {
-        HttpHeaders headers = new HttpHeaders();
-        String contentType = httpRequest.getContentType();
+//        HttpHeaders headers = new HttpHeaders();
+//        String contentType = httpRequest.getContentType();
+//
+//        if (contentType != null) {
+//            headers.setContentType(MediaType.parseMediaType(contentType));
+//        }
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setContentType(new MediaType(headers.getContentType(), StandardCharsets.UTF_8)); // Add UTF-8
+
+        String contentType = httpRequest.getContentType();
         if (contentType != null) {
-            headers.setContentType(MediaType.parseMediaType(contentType));
+            // Override the MIME type while ensuring UTF-8
+            MediaType mediaType = MediaType.parseMediaType(contentType);
+            headers.setContentType(new MediaType(mediaType.getType(), mediaType.getSubtype(), StandardCharsets.UTF_8));
         }
 
         String cookieHeader = httpRequest.getHeader("Cookie");
@@ -168,11 +178,22 @@ public class ApiForwardingFilter implements Filter {
     }
 
     public ResponseEntity<byte[]> forwardPostRequest(String serverUrl, HttpServletRequest httpRequest) throws IOException, ServletException {
-        HttpHeaders headers = new HttpHeaders();
-        String contentType = httpRequest.getContentType();
+//        HttpHeaders headers = new HttpHeaders();
+//        String contentType = httpRequest.getContentType();
+//
+//        if (contentType != null) {
+//            headers.setContentType(MediaType.parseMediaType(contentType));
+//        }
 
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setContentType(new MediaType(headers.getContentType(), StandardCharsets.UTF_8));
+
+        String contentType = httpRequest.getContentType();
         if (contentType != null) {
-            headers.setContentType(MediaType.parseMediaType(contentType));
+            MediaType mediaType = MediaType.parseMediaType(contentType);
+            headers.setContentType(new MediaType(mediaType.getType(), mediaType.getSubtype(), StandardCharsets.UTF_8));
         }
 
         String cookieHeader = httpRequest.getHeader("Cookie");
@@ -248,7 +269,7 @@ public class ApiForwardingFilter implements Filter {
         return restTemplate.exchange(serverUrl, HttpMethod.DELETE, entity, byte[].class);
     }
 
-    private Map<String, String> extractFormData(HttpServletRequest request) throws IOException {
+    private Map<String, String> extractFormData(HttpServletRequest request) {
         Map<String, String> formData = new HashMap<>();
         Enumeration<String> parameterNames = request.getParameterNames();
 
