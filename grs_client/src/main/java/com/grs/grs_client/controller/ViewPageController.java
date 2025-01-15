@@ -1442,4 +1442,17 @@ public class ViewPageController {
         return new ModelAndView("redirect:/error-page");
     }
 
+    @RequestMapping(value = "superUserPasswordChange.do", method = RequestMethod.GET)
+    public ModelAndView getSuperUserPasswordChangePage(Authentication authentication, Model model, HttpServletRequest request) {
+        if (authentication != null) {
+            return modelViewService.addNecessaryAttributesAndReturnViewPage(model,
+                    authentication,
+                    request,
+                    "management",
+                    "superUserPasswordChange",
+                    "superAdmin");
+        }
+        return new ModelAndView("redirect:/error-page");
+    }
+
 }
