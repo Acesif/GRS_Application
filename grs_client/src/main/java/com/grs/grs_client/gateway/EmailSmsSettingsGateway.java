@@ -13,7 +13,7 @@ public class EmailSmsSettingsGateway extends BaseRestTemplate{
     String GRS_CORE_CONTEXT_PATH = "/grs_server";
 
     public EmailSmsSettings getEmailSmsSettings(Long id) {
-        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/emailSmsSettingWithId/" + id;
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/api/emailSmsSetting/emailSmsSettingWithId/" + id;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<>(headers);

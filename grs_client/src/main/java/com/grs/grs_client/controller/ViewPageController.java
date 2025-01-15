@@ -531,7 +531,7 @@ public class ViewPageController {
             model.addAttribute("grsRoles", emailSmsSettingsService.convertToGrsRoleList());
             model.addAttribute("grievanceStatuses", emailSmsSettingsService.convertToGrievanceStatusList());
             model.addAttribute("actions", emailSmsSettingsService.convertToActionList());
-            EmailTemplate emailTemplateDTO = new EmailTemplate();
+            EmailTemplateDTO emailTemplateDTO = new EmailTemplateDTO();
             model.addAttribute("emailTemplate", emailTemplateDTO);
             return modelViewService.addNecessaryAttributesAndReturnViewPage(model,
                     authentication,
@@ -553,7 +553,7 @@ public class ViewPageController {
                                                  Model model,
                                                  @RequestParam(value = "id") Long id) {
         if (authentication != null) {
-            EmailTemplate emailTemplateDTO = this.emailService.getEmailTemplate(id);
+            EmailTemplateDTO emailTemplateDTO = this.emailService.getEmailTemplate(id);
             model.addAttribute("emailTemplate", emailTemplateDTO);
             return modelViewService.addNecessaryAttributesAndReturnViewPage(model,
                     authentication,
@@ -584,7 +584,7 @@ public class ViewPageController {
             model.addAttribute("grsRoles", emailSmsSettingsService.convertToGrsRoleList());
             model.addAttribute("grievanceStatuses", emailSmsSettingsService.convertToGrievanceStatusList());
             model.addAttribute("actions", emailSmsSettingsService.convertToActionList());
-            SmsTemplate smsTemplateDTO = new SmsTemplate();
+            SmsTemplateDTO smsTemplateDTO = new SmsTemplateDTO();
             model.addAttribute("smsTemplate", smsTemplateDTO);
             return modelViewService.addNecessaryAttributesAndReturnViewPage(model,
                     authentication,

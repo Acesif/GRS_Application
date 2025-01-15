@@ -165,7 +165,7 @@ public class GeneralServiceGateway extends BaseRestTemplate{
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(url,
-                HttpMethod.GET, entity, new ParameterizedTypeReference<String>() {
+                HttpMethod.POST, entity, new ParameterizedTypeReference<String>() {
                 });
         return response.getBody();
 

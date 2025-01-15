@@ -505,10 +505,10 @@
         $.ajax({
             url: "/api/office/" + getSelectedOfficeId("") + "/citizen-charters" + "?officeOriginId=" + getSelectedOfficeOriginId(""),
             type: "PUT",
-            data: {
-                "page": (page - 1),
-                "size": searchSize
-            },
+            // data: {
+            //     "page": (page - 1),
+            //     "size": searchSize
+            // },
             dataType: "json",
             contentType: "application/json",
             success: function (response) {

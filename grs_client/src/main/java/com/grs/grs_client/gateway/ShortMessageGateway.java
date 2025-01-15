@@ -1,6 +1,5 @@
 package com.grs.grs_client.gateway;
 
-import com.grs.grs_client.model.EmailTemplate;
 import com.grs.grs_client.model.SmsTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;

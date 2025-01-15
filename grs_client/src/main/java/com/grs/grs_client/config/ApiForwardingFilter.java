@@ -135,6 +135,11 @@ public class ApiForwardingFilter implements Filter {
             entity = new HttpEntity<>(requestBody, headers);
         }
 
+        String queryString = httpRequest.getQueryString();
+        if (queryString != null) {
+            serverUrl += "?" + queryString;
+        }
+
         return restTemplate.exchange(serverUrl, HttpMethod.PUT, entity, byte[].class);
     }
 
@@ -170,7 +175,7 @@ public class ApiForwardingFilter implements Filter {
 
         String queryString = httpRequest.getQueryString();
         if (queryString != null) {
-            serverUrl = serverUrl + "?" + queryString;
+            serverUrl += "?" + queryString;
         }
 
         HttpEntity<String> entity = new HttpEntity<>(headers);
