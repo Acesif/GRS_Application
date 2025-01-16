@@ -1,11 +1,9 @@
 package com.grs.core.dao;
 
-import com.grs.api.model.request.SuperAdminDTO;
+import com.grs.api.gateway.SuperAdminGateway;
 import com.grs.core.domain.grs.SuperAdmin;
-import com.grs.core.repo.grs.SuperAdminRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +13,7 @@ import java.util.List;
 
 public class SuperAdminDAO {
     @Autowired
-    private SuperAdminRepo superAdminRepo;
+    private SuperAdminGateway superAdminRepo;
 
     public SuperAdmin save(SuperAdmin superAdmin) {
         return this.superAdminRepo.save(superAdmin);
