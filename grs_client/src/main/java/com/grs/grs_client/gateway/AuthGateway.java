@@ -4,14 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.grs.grs_client.enums.GRSUserType;
 import com.grs.grs_client.enums.OISFUserType;
 import com.grs.grs_client.enums.UserType;
-import com.grs.grs_client.model.LoginRequest;
-import com.grs.grs_client.model.LoginResponse;
-import com.grs.grs_client.model.OfficeInformation;
-import com.grs.grs_client.model.UserDetails;
+import com.grs.grs_client.model.*;
+import com.grs.grs_client.utils.Utility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -57,5 +59,31 @@ public class AuthGateway extends BaseRestTemplate{
         return response.getBody();
     }
 
+    public String superAdminPasswordChange(PasswordChange passwordChange) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserInformation userInformation = Utility.extractUserInformationFromAuthentication(authentication);
 
+        if (!userInformation.getGrsUserType().equals(GRSUserType.SUPER_ADMIN)) {
+            return "You are not authorized to change password";
+        }
+
+        String url = getUrl() + GRS_AUTH_CONTEXT_PATH + "/auth/superAdmin/passwordChange";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        passwordChange.setUsername(userInformation.getUsername());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String body = "";
+        try {
+            body = objectMapper.writeValueAsString(passwordChange);
+        }catch (Exception ex){
+            log.error("",ex);
+        }
+        HttpEntity<String> entity = new HttpEntity<>(body, headers);
+        ResponseEntity<String> response = restTemplate.exchange(url,
+                HttpMethod.POST, entity, new ParameterizedTypeReference<String>() {
+                });
+        return response.getBody();
+    }
 }
