@@ -124,6 +124,8 @@ nothi:
     login: /api/client/login
     district: /api/v1/district
   logoutUrl: http://n-doptor-accounts.nothi.gov.bd/logout?referer=aHR0cDovL2dycy5nb3YuYmQ=
+  mobileAdmin:
+    url: https://n-doptor-api.nothi.gov.bd/api/user/verify
 
 upload:
   file:
@@ -138,3 +140,6 @@ google:
     key:
       site: 6LezJA8qAAAAAGLqs4QywlGdUnK3xzcEDRf041hf
       secret: 6LezJA8qAAAAAMpWvPUwtFxcX-KD4CmgO7T8SMYD
+
+token:
+  status: false

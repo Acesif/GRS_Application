@@ -128,6 +128,8 @@ nothi:
     district: /api/v1/district
   #logoutUrl: http://n-doptor-accounts-stage.nothi.gov.bd/logout?referer=aHR0cDovL3RyYWluaW5nLmdycy5nb3YuYmQvbG9naW4=
   logoutUrl: http://api-stage.doptor.gov.bd/logout?referer=aHR0cDovL3RyYWluaW5nLmdycy5nb3YuYmQvbG9naW4=
+  mobileAdmin:
+    url: https://api-stage.doptor.gov.bd/api/user/verify
 
 upload:
   file:
@@ -142,3 +144,6 @@ google:
     key:
       site: 6LezJA8qAAAAAGLqs4QywlGdUnK3xzcEDRf041hf
       secret: 6LezJA8qAAAAAMpWvPUwtFxcX-KD4CmgO7T8SMYD
+
+token:
+  status: true

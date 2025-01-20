@@ -1,7 +1,12 @@
 package com.grs.api.config.security;
 
+import com.grs.core.dao.GrsRoleDAO;
+import com.grs.core.service.ComplainantService;
+import com.grs.mobileApp.config.JWTAdminLoginFilterForMobileAPI;
+import com.grs.mobileApp.config.JWTLoginFilterForMobileAPI;
 import com.grs.utils.CookieUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -30,6 +35,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private CustomAuthenticationProvider customAuthenticationProvider;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired
+    private ComplainantService complainantService;
+    @Autowired
+    private GrsRoleDAO grsRoleDao;
+    @Value("${nothi.mobileAdmin.url}")
+    private String mobileAdminVerify;
+    @Value("${token.status}")
+    private boolean tokenStatus;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -73,6 +86,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilterBefore(new JWTLoginFilter("/login", authenticationManager(), bCryptPasswordEncoder), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JWTLoginFilterForAPI("/api/login", authenticationManager(), bCryptPasswordEncoder), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JWTLoginFilterForMobileAPI("/api/mobile/login", authenticationManager(), bCryptPasswordEncoder, complainantService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JWTAdminLoginFilterForMobileAPI("/api/auth/mobile-administrative-login", authenticationManager(), bCryptPasswordEncoder, oisfUserDetailsService, grsRoleDao, mobileAdminVerify, tokenStatus), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JWTAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 

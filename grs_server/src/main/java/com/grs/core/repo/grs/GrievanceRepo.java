@@ -18,6 +18,8 @@ public interface GrievanceRepo extends JpaRepository<Grievance, Long> {
     nativeQuery = true)
     public long findMaxTrackingNumber();
 
+    List<Grievance> findGrievancesByComplainantId(Long id);
+
 
 //    @Query("SELECT g FROM Grievance g WHERE g.trackingNumber = :trx OR g.trackingNumber = CONCAT('0', :trx)")
 //    List<Grievance> findGrievancesByTrackingNumber(@Param("trx") String trx);
