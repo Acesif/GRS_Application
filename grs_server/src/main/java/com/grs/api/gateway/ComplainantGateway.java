@@ -86,25 +86,21 @@ public class ComplainantGateway {
     }
 
     public Complainant findByPhoneNumber(String phoneNumber) {
-        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/findByPhoneNumber";
+        String url = getUrl() + GRS_CORE_CONTEXT_PATH + "/findByPhoneNumber/"+phoneNumber;
 
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
 
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
-        String urlTemplate = UriComponentsBuilder.fromHttpUrl(url)
-                .queryParam("phoneNumber", "{phoneNumber}")
-                .buildAndExpand(phoneNumber)
-                .toUriString();
-
         try {
             ResponseEntity<Complainant> response = restTemplate.exchange(
-                    urlTemplate,
-                    HttpMethod.POST,
+                    url,
+                    HttpMethod.GET,
                     entity,
                     Complainant.class
             );
+            System.out.println(response.getBody());
             return response.getBody();
         } catch (HttpClientErrorException e) {
             log.error("HTTP Client Error: {}", e.getResponseBodyAsString());
