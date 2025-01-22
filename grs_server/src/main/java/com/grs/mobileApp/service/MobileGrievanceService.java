@@ -333,8 +333,6 @@ public class MobileGrievanceService {
         Complainant complainant = complainantService.findOne(grievance.getComplainant_id());
         // Filter the occupations list to find the matching occupation ID
 
-        SimpleDateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");
-
         Map<String,Object> grievanceDetails = this.getGrievanceDetails(grievance);
 
         Map<String, Object> complainantInfo = new HashMap<>();
@@ -385,8 +383,8 @@ public class MobileGrievanceService {
         complainantInfo.put("foreign_present_address_state", complainant.getForeignPresentAddressState());
         complainantInfo.put("foreign_present_address_zipcode", complainant.getForeignPresentAddressZipCode());
         complainantInfo.put("is_authenticated", complainant.isAuthenticated() ? 1 : 0);
-        complainantInfo.put("created_at", isoDateFormat.format(new Date(complainant.getCreatedAt().getTime())));
-        complainantInfo.put("updated_at", isoDateFormat.format(new Date(complainant.getUpdatedAt().getTime())));
+        complainantInfo.put("created_at", getDateinIso(complainant.getCreatedAt()));
+        complainantInfo.put("updated_at", getDateinIso(complainant.getUpdatedAt()));
         complainantInfo.put("status", complainant.getStatus());
         complainantInfo.put("present_address_country_id", complainant.getPresentAddressCountryId());
         complainantInfo.put("permanent_address_country_id", complainant.getPermanentAddressCountryId());
@@ -450,6 +448,16 @@ public class MobileGrievanceService {
         response.put("status", "success");
 
         return response;
+    }
+
+    private String getDateinIso(Date date) {
+
+        if (date == null) {
+            return null;
+        }
+
+        SimpleDateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");
+        return isoDateFormat.format(new Date(date.getTime()));
     }
 
     public MobileGrievanceResponseDTO findGrievancesById(
